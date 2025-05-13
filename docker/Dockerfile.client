@@ -1,0 +1,39 @@
+# Build stage
+FROM node:20-alpine AS build
+
+WORKDIR /app
+
+# Copy package files
+COPY client/package*.json ./
+
+# Install dependencies
+RUN npm install
+
+# Create necessary directory structure for missing files
+RUN mkdir -p public src/assets/styles
+
+# Create minimal index.html if it doesn't exist
+RUN echo '<!DOCTYPE html><html lang="en"><head><meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" /><title>TechHub</title></head><body><div id="root"></div></body></html>' > public/index.html
+
+# Create placeholder global.css file
+RUN echo '/* Placeholder global styles */' > src/assets/styles/global.css
+
+# Now copy all files, the placeholder will be overwritten if the file exists
+COPY client/ ./
+
+# Build the app
+RUN DISABLE_ESLINT_PLUGIN=true npm run build
+
+# Production stage
+FROM nginx:alpine
+
+# Copy build files
+COPY --from=build /app/build /usr/share/nginx/html
+
+# Copy nginx config
+COPY docker/nginx.conf /etc/nginx/conf.d/default.conf
+
+# Expose port
+EXPOSE 80
+
+CMD ["nginx", "-g", "daemon off;"]

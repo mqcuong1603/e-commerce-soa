@@ -1,0 +1,82 @@
+[
+  {
+    "email": "admin@example.com",
+    "fullName": "Admin User",
+    "password": "Admin123!",
+    "role": "admin",
+    "status": "active",
+    "loyaltyPoints": 0
+  },
+  {
+    "email": "john.doe@example.com",
+    "fullName": "John Doe",
+    "password": "Password123!",
+    "role": "customer",
+    "status": "active",
+    "loyaltyPoints": 150
+  },
+  {
+    "email": "sarah.johnson@example.com",
+    "fullName": "Sarah Johnson",
+    "password": "Password123!",
+    "role": "customer",
+    "status": "active",
+    "loyaltyPoints": 200
+  },
+  {
+    "email": "michael.chen@example.com",
+    "fullName": "Michael Chen",
+    "password": "Password123!",
+    "role": "customer",
+    "status": "active",
+    "loyaltyPoints": 75
+  },
+  {
+    "email": "emily.wilson@example.com",
+    "fullName": "Emily Wilson",
+    "password": "Password123!",
+    "role": "customer",
+    "status": "active",
+    "loyaltyPoints": 125
+  },
+  {
+    "email": "david.rodriguez@example.com",
+    "fullName": "David Rodriguez",
+    "password": "Password123!",
+    "role": "customer",
+    "status": "active",
+    "loyaltyPoints": 300
+  },
+  {
+    "email": "jennifer.park@example.com",
+    "fullName": "Jennifer Park",
+    "password": "Password123!",
+    "role": "customer",
+    "status": "active",
+    "loyaltyPoints": 180
+  },
+  {
+    "email": "robert.williams@example.com",
+    "fullName": "Robert Williams",
+    "password": "Password123!",
+    "role": "customer",
+    "status": "active",
+    "loyaltyPoints": 95
+  },
+  {
+    "email": "sophia.martinez@example.com",
+    "fullName": "Sophia Martinez",
+    "password": "Password123!",
+    "role": "customer",
+    "status": "active",
+    "loyaltyPoints": 250
+  },
+  {
+    "email": "james.brown@example.com",
+    "fullName": "James Brown",
+    "password": "Password123!",
+    "role": "customer",
+    "status": "inactive",
+    "loyaltyPoints": 50
+  }
+]

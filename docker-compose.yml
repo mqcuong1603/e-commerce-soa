@@ -1,0 +1,77 @@
+services:
+  # Backend service
+  server:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.server
+    container_name: ecommerce-server
+    restart: always
+    environment:
+      - NODE_ENV=development
+      - PORT=3000
+      - MONGODB_URI=mongodb://admin:password123@mongo:27017/ecommerce?authSource=admin
+      - JWT_SECRET=your_jwt_secret_key
+      - SESSION_SECRET=your_session_secret_key
+      - CLIENT_URL=http://localhost:8080
+      - SEED_DATABASE=true
+    ports:
+      - "3000:3000"
+    env_file:
+      - ./.env
+    depends_on:
+      mongo:
+        condition: service_healthy
+    volumes:
+      - ./server:/app
+      - /app/node_modules
+    networks:
+      - app-network
+
+  # Frontend service
+  client:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.client
+    container_name: ecommerce-client
+    restart: always
+    ports:
+      - "8080:80"
+    environment:
+      - REACT_APP_API_URL=http://localhost:3000/api
+      - REACT_APP_SOCKET_URL=http://localhost:3000
+    depends_on:
+      - server
+    volumes:
+      - ./client:/app
+      - /app/node_modules
+    networks:
+      - app-network
+
+  # MongoDB service
+  mongo:
+    image: mongo:latest
+    container_name: ecommerce-mongo
+    restart: always
+    ports:
+      - "27017:27017"
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=admin
+      - MONGO_INITDB_ROOT_PASSWORD=password123
+      - MONGO_INITDB_DATABASE=ecommerce
+    volumes:
+      - mongo-data:/data/db
+    networks:
+      - app-network
+    healthcheck:
+      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
+networks:
+  app-network:
+    driver: bridge
+
+volumes:
+  mongo-data:

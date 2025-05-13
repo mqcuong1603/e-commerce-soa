@@ -1,0 +1,267 @@
+[
+  {
+    "name": "Laptops",
+    "description": "Portable computers for work and play",
+    "image": "/images/categories/laptops.jpg",
+    "isActive": true,
+    "sortOrder": 1
+  },
+  {
+    "name": "Ultrabooks",
+    "description": "Ultra-thin, lightweight laptops with premium performance",
+    "image": "/images/categories/ultrabooks.jpg",
+    "isActive": true,
+    "sortOrder": 1,
+    "parentName": "Laptops"
+  },
+  {
+    "name": "Gaming Laptops",
+    "description": "High-performance laptops designed for gaming",
+    "image": "/images/categories/gaming-laptops.jpg",
+    "isActive": true,
+    "sortOrder": 2,
+    "parentName": "Laptops"
+  },
+  {
+    "name": "Business Laptops",
+    "description": "Reliable laptops for business and productivity",
+    "image": "/images/categories/business-laptops.jpg",
+    "isActive": true,
+    "sortOrder": 3,
+    "parentName": "Laptops"
+  },
+  {
+    "name": "2-in-1 Convertibles",
+    "description": "Versatile devices that function as both laptops and tablets",
+    "image": "/images/categories/convertibles.jpg",
+    "isActive": true,
+    "sortOrder": 4,
+    "parentName": "Laptops"
+  },
+  {
+    "name": "MacBooks/Chromebooks",
+    "description": "Apple MacBooks and Google Chromebooks",
+    "image": "/images/categories/macbooks-chromebooks.jpg",
+    "isActive": true,
+    "sortOrder": 5,
+    "parentName": "Laptops"
+  },
+  {
+    "name": "Monitors",
+    "description": "Displays for computers and gaming",
+    "image": "/images/categories/monitors.jpg",
+    "isActive": true,
+    "sortOrder": 2
+  },
+  {
+    "name": "Full HD Monitors",
+    "description": "1080p displays for everyday computing",
+    "image": "/images/categories/fullhd-monitors.jpg",
+    "isActive": true,
+    "sortOrder": 1,
+    "parentName": "Monitors"
+  },
+  {
+    "name": "4K Monitors",
+    "description": "Ultra high definition displays for detailed visuals",
+    "image": "/images/categories/4k-monitors.jpg",
+    "isActive": true,
+    "sortOrder": 2,
+    "parentName": "Monitors"
+  },
+  {
+    "name": "Curved Monitors",
+    "description": "Immersive curved displays for enhanced viewing experience",
+    "image": "/images/categories/curved-monitors.jpg",
+    "isActive": true,
+    "sortOrder": 3,
+    "parentName": "Monitors"
+  },
+  {
+    "name": "Gaming Monitors",
+    "description": "High refresh rate monitors for competitive gaming",
+    "image": "/images/categories/gaming-monitors.jpg",
+    "isActive": true,
+    "sortOrder": 4,
+    "parentName": "Monitors"
+  },
+  {
+    "name": "Professional Monitors",
+    "description": "Color-accurate displays for creative professionals",
+    "image": "/images/categories/professional-monitors.jpg",
+    "isActive": true,
+    "sortOrder": 5,
+    "parentName": "Monitors"
+  },
+  {
+    "name": "Storage",
+    "description": "Storage solutions for all your data needs",
+    "image": "/images/categories/storage.jpg",
+    "isActive": true,
+    "sortOrder": 3
+  },
+  {
+    "name": "Internal SSD",
+    "description": "Fast solid state drives for system and application storage",
+    "image": "/images/categories/internal-ssd.jpg",
+    "isActive": true,
+    "sortOrder": 1,
+    "parentName": "Storage"
+  },
+  {
+    "name": "Internal HDD",
+    "description": "High capacity hard disk drives for mass storage",
+    "image": "/images/categories/internal-hdd.jpg",
+    "isActive": true,
+    "sortOrder": 2,
+    "parentName": "Storage"
+  },
+  {
+    "name": "External SSD",
+    "description": "Portable solid state drives for on-the-go storage",
+    "image": "/images/categories/external-ssd.jpg",
+    "isActive": true,
+    "sortOrder": 3,
+    "parentName": "Storage"
+  },
+  {
+    "name": "External HDD",
+    "description": "High capacity external drives for backups and archives",
+    "image": "/images/categories/external-hdd.jpg",
+    "isActive": true,
+    "sortOrder": 4,
+    "parentName": "Storage"
+  },
+  {
+    "name": "USB Flash Drives",
+    "description": "Compact storage devices for easy file transfer",
+    "image": "/images/categories/usb-drives.jpg",
+    "isActive": true,
+    "sortOrder": 5,
+    "parentName": "Storage"
+  },
+  {
+    "name": "Processors",
+    "description": "CPUs for desktops and laptops",
+    "image": "/images/categories/processors.jpg",
+    "isActive": true,
+    "sortOrder": 4
+  },
+  {
+    "name": "Intel Processors",
+    "description": "Intel CPUs for desktops and laptops",
+    "image": "/images/categories/intel-cpus.jpg",
+    "isActive": true,
+    "sortOrder": 1,
+    "parentName": "Processors"
+  },
+  {
+    "name": "AMD Processors",
+    "description": "AMD CPUs for desktops and laptops",
+    "image": "/images/categories/amd-cpus.jpg",
+    "isActive": true,
+    "sortOrder": 2,
+    "parentName": "Processors"
+  },
+  {
+    "name": "Desktop CPUs",
+    "description": "High-performance processors for desktop computers",
+    "image": "/images/categories/desktop-cpus.jpg",
+    "isActive": true,
+    "sortOrder": 3,
+    "parentName": "Processors"
+  },
+  {
+    "name": "Laptop CPUs",
+    "description": "Energy-efficient processors for laptops",
+    "image": "/images/categories/laptop-cpus.jpg",
+    "isActive": true,
+    "sortOrder": 4,
+    "parentName": "Processors"
+  },
+  {
+    "name": "Motherboards",
+    "description": "The foundation of your computer build",
+    "image": "/images/categories/motherboards.jpg",
+    "isActive": true,
+    "sortOrder": 5
+  },
+  {
+    "name": "Intel Compatible",
+    "description": "Motherboards compatible with Intel processors",
+    "image": "/images/categories/intel-motherboards.jpg",
+    "isActive": true,
+    "sortOrder": 1,
+    "parentName": "Motherboards"
+  },
+  {
+    "name": "AMD Compatible",
+    "description": "Motherboards compatible with AMD processors",
+    "image": "/images/categories/amd-motherboards.jpg",
+    "isActive": true,
+    "sortOrder": 2,
+    "parentName": "Motherboards"
+  },
+  {
+    "name": "ATX Motherboards",
+    "description": "Standard ATX, Micro-ATX, and Mini-ITX form factors",
+    "image": "/images/categories/atx-motherboards.jpg",
+    "isActive": true,
+    "sortOrder": 3,
+    "parentName": "Motherboards"
+  },
+  {
+    "name": "Graphics Cards",
+    "description": "GPUs for gaming and content creation",
+    "image": "/images/categories/gpu.jpg",
+    "isActive": true,
+    "sortOrder": 6
+  },
+  {
+    "name": "NVIDIA GPUs",
+    "description": "NVIDIA graphics cards for gaming and content creation",
+    "image": "/images/categories/nvidia-gpus.jpg",
+    "isActive": true,
+    "sortOrder": 1,
+    "parentName": "Graphics Cards"
+  },
+  {
+    "name": "AMD GPUs",
+    "description": "AMD graphics cards for gaming and content creation",
+    "image": "/images/categories/amd-gpus.jpg",
+    "isActive": true,
+    "sortOrder": 2,
+    "parentName": "Graphics Cards"
+  },
+  {
+    "name": "Integrated GPUs",
+    "description": "Integrated graphics solutions",
+    "image": "/images/categories/integrated-gpus.jpg",
+    "isActive": true,
+    "sortOrder": 3,
+    "parentName": "Graphics Cards"
+  },
+  {
+    "name": "RAM",
+    "description": "Memory modules for your computer",
+    "image": "/images/categories/ram.jpg",
+    "isActive": true,
+    "sortOrder": 7
+  },
+  {
+    "name": "Desktop RAM",
+    "description": "Memory modules for desktop computers",
+    "image": "/images/categories/desktop-ram.jpg",
+    "isActive": true,
+    "sortOrder": 1,
+    "parentName": "RAM"
+  },
+  {
+    "name": "Laptop RAM",
+    "description": "Memory modules for laptops",
+    "image": "/images/categories/laptop-ram.jpg",
+    "isActive": true,
+    "sortOrder": 2,
+    "parentName": "RAM"
+  }
+]

@@ -1,0 +1,1117 @@
+[
+  {
+    "name": "Dell XPS 13",
+    "brand": "Dell",
+    "description": "The Dell XPS 13 is a premium ultrabook with an InfinityEdge display that maximizes screen space. Featuring a 13.4-inch 4K display with minimal bezels, it delivers stunning visuals for both work and entertainment. Powered by Intel's latest Core processors and up to 32GB of RAM, this ultrabook handles multitasking with ease. The precision-engineered CNC aluminum chassis and carbon fiber palm rest provide durability while maintaining a lightweight profile under 2.8 pounds. With up to 12 hours of battery life and Thunderbolt 4 connectivity, it's perfect for professionals on the go. The backlit keyboard and large precision touchpad ensure comfortable use in any environment.",
+    "shortDescription": "Premium ultrabook with InfinityEdge display and all-day battery life",
+    "basePrice": 1199.99,
+    "isActive": true,
+    "isNewProduct": true,
+    "isBestSeller": true,
+    "isFeatured": true,
+    "categoryNames": ["Ultrabooks", "Laptops"],
+    "tags": ["ultrabook", "dell", "xps", "infinity-edge"],
+    "variants": [
+      {
+        "name": "Core i5 / 8GB / 256GB",
+        "sku": "XPS13-I5-8-256",
+        "attributes": {
+          "processor": "Intel Core i5-1135G7",
+          "memory": "8GB LPDDR4X",
+          "storage": "256GB PCIe NVMe SSD",
+          "display": "13.4\" FHD+ (1920 x 1200)",
+          "color": "Platinum Silver"
+        },
+        "price": 1199.99,
+        "salePrice": 1099.99,
+        "inventory": 25,
+        "isActive": true
+      },
+      {
+        "name": "Core i7 / 16GB / 512GB",
+        "sku": "XPS13-I7-16-512",
+        "attributes": {
+          "processor": "Intel Core i7-1165G7",
+          "memory": "16GB LPDDR4X",
+          "storage": "512GB PCIe NVMe SSD",
+          "display": "13.4\" UHD+ (3840 x 2400)",
+          "color": "Frost White"
+        },
+        "price": 1699.99,
+        "salePrice": null,
+        "inventory": 20,
+        "isActive": true
+      }
+    ],
+    "images": [
+      {
+        "imageUrl": "/images/products/xps-13-1.jpg",
+        "isMain": true,
+        "alt": "Dell XPS 13 front view"
+      },
+      {
+        "imageUrl": "/images/products/xps-13-2.jpg",
+        "isMain": false,
+        "alt": "Dell XPS 13 side view"
+      },
+      {
+        "imageUrl": "/images/products/xps-13-3.jpg",
+        "isMain": false,
+        "alt": "Dell XPS 13 keyboard view"
+      }
+    ]
+  },
+  {
+    "name": "HP Spectre x360",
+    "brand": "HP",
+    "description": "The HP Spectre x360 redefines versatility with its 360-degree hinge design, allowing you to use it as a laptop, tablet, or in tent mode. The gem-cut design and dual-chamfered edges showcase exceptional craftsmanship, while the 13.3-inch OLED touchscreen display delivers vibrant colors and true blacks for an immersive viewing experience. Powered by Intel Evo platform with 11th Gen processors, it offers remarkable performance and responsiveness. The Spectre features HP's True Vision HD IR camera with integrated privacy switch, fingerprint reader, and Bang & Olufsen quad speakers for premium security and audio. With up to 16 hours of battery life and fast charging capabilities, it's the perfect companion for creative professionals who need power and flexibility.",
+    "shortDescription": "Versatile 2-in-1 ultrabook with gem-cut design and OLED display",
+    "basePrice": 1349.99,
+    "isActive": true,
+    "isNewProduct": true,
+    "isBestSeller": false,
+    "isFeatured": true,
+    "categoryNames": ["Ultrabooks", "2-in-1 Convertibles", "Laptops"],
+    "tags": ["ultrabook", "2-in-1", "convertible", "hp", "oled"],
+    "variants": [
+      {
+        "name": "Core i5 / 8GB / 512GB",
+        "sku": "SPECTRE-I5-8-512",
+        "attributes": {
+          "processor": "Intel Core i5-1135G7",
+          "memory": "8GB LPDDR4X",
+          "storage": "512GB PCIe NVMe SSD",
+          "display": "13.3\" FHD IPS Touch",
+          "color": "Nightfall Black"
+        },
+        "price": 1349.99,
+        "salePrice": 1249.99,
+        "inventory": 20,
+        "isActive": true
+      },
+      {
+        "name": "Core i7 / 16GB / 1TB",
+        "sku": "SPECTRE-I7-16-1TB",
+        "attributes": {
+          "processor": "Intel Core i7-1165G7",
+          "memory": "16GB LPDDR4X",
+          "storage": "1TB PCIe NVMe SSD",
+          "display": "13.3\" 4K OLED Touch",
+          "color": "Poseidon Blue"
+        },
+        "price": 1849.99,
+        "salePrice": null,
+        "inventory": 15,
+        "isActive": true
+      }
+    ],
+    "images": [
+      {
+        "imageUrl": "/images/products/hp-spectre-1.jpg",
+        "isMain": true,
+        "alt": "HP Spectre x360 front view"
+      },
+      {
+        "imageUrl": "/images/products/hp-spectre-2.jpg",
+        "isMain": false,
+        "alt": "HP Spectre x360 tablet mode"
+      },
+      {
+        "imageUrl": "/images/products/hp-spectre-3.jpg",
+        "isMain": false,
+        "alt": "HP Spectre x360 tent mode"
+      }
+    ]
+  },
+  {
+    "name": "Samsung 980 PRO",
+    "brand": "Samsung",
+    "description": "The Samsung 980 PRO represents the pinnacle of NVMe SSD technology, leveraging PCIe 4.0 to deliver sequential read speeds up to 7,000 MB/s and write speeds up to 5,000 MB/s - nearly twice as fast as PCIe 3.0 SSDs. As Samsung's fastest consumer SSD, it features V-NAND technology and a proprietary Elpis controller optimized for speed and efficiency. The drive maintains lower operating temperatures thanks to its nickel-coated controller and effective heat dissipation layer, ensuring consistent performance during intensive tasks like 4K video editing, 3D rendering, and high-end gaming. Samsung's Dynamic Thermal Guard technology automatically minimizes performance fluctuations during extended use, while the streamlined, compact M.2 form factor makes it ideal for next-gen desktops and laptop upgrades. Samsung Magician software provides robust SSD management tools for monitoring drive health, performing firmware updates, and optimizing performance over time.",
+    "shortDescription": "High-performance PCIe 4.0 NVMe SSD with speeds up to 7,000 MB/s",
+    "basePrice": 229.99,
+    "isActive": true,
+    "isNewProduct": true,
+    "isBestSeller": true,
+    "isFeatured": true,
+    "categoryNames": ["Internal SSD", "Storage"],
+    "tags": ["storage", "ssd", "nvme", "samsung", "pcie4", "m.2"],
+    "variants": [
+      {
+        "name": "500GB",
+        "sku": "SM-980PRO-500",
+        "attributes": {
+          "capacity": "500GB",
+          "interface": "PCIe 4.0 x4, NVMe 1.3c",
+          "readSpeed": "6,900 MB/s",
+          "writeSpeed": "5,000 MB/s",
+          "formFactor": "M.2 2280",
+          "tbw": "300 TB"
+        },
+        "price": 229.99,
+        "salePrice": 199.99,
+        "inventory": 35,
+        "isActive": true
+      },
+      {
+        "name": "1TB",
+        "sku": "SM-980PRO-1TB",
+        "attributes": {
+          "capacity": "1TB",
+          "interface": "PCIe 4.0 x4, NVMe 1.3c",
+          "readSpeed": "7,000 MB/s",
+          "writeSpeed": "5,000 MB/s",
+          "formFactor": "M.2 2280",
+          "tbw": "600 TB"
+        },
+        "price": 399.99,
+        "salePrice": 349.99,
+        "inventory": 30,
+        "isActive": true
+      },
+      {
+        "name": "2TB",
+        "sku": "SM-980PRO-2TB",
+        "attributes": {
+          "capacity": "2TB",
+          "interface": "PCIe 4.0 x4, NVMe 1.3c",
+          "readSpeed": "7,000 MB/s",
+          "writeSpeed": "5,100 MB/s",
+          "formFactor": "M.2 2280",
+          "tbw": "1,200 TB"
+        },
+        "price": 729.99,
+        "salePrice": 649.99,
+        "inventory": 20,
+        "isActive": true
+      }
+    ],
+    "images": [
+      {
+        "imageUrl": "/images/products/samsung-980pro-1.jpg",
+        "isMain": true,
+        "alt": "Samsung 980 PRO front view"
+      },
+      {
+        "imageUrl": "/images/products/samsung-980pro-2.jpg",
+        "isMain": false,
+        "alt": "Samsung 980 PRO angle view"
+      },
+      {
+        "imageUrl": "/images/products/samsung-980pro-3.jpg",
+        "isMain": false,
+        "alt": "Samsung 980 PRO packaging"
+      }
+    ]
+  },
+  {
+    "name": "Seagate BarraCuda",
+    "brand": "Seagate",
+    "description": "The Seagate BarraCuda is the industry standard for reliable, cost-effective storage, offering exceptional value for everyday computing and mass storage needs. Available in capacities up to 8TB in the 3.5-inch form factor, it provides ample space for operating systems, applications, documents, and media files. With 7200 RPM spindle speed and 256MB cache on higher-capacity models, it delivers better performance than typical 5400 RPM drives for faster system responsiveness. Seagate's Multi-Tier Caching Technology (MTC) combines several cache types including DRAM and NAND flash to optimize data flow, resulting in improved overall performance for frequently accessed files. With 30+ years of innovation and reliability testing, BarraCuda drives are built to last, backed by Seagate's 2-year limited warranty. The standard SATA 6Gb/s interface ensures broad compatibility with virtually all desktop systems, making it an ideal choice for system builders, storage upgrades, and secondary storage needs where capacity and value take priority over the speed of SSDs.",
+    "shortDescription": "Reliable, high-capacity hard drive for everyday computing and storage",
+    "basePrice": 59.99,
+    "isActive": true,
+    "isNewProduct": false,
+    "isBestSeller": true,
+    "isFeatured": true,
+    "categoryNames": ["Internal HDD", "Storage"],
+    "tags": ["storage", "hdd", "seagate", "barracuda", "sata", "desktop"],
+    "variants": [
+      {
+        "name": "2TB",
+        "sku": "SEAGATE-BARRACUDA-2TB",
+        "attributes": {
+          "capacity": "2TB",
+          "interface": "SATA 6Gb/s",
+          "formFactor": "3.5-inch",
+          "rpm": "7200 RPM",
+          "cache": "256MB",
+          "recordingTechnology": "CMR"
+        },
+        "price": 59.99,
+        "salePrice": 54.99,
+        "inventory": 50,
+        "isActive": true
+      },
+      {
+        "name": "4TB",
+        "sku": "SEAGATE-BARRACUDA-4TB",
+        "attributes": {
+          "capacity": "4TB",
+          "interface": "SATA 6Gb/s",
+          "formFactor": "3.5-inch",
+          "rpm": "7200 RPM",
+          "cache": "256MB",
+          "recordingTechnology": "CMR"
+        },
+        "price": 99.99,
+        "salePrice": 89.99,
+        "inventory": 40,
+        "isActive": true
+      },
+      {
+        "name": "8TB",
+        "sku": "SEAGATE-BARRACUDA-8TB",
+        "attributes": {
+          "capacity": "8TB",
+          "interface": "SATA 6Gb/s",
+          "formFactor": "3.5-inch",
+          "rpm": "7200 RPM",
+          "cache": "256MB",
+          "recordingTechnology": "CMR"
+        },
+        "price": 179.99,
+        "salePrice": 159.99,
+        "inventory": 25,
+        "isActive": true
+      }
+    ],
+    "images": [
+      {
+        "imageUrl": "/images/products/seagate-barracuda-1.jpg",
+        "isMain": true,
+        "alt": "Seagate BarraCuda front view"
+      },
+      {
+        "imageUrl": "/images/products/seagate-barracuda-2.jpg",
+        "isMain": false,
+        "alt": "Seagate BarraCuda side view"
+      },
+      {
+        "imageUrl": "/images/products/seagate-barracuda-3.jpg",
+        "isMain": false,
+        "alt": "Seagate BarraCuda packaging"
+      }
+    ]
+  },
+  {
+    "name": "Lenovo ThinkPad X1 Carbon",
+    "brand": "Lenovo",
+    "description": "The ThinkPad X1 Carbon is Lenovo's flagship ultrabook built for business professionals who demand uncompromising performance and reliability. Featuring a premium carbon fiber chassis that's both lightweight and durable, it offers military-grade durability testing and enterprise-grade security features. The legendary ThinkPad keyboard provides exceptional typing comfort, while the 14-inch display options range from FHD to 4K UHD with Dolby Vision. Powered by Intel vPro processors and featuring up to 32GB of LPDDR4X memory, it delivers exceptional performance for demanding business applications. With Thunderbolt 4 connectivity, optional 5G WWAN, and up to 19 hours of battery life, it's the perfect companion for mobile professionals.",
+    "shortDescription": "Business-class ultrabook with carbon fiber chassis and legendary ThinkPad keyboard",
+    "basePrice": 1499.99,
+    "isActive": true,
+    "isNewProduct": false,
+    "isBestSeller": true,
+    "isFeatured": true,
+    "categoryNames": ["Ultrabooks", "Business Laptops", "Laptops"],
+    "tags": ["ultrabook", "business", "thinkpad", "lenovo", "carbon fiber"],
+    "variants": [
+      {
+        "name": "Core i5 / 16GB / 256GB",
+        "sku": "X1CARBON-I5-16-256",
+        "attributes": {
+          "processor": "Intel Core i5-1135G7",
+          "memory": "16GB LPDDR4X",
+          "storage": "256GB PCIe SSD",
+          "display": "14\" FHD IPS Anti-Glare",
+          "color": "Black"
+        },
+        "price": 1499.99,
+        "salePrice": 1399.99,
+        "inventory": 30,
+        "isActive": true
+      },
+      {
+        "name": "Core i7 / 32GB / 1TB",
+        "sku": "X1CARBON-I7-32-1TB",
+        "attributes": {
+          "processor": "Intel Core i7-1185G7 vPro",
+          "memory": "32GB LPDDR4X",
+          "storage": "1TB PCIe SSD",
+          "display": "14\" 4K UHD IPS Dolby Vision",
+          "color": "Black"
+        },
+        "price": 2199.99,
+        "salePrice": null,
+        "inventory": 15,
+        "isActive": true
+      }
+    ],
+    "images": [
+      {
+        "imageUrl": "/images/products/thinkpad-x1-1.jpg",
+        "isMain": true,
+        "alt": "ThinkPad X1 Carbon front view"
+      },
+      {
+        "imageUrl": "/images/products/thinkpad-x1-2.jpg",
+        "isMain": false,
+        "alt": "ThinkPad X1 Carbon open view"
+      },
+      {
+        "imageUrl": "/images/products/thinkpad-x1-3.jpg",
+        "isMain": false,
+        "alt": "ThinkPad X1 Carbon keyboard view"
+      }
+    ]
+  },
+  {
+    "name": "LG Gram 16",
+    "brand": "LG",
+    "description": "The LG Gram 16 redefines what's possible in an ultralight laptop, combining a spacious 16-inch display with an incredibly lightweight magnesium alloy chassis that weighs just 2.6 pounds. Despite its featherweight design, it meets MIL-STD-810G military standards for durability, ensuring it can withstand the rigors of daily use. The WQXGA (2560x1600) IPS display delivers stunning visuals with excellent color accuracy, while the 80Wh battery provides up to 22 hours of battery life. Powered by Intel's latest processors and featuring Thunderbolt 4 connectivity, it offers desktop-class performance in a remarkably portable package. The backlit keyboard and precision touchpad ensure comfortable use, while the comprehensive port selection includes USB-C, USB-A, HDMI, and a microSD card reader.",
+    "shortDescription": "Ultra-lightweight 16-inch laptop with long battery life and military-grade durability",
+    "basePrice": 1399.99,
+    "isActive": true,
+    "isNewProduct": true,
+    "isBestSeller": false,
+    "isFeatured": false,
+    "categoryNames": ["Ultrabooks", "Laptops"],
+    "tags": ["ultrabook", "lightweight", "lg", "16-inch", "long battery"],
+    "variants": [
+      {
+        "name": "Core i5 / 8GB / 512GB",
+        "sku": "GRAM16-I5-8-512",
+        "attributes": {
+          "processor": "Intel Core i5-1135G7",
+          "memory": "8GB LPDDR4X",
+          "storage": "512GB NVMe SSD",
+          "display": "16\" WQXGA (2560x1600) IPS",
+          "color": "White"
+        },
+        "price": 1399.99,
+        "salePrice": 1299.99,
+        "inventory": 25,
+        "isActive": true
+      },
+      {
+        "name": "Core i7 / 16GB / 1TB",
+        "sku": "GRAM16-I7-16-1TB",
+        "attributes": {
+          "processor": "Intel Core i7-1165G7",
+          "memory": "16GB LPDDR4X",
+          "storage": "1TB NVMe SSD",
+          "display": "16\" WQXGA (2560x1600) IPS",
+          "color": "Black"
+        },
+        "price": 1799.99,
+        "salePrice": 1699.99,
+        "inventory": 15,
+        "isActive": true
+      }
+    ],
+    "images": [
+      {
+        "imageUrl": "/images/products/lg-gram-1.jpg",
+        "isMain": true,
+        "alt": "LG Gram 16 front view"
+      },
+      {
+        "imageUrl": "/images/products/lg-gram-2.jpg",
+        "isMain": false,
+        "alt": "LG Gram 16 side view"
+      },
+      {
+        "imageUrl": "/images/products/lg-gram-3.jpg",
+        "isMain": false,
+        "alt": "LG Gram 16 keyboard view"
+      }
+    ]
+  },
+  {
+    "name": "ASUS ROG Zephyrus G15",
+    "brand": "ASUS",
+    "description": "The ASUS ROG Zephyrus G15 represents the pinnacle of gaming laptop engineering, combining desktop-class performance with unprecedented portability. Powered by AMD's Ryzen 9 processor and NVIDIA's RTX 30 series graphics, it delivers exceptional gaming performance while maintaining a slim profile. The 15.6-inch QHD display with 165Hz refresh rate and 3ms response time ensures smooth, tear-free gaming, while the 100% DCI-P3 color gamut provides stunning visual fidelity. The innovative ErgoLift hinge design improves airflow and typing comfort, while the ROG Intelligent Cooling system keeps temperatures in check during intense gaming sessions. With up to 10 hours of battery life and a comprehensive selection of ports including USB-C with Power Delivery, it's equally capable as a gaming powerhouse and a productivity machine.",
+    "shortDescription": "Premium gaming laptop with Ryzen 9 processor and RTX graphics in a portable form factor",
+    "basePrice": 1799.99,
+    "isActive": true,
+    "isNewProduct": true,
+    "isBestSeller": true,
+    "isFeatured": true,
+    "categoryNames": ["Gaming Laptops", "Laptops"],
+    "tags": ["gaming", "laptop", "asus", "rog", "rtx", "ryzen"],
+    "variants": [
+      {
+        "name": "RTX 3070 / 16GB / 1TB",
+        "sku": "ROG-ZEPH-G15-3070",
+        "attributes": {
+          "processor": "AMD Ryzen 9 5900HS",
+          "memory": "16GB DDR4 3200MHz",
+          "storage": "1TB NVMe SSD",
+          "display": "15.6\" QHD 165Hz",
+          "graphics": "NVIDIA GeForce RTX 3070 8GB"
+        },
+        "price": 1799.99,
+        "salePrice": 1699.99,
+        "inventory": 20,
+        "isActive": true
+      },
+      {
+        "name": "RTX 3080 / 32GB / 1TB",
+        "sku": "ROG-ZEPH-G15-3080",
+        "attributes": {
+          "processor": "AMD Ryzen 9 5900HS",
+          "memory": "32GB DDR4 3200MHz",
+          "storage": "1TB NVMe SSD",
+          "display": "15.6\" QHD 165Hz",
+          "graphics": "NVIDIA GeForce RTX 3080 8GB"
+        },
+        "price": 2199.99,
+        "salePrice": null,
+        "inventory": 15,
+        "isActive": true
+      }
+    ],
+    "images": [
+      {
+        "imageUrl": "/images/products/rog-zephyrus-1.jpg",
+        "isMain": true,
+        "alt": "ASUS ROG Zephyrus G15 front view"
+      },
+      {
+        "imageUrl": "/images/products/rog-zephyrus-2.jpg",
+        "isMain": false,
+        "alt": "ASUS ROG Zephyrus G15 open view"
+      },
+      {
+        "imageUrl": "/images/products/rog-zephyrus-3.jpg",
+        "isMain": false,
+        "alt": "ASUS ROG Zephyrus G15 rear view"
+      }
+    ]
+  },
+  {
+    "name": "Alienware m17 R4",
+    "brand": "Dell",
+    "description": "The Alienware m17 R4 is a performance powerhouse designed for serious gamers who demand uncompromising performance. Featuring the latest Intel Core i9 processor and NVIDIA RTX 3080 graphics, it delivers desktop-class gaming performance in a portable form factor. The 17.3-inch display options include a 360Hz FHD panel for competitive gaming and a 4K UHD panel for immersive visuals, both with NVIDIA G-SYNC technology. The Alienware Cryo-Tech cooling system, featuring a vapor chamber and advanced thermal management, ensures sustained performance during extended gaming sessions. The per-key RGB AlienFX lighting, customizable macro keys, and premium audio with Nahimic 3D sound create an immersive gaming experience. With Thunderbolt 3, Killer Wi-Fi 6, and a comprehensive selection of ports, it's ready for any gaming setup.",
+    "shortDescription": "High-performance 17-inch gaming laptop with 360Hz display and RTX graphics",
+    "basePrice": 2499.99,
+    "isActive": true,
+    "isNewProduct": true,
+    "isBestSeller": false,
+    "isFeatured": true,
+    "categoryNames": ["Gaming Laptops", "Laptops"],
+    "tags": ["gaming", "laptop", "alienware", "dell", "rtx", "17-inch"],
+    "variants": [
+      {
+        "name": "RTX 3070 / 16GB / 1TB",
+        "sku": "AW-M17-R4-3070",
+        "attributes": {
+          "processor": "Intel Core i7-10870H",
+          "memory": "16GB DDR4 2933MHz",
+          "storage": "1TB PCIe M.2 SSD",
+          "display": "17.3\" FHD 360Hz",
+          "graphics": "NVIDIA GeForce RTX 3070 8GB"
+        },
+        "price": 2499.99,
+        "salePrice": 2299.99,
+        "inventory": 15,
+        "isActive": true
+      },
+      {
+        "name": "RTX 3080 / 32GB / 2TB",
+        "sku": "AW-M17-R4-3080",
+        "attributes": {
+          "processor": "Intel Core i9-10980HK",
+          "memory": "32GB DDR4 2933MHz",
+          "storage": "2TB RAID0 (2x 1TB PCIe M.2 SSD)",
+          "display": "17.3\" UHD 60Hz",
+          "graphics": "NVIDIA GeForce RTX 3080 16GB"
+        },
+        "price": 3299.99,
+        "salePrice": null,
+        "inventory": 10,
+        "isActive": true
+      }
+    ],
+    "images": [
+      {
+        "imageUrl": "/images/products/alienware-m17-1.jpg",
+        "isMain": true,
+        "alt": "Alienware m17 R4 front view"
+      },
+      {
+        "imageUrl": "/images/products/alienware-m17-2.jpg",
+        "isMain": false,
+        "alt": "Alienware m17 R4 open view"
+      },
+      {
+        "imageUrl": "/images/products/alienware-m17-3.jpg",
+        "isMain": false,
+        "alt": "Alienware m17 R4 side view"
+      }
+    ]
+  },
+  {
+    "name": "MSI GE76 Raider",
+    "brand": "MSI",
+    "description": "The MSI GE76 Raider is a desktop-class gaming laptop featuring an aggressive design and uncompromising performance. Powered by the latest Intel Core i9 processor and NVIDIA RTX 3080 graphics, it delivers exceptional gaming performance with advanced cooling technology. The 17.3-inch display options include a 360Hz FHD panel for competitive gaming and a 4K UHD panel with 120Hz refresh rate for immersive visuals. The SteelSeries per-key RGB keyboard with anti-ghosting technology ensures precise control during intense gaming sessions. The MSI Center software provides comprehensive system control, including performance profiles, RGB lighting customization, and system monitoring. With Thunderbolt 4, Wi-Fi 6E, and a comprehensive selection of ports, it's ready for any gaming or content creation task.",
+    "shortDescription": "High-end 17-inch gaming laptop with panoramic aurora lighting and desktop-class performance",
+    "basePrice": 2299.99,
+    "isActive": true,
+    "isNewProduct": true,
+    "isBestSeller": true,
+    "isFeatured": false,
+    "categoryNames": ["Gaming Laptops", "Laptops"],
+    "tags": ["gaming", "laptop", "msi", "raider", "rtx", "intel"],
+    "variants": [
+      {
+        "name": "RTX 3070 / 32GB / 1TB",
+        "sku": "MSI-GE76-3070",
+        "attributes": {
+          "processor": "Intel Core i7-11800H",
+          "memory": "32GB DDR4 3200MHz",
+          "storage": "1TB NVMe SSD",
+          "display": "17.3\" FHD 360Hz",
+          "graphics": "NVIDIA GeForce RTX 3070 8GB"
+        },
+        "price": 2299.99,
+        "salePrice": 2199.99,
+        "inventory": 20,
+        "isActive": true
+      },
+      {
+        "name": "RTX 3080 / 64GB / 2TB",
+        "sku": "MSI-GE76-3080",
+        "attributes": {
+          "processor": "Intel Core i9-11980HK",
+          "memory": "64GB DDR4 3200MHz",
+          "storage": "2TB NVMe SSD",
+          "display": "17.3\" UHD 120Hz",
+          "graphics": "NVIDIA GeForce RTX 3080 16GB"
+        },
+        "price": 3199.99,
+        "salePrice": 2999.99,
+        "inventory": 10,
+        "isActive": true
+      }
+    ],
+    "images": [
+      {
+        "imageUrl": "/images/products/msi-ge76-1.jpg",
+        "isMain": true,
+        "alt": "MSI GE76 Raider front view"
+      },
+      {
+        "imageUrl": "/images/products/msi-ge76-2.jpg",
+        "isMain": false,
+        "alt": "MSI GE76 Raider open view"
+      },
+      {
+        "imageUrl": "/images/products/msi-ge76-3.jpg",
+        "isMain": false,
+        "alt": "MSI GE76 Raider side view"
+      }
+    ]
+  },
+  {
+    "name": "Lenovo ThinkPad T14",
+    "brand": "Lenovo",
+    "description": "The Lenovo ThinkPad T14 is the cornerstone of business computing, offering enterprise-grade reliability and security features in a versatile 14-inch form factor. Built to meet military-grade durability standards, it features a robust magnesium alloy chassis and spill-resistant keyboard. Powered by Intel vPro or AMD Ryzen Pro processors, it delivers exceptional performance for business applications while maintaining enterprise-grade security features. The 14-inch display options include FHD and 4K UHD panels with optional privacy filters, while the comprehensive port selection includes Thunderbolt 4 and optional smart card reader. With up to 20 hours of battery life, optional 4G LTE connectivity, and a range of security features including fingerprint reader and IR camera, it's the perfect choice for business professionals.",
+    "shortDescription": "Enterprise-grade business laptop with legendary ThinkPad durability and security features",
+    "basePrice": 1249.99,
+    "isActive": true,
+    "isNewProduct": false,
+    "isBestSeller": true,
+    "isFeatured": true,
+    "categoryNames": ["Business Laptops", "Laptops"],
+    "tags": ["business", "laptop", "thinkpad", "lenovo", "enterprise"],
+    "variants": [
+      {
+        "name": "Core i5 / 8GB / 256GB",
+        "sku": "TP-T14-I5-8-256",
+        "attributes": {
+          "processor": "Intel Core i5-1145G7 vPro",
+          "memory": "8GB DDR4 3200MHz",
+          "storage": "256GB PCIe SSD",
+          "display": "14\" FHD IPS Anti-Glare",
+          "color": "Black"
+        },
+        "price": 1249.99,
+        "salePrice": 1149.99,
+        "inventory": 30,
+        "isActive": true
+      },
+      {
+        "name": "Ryzen 7 / 16GB / 512GB",
+        "sku": "TP-T14-R7-16-512",
+        "attributes": {
+          "processor": "AMD Ryzen 7 PRO 5850U",
+          "memory": "16GB DDR4 3200MHz",
+          "storage": "512GB PCIe SSD",
+          "display": "14\" FHD IPS Anti-Glare",
+          "color": "Black"
+        },
+        "price": 1549.99,
+        "salePrice": 1449.99,
+        "inventory": 25,
+        "isActive": true
+      }
+    ],
+    "images": [
+      {
+        "imageUrl": "/images/products/thinkpad-t14-1.jpg",
+        "isMain": true,
+        "alt": "Lenovo ThinkPad T14 front view"
+      },
+      {
+        "imageUrl": "/images/products/thinkpad-t14-2.jpg",
+        "isMain": false,
+        "alt": "Lenovo ThinkPad T14 open view"
+      },
+      {
+        "imageUrl": "/images/products/thinkpad-t14-3.jpg",
+        "isMain": false,
+        "alt": "Lenovo ThinkPad T14 side view"
+      }
+    ]
+  },
+  {
+    "name": "Dell Latitude 7420",
+    "brand": "Dell",
+    "description": "The Dell Latitude 7420 is the ultimate business laptop designed for professionals who demand premium performance and security. Featuring a premium aluminum or carbon fiber chassis, it combines durability with a sleek, professional appearance. Powered by Intel vPro processors and featuring up to 32GB of memory, it delivers exceptional performance for demanding business applications. The 14-inch display options range from FHD to 4K UHD, with optional touch and privacy features. The ExpressSign-in technology with proximity sensor and optional smart card reader provides enterprise-grade security, while the comprehensive port selection includes Thunderbolt 4 and optional smart card reader. With up to 21 hours of battery life and optional 5G connectivity, it's ready for any business challenge.",
+    "shortDescription": "Premium business laptop with AI-optimized performance and advanced security features",
+    "basePrice": 1399.99,
+    "isActive": true,
+    "isNewProduct": true,
+    "isBestSeller": false,
+    "isFeatured": true,
+    "categoryNames": ["Business Laptops", "Laptops"],
+    "tags": ["business", "laptop", "dell", "latitude", "enterprise", "vpro"],
+    "variants": [
+      {
+        "name": "Core i5 / 8GB / 256GB",
+        "sku": "LAT-7420-I5-8-256",
+        "attributes": {
+          "processor": "Intel Core i5-1145G7 vPro",
+          "memory": "8GB LPDDR4X",
+          "storage": "256GB M.2 PCIe NVMe SSD",
+          "display": "14\" FHD (1920 x 1080)",
+          "chassis": "Aluminum"
+        },
+        "price": 1399.99,
+        "salePrice": 1299.99,
+        "inventory": 25,
+        "isActive": true
+      },
+      {
+        "name": "Core i7 / 16GB / 512GB",
+        "sku": "LAT-7420-I7-16-512",
+        "attributes": {
+          "processor": "Intel Core i7-1185G7 vPro",
+          "memory": "16GB LPDDR4X",
+          "storage": "512GB M.2 PCIe NVMe SSD",
+          "display": "14\" 4K UHD (3840 x 2160)",
+          "chassis": "Carbon Fiber"
+        },
+        "price": 1899.99,
+        "salePrice": null,
+        "inventory": 20,
+        "isActive": true
+      }
+    ],
+    "images": [
+      {
+        "imageUrl": "/images/products/latitude-7420-1.jpg",
+        "isMain": true,
+        "alt": "Dell Latitude 7420 front view"
+      },
+      {
+        "imageUrl": "/images/products/latitude-7420-2.jpg",
+        "isMain": false,
+        "alt": "Dell Latitude 7420 open view"
+      },
+      {
+        "imageUrl": "/images/products/latitude-7420-3.jpg",
+        "isMain": false,
+        "alt": "Dell Latitude 7420 side view"
+      }
+    ]
+  },
+  {
+    "name": "HP EliteBook 840 G8",
+    "brand": "HP",
+    "description": "The HP EliteBook 840 G8 is a premium business laptop crafted for today's hybrid work environments, combining enterprise-grade security with modern connectivity. Featuring a sleek aluminum chassis and HP's Sure View Reflect privacy screen, it ensures both style and data protection. Powered by Intel vPro processors and featuring up to 64GB of memory, it delivers exceptional performance for demanding business applications. The 14-inch display options include FHD and 4K UHD panels with optional touch and privacy features. The HP Sure Click and HP Sure Sense technologies provide advanced security against malware and phishing attacks, while the comprehensive port selection includes Thunderbolt 4 and optional smart card reader. With up to 20 hours of battery life and optional 5G connectivity, it's designed for the modern workplace.",
+    "shortDescription": "Premium business laptop with integrated privacy features and enhanced security",
+    "basePrice": 1449.99,
+    "isActive": true,
+    "isNewProduct": false,
+    "isBestSeller": true,
+    "isFeatured": false,
+    "categoryNames": ["Business Laptops", "Laptops"],
+    "tags": ["business", "laptop", "hp", "elitebook", "enterprise", "security"],
+    "variants": [
+      {
+        "name": "Core i5 / 16GB / 256GB",
+        "sku": "EB-840-I5-16-256",
+        "attributes": {
+          "processor": "Intel Core i5-1145G7 vPro",
+          "memory": "16GB DDR4 3200MHz",
+          "storage": "256GB PCIe NVMe SSD",
+          "display": "14\" FHD IPS Anti-Glare",
+          "security": "HP Sure View Reflect"
+        },
+        "price": 1449.99,
+        "salePrice": 1349.99,
+        "inventory": 20,
+        "isActive": true
+      },
+      {
+        "name": "Core i7 / 32GB / 1TB",
+        "sku": "EB-840-I7-32-1TB",
+        "attributes": {
+          "processor": "Intel Core i7-1185G7 vPro",
+          "memory": "32GB DDR4 3200MHz",
+          "storage": "1TB PCIe NVMe SSD",
+          "display": "14\" 4K UHD IPS Anti-Glare",
+          "security": "HP Sure View Reflect"
+        },
+        "price": 1949.99,
+        "salePrice": 1849.99,
+        "inventory": 15,
+        "isActive": true
+      }
+    ],
+    "images": [
+      {
+        "imageUrl": "/images/products/elitebook-840-1.jpg",
+        "isMain": true,
+        "alt": "HP EliteBook 840 G8 front view"
+      },
+      {
+        "imageUrl": "/images/products/elitebook-840-2.jpg",
+        "isMain": false,
+        "alt": "HP EliteBook 840 G8 open view"
+      },
+      {
+        "imageUrl": "/images/products/elitebook-840-3.jpg",
+        "isMain": false,
+        "alt": "HP EliteBook 840 G8 side view"
+      }
+    ]
+  },
+  {
+    "name": "Microsoft Surface Pro 8",
+    "brand": "Microsoft",
+    "description": "The Microsoft Surface Pro 8 redefines the versatility of a professional 2-in-1 device, combining the power of a laptop with the flexibility of a tablet. Featuring a stunning 13-inch PixelSense Flow display with 120Hz refresh rate and Dolby Vision, it delivers exceptional visual clarity and smooth interactions. Powered by 11th Gen Intel Core processors and featuring up to 32GB of memory, it handles demanding applications with ease. The redesigned Surface Pro Signature Keyboard with Slim Pen 2 storage and haptic feedback provides a premium typing experience, while the Thunderbolt 4 ports enable high-speed data transfer and external display connectivity. With up to 16 hours of battery life and optional LTE connectivity, it's the perfect device for professionals who need both power and portability.",
+    "shortDescription": "Premium 2-in-1 detachable with 120Hz display and Thunderbolt 4 connectivity",
+    "basePrice": 1099.99,
+    "isActive": true,
+    "isNewProduct": true,
+    "isBestSeller": true,
+    "isFeatured": true,
+    "categoryNames": ["2-in-1 Convertibles", "Laptops"],
+    "tags": [
+      "2-in-1",
+      "convertible",
+      "tablet",
+      "surface",
+      "microsoft",
+      "stylus"
+    ],
+    "variants": [
+      {
+        "name": "Core i5 / 8GB / 128GB",
+        "sku": "SURFACE-PRO8-I5-8-128",
+        "attributes": {
+          "processor": "Intel Core i5-1135G7",
+          "memory": "8GB LPDDR4x",
+          "storage": "128GB SSD",
+          "display": "13\" PixelSense Flow 120Hz",
+          "color": "Platinum"
+        },
+        "price": 1099.99,
+        "salePrice": 999.99,
+        "inventory": 30,
+        "isActive": true
+      },
+      {
+        "name": "Core i7 / 16GB / 256GB",
+        "sku": "SURFACE-PRO8-I7-16-256",
+        "attributes": {
+          "processor": "Intel Core i7-1185G7",
+          "memory": "16GB LPDDR4x",
+          "storage": "256GB SSD",
+          "display": "13\" PixelSense Flow 120Hz",
+          "color": "Graphite"
+        },
+        "price": 1599.99,
+        "salePrice": null,
+        "inventory": 25,
+        "isActive": true
+      }
+    ],
+    "images": [
+      {
+        "imageUrl": "/images/products/surface-pro8-1.jpg",
+        "isMain": true,
+        "alt": "Microsoft Surface Pro 8 tablet mode"
+      },
+      {
+        "imageUrl": "/images/products/surface-pro8-2.jpg",
+        "isMain": false,
+        "alt": "Microsoft Surface Pro 8 laptop mode"
+      },
+      {
+        "imageUrl": "/images/products/surface-pro8-3.jpg",
+        "isMain": false,
+        "alt": "Microsoft Surface Pro 8 studio mode"
+      }
+    ]
+  },
+  {
+    "name": "Lenovo Yoga 9i",
+    "brand": "Lenovo",
+    "description": "The Lenovo Yoga 9i is a premium 2-in-1 convertible that blends stunning design with powerful performance. Featuring a unique rotating soundbar hinge that delivers immersive audio in any mode, it offers a truly innovative user experience. The 14-inch display options include FHD and 4K UHD panels with Dolby Vision, while the optional leather cover adds a touch of luxury. Powered by Intel's latest processors and featuring up to 16GB of memory, it delivers exceptional performance for both work and entertainment. The included Lenovo Digital Pen with 4,096 levels of pressure sensitivity provides a natural writing and drawing experience, while the comprehensive port selection includes Thunderbolt 4. With up to 18 hours of battery life and fast charging capabilities, it's ready for any task.",
+    "shortDescription": "Premium 2-in-1 convertible with rotating soundbar and optional leather cover",
+    "basePrice": 1249.99,
+    "isActive": true,
+    "isNewProduct": true,
+    "isBestSeller": false,
+    "isFeatured": true,
+    "categoryNames": ["2-in-1 Convertibles", "Laptops"],
+    "tags": ["2-in-1", "convertible", "yoga", "lenovo", "soundbar", "stylus"],
+    "variants": [
+      {
+        "name": "Core i5 / 8GB / 256GB",
+        "sku": "YOGA-9I-I5-8-256",
+        "attributes": {
+          "processor": "Intel Core i5-1135G7",
+          "memory": "8GB LPDDR4X",
+          "storage": "256GB PCIe SSD",
+          "display": "14\" FHD IPS Touch",
+          "color": "Shadow Black"
+        },
+        "price": 1249.99,
+        "salePrice": 1149.99,
+        "inventory": 25,
+        "isActive": true
+      },
+      {
+        "name": "Core i7 / 16GB / 512GB / Leather",
+        "sku": "YOGA-9I-I7-16-512-L",
+        "attributes": {
+          "processor": "Intel Core i7-1185G7",
+          "memory": "16GB LPDDR4X",
+          "storage": "512GB PCIe SSD",
+          "display": "14\" UHD IPS Touch",
+          "color": "Shadow Black with Leather Cover"
+        },
+        "price": 1649.99,
+        "salePrice": null,
+        "inventory": 20,
+        "isActive": true
+      }
+    ],
+    "images": [
+      {
+        "imageUrl": "/images/products/yoga-9i-1.jpg",
+        "isMain": true,
+        "alt": "Lenovo Yoga 9i front view"
+      },
+      {
+        "imageUrl": "/images/products/yoga-9i-2.jpg",
+        "isMain": false,
+        "alt": "Lenovo Yoga 9i tent mode"
+      },
+      {
+        "imageUrl": "/images/products/yoga-9i-3.jpg",
+        "isMain": false,
+        "alt": "Lenovo Yoga 9i tablet mode"
+      }
+    ]
+  },
+  {
+    "name": "HP Spectre x360 14",
+    "brand": "HP",
+    "description": "The HP Spectre x360 14 represents the pinnacle of convertible laptop design, combining premium materials with innovative features. The gem-cut design and dual-chamfered edges showcase exceptional craftsmanship, while the 3:2 aspect ratio display provides more vertical space for productivity. The 14-inch display options include FHD+ and 3K2K OLED panels with optional touch and privacy features, delivering stunning visuals with excellent color accuracy. Powered by Intel's latest processors and featuring up to 16GB of memory, it delivers exceptional performance for both work and entertainment. The HP True Vision HD IR camera with integrated privacy switch and fingerprint reader provides premium security, while the Bang & Olufsen quad speakers deliver immersive audio. With up to 17 hours of battery life and fast charging capabilities, it's the perfect companion for creative professionals.",
+    "shortDescription": "Premium convertible laptop with 3:2 OLED display and gem-cut design",
+    "basePrice": 1299.99,
+    "isActive": true,
+    "isNewProduct": true,
+    "isBestSeller": true,
+    "isFeatured": false,
+    "categoryNames": ["2-in-1 Convertibles", "Laptops"],
+    "tags": ["2-in-1", "convertible", "hp", "spectre", "oled", "3:2 display"],
+    "variants": [
+      {
+        "name": "Core i5 / 8GB / 256GB",
+        "sku": "SPECTRE-X360-14-I5-8-256",
+        "attributes": {
+          "processor": "Intel Core i5-1135G7",
+          "memory": "8GB LPDDR4X",
+          "storage": "256GB PCIe NVMe SSD",
+          "display": "14\" 3:2 FHD+ IPS Touch",
+          "color": "Nightfall Black"
+        },
+        "price": 1299.99,
+        "salePrice": 1199.99,
+        "inventory": 20,
+        "isActive": true
+      },
+      {
+        "name": "Core i7 / 16GB / 1TB",
+        "sku": "SPECTRE-X360-14-I7-16-1TB",
+        "attributes": {
+          "processor": "Intel Core i7-1165G7",
+          "memory": "16GB LPDDR4X",
+          "storage": "1TB PCIe NVMe SSD",
+          "display": "14\" 3:2 3K2K OLED Touch",
+          "color": "Poseidon Blue"
+        },
+        "price": 1799.99,
+        "salePrice": 1699.99,
+        "inventory": 15,
+        "isActive": true
+      }
+    ],
+    "images": [
+      {
+        "imageUrl": "/images/products/spectre-x360-14-1.jpg",
+        "isMain": true,
+        "alt": "HP Spectre x360 14 front view"
+      },
+      {
+        "imageUrl": "/images/products/spectre-x360-14-2.jpg",
+        "isMain": false,
+        "alt": "HP Spectre x360 14 tent mode"
+      },
+      {
+        "imageUrl": "/images/products/spectre-x360-14-3.jpg",
+        "isMain": false,
+        "alt": "HP Spectre x360 14 tablet mode"
+      }
+    ]
+  },
+  {
+    "name": "LG UltraGear 27GN950",
+    "brand": "LG",
+    "description": "The LG UltraGear 27GN950 is a premium gaming monitor that delivers exceptional performance and stunning visuals. Featuring a 27-inch Nano IPS display with 4K UHD resolution (3840x2160) and a 144Hz refresh rate with 1ms response time, it provides incredibly smooth and responsive gameplay. The monitor supports NVIDIA G-SYNC and AMD FreeSync Premium Pro, ensuring tear-free gaming across a wide range of frame rates. With DisplayHDR 600 certification and 98% DCI-P3 color gamut coverage, it delivers vibrant colors and excellent contrast for both gaming and content creation. The sleek design includes customizable RGB lighting, height and tilt adjustment, and a comprehensive selection of ports including DisplayPort 1.4, HDMI 2.1, and USB hub functionality.",
+    "shortDescription": "27-inch 4K gaming monitor with 144Hz refresh rate and HDR",
+    "basePrice": 849.99,
+    "isActive": true,
+    "isNewProduct": true,
+    "isBestSeller": false,
+    "isFeatured": true,
+    "categoryNames": ["Monitors", "Gaming Monitors"],
+    "tags": ["gaming", "4k", "hdr", "144hz", "g-sync"],
+    "variants": [
+      {
+        "name": "Standard",
+        "sku": "LG-27GN950-STD",
+        "price": 849.99,
+        "stock": 15,
+        "attributes": {
+          "panel": "Nano IPS",
+          "resolution": "4K UHD (3840x2160)",
+          "refreshRate": "144Hz",
+          "responseTime": "1ms",
+          "hdr": "DisplayHDR 600",
+          "colorGamut": "98% DCI-P3",
+          "ports": "DisplayPort 1.4, HDMI 2.1, USB Hub"
+        }
+      }
+    ],
+    "images": [
+      {
+        "imageUrl": "/images/products/lg-ultragear-27gn950-1.jpg",
+        "alt": "LG UltraGear 27GN950 front view",
+        "isPrimary": true
+      },
+      {
+        "imageUrl": "/images/products/lg-ultragear-27gn950-2.jpg",
+        "alt": "LG UltraGear 27GN950 side view",
+        "isPrimary": false
+      },
+      {
+        "imageUrl": "/images/products/lg-ultragear-27gn950-3.jpg",
+        "alt": "LG UltraGear 27GN950 back view with RGB lighting",
+        "isPrimary": false
+      }
+    ]
+  },
+  {
+    "name": "Intel Core i9-12900K",
+    "brand": "Intel",
+    "description": "The Intel Core i9-12900K is a high-performance desktop processor featuring Intel's hybrid architecture with 16 cores (8 Performance cores and 8 Efficient cores) and 24 threads. With a maximum turbo frequency of 5.2 GHz on the Performance cores and 3.9 GHz on the Efficient cores, it delivers exceptional single-threaded and multi-threaded performance. The processor includes 30MB of Intel Smart Cache and supports PCIe 5.0 and DDR5 memory, making it ideal for gaming, content creation, and demanding workloads. Built on Intel's 10nm process node, it features Intel's latest technologies including Intel Thread Director for optimal thread scheduling and Intel UHD Graphics 770 for integrated graphics capabilities.",
+    "shortDescription": "High-performance desktop processor with 16 cores and 24 threads",
+    "basePrice": 589.99,
+    "isActive": true,
+    "isNewProduct": true,
+    "isBestSeller": true,
+    "isFeatured": true,
+    "categoryNames": ["Processors", "Computer Components"],
+    "tags": ["processor", "cpu", "intel", "gaming", "content creation"],
+    "variants": [
+      {
+        "name": "Standard",
+        "sku": "INT-I9-12900K",
+        "price": 589.99,
+        "stock": 25,
+        "attributes": {
+          "cores": "16 (8P + 8E)",
+          "threads": "24",
+          "baseFrequency": "3.2 GHz",
+          "maxTurboFrequency": "5.2 GHz",
+          "cache": "30MB Intel Smart Cache",
+          "tdp": "125W",
+          "socket": "LGA 1700"
+        }
+      }
+    ],
+    "images": [
+      {
+        "imageUrl": "/images/products/intel-i9-12900k-1.jpg",
+        "alt": "Intel Core i9-12900K front view",
+        "isPrimary": true
+      },
+      {
+        "imageUrl": "/images/products/intel-i9-12900k-2.jpg",
+        "alt": "Intel Core i9-12900K side view",
+        "isPrimary": false
+      },
+      {
+        "imageUrl": "/images/products/intel-i9-12900k-3.jpg",
+        "alt": "Intel Core i9-12900K packaging",
+        "isPrimary": false
+      }
+    ]
+  },
+  {
+    "name": "NVIDIA GeForce RTX 3080",
+    "brand": "NVIDIA",
+    "description": "The NVIDIA GeForce RTX 3080 is a high-performance gaming graphics card that delivers exceptional ray tracing and AI capabilities. Built on the Ampere architecture, it features 10GB of GDDR6X memory and 8704 CUDA cores, providing up to 2x the performance of the previous generation. With real-time ray tracing and DLSS technology, it enables stunning visual effects and improved frame rates in supported games. The card supports PCIe 4.0 for maximum bandwidth and features NVIDIA's latest cooling solution with a dual-axial flow-through design. Perfect for 4K gaming, content creation, and professional applications that require significant GPU power.",
+    "shortDescription": "High-performance gaming GPU with ray tracing and DLSS support",
+    "basePrice": 699.99,
+    "isActive": true,
+    "isNewProduct": true,
+    "isBestSeller": true,
+    "isFeatured": true,
+    "categoryNames": ["Graphics Cards", "Computer Components"],
+    "tags": ["gpu", "gaming", "nvidia", "rtx", "ray-tracing"],
+    "variants": [
+      {
+        "name": "10GB GDDR6X",
+        "sku": "NV-RTX3080-10G",
+        "attributes": {
+          "memory": "10GB GDDR6X",
+          "memoryInterface": "320-bit",
+          "boostClock": "1.71 GHz",
+          "cudaCores": "8704",
+          "powerConsumption": "320W",
+          "recommendedPSU": "750W"
+        },
+        "price": 699.99,
+        "salePrice": 649.99,
+        "inventory": 15,
+        "isActive": true
+      }
+    ],
+    "images": [
+      {
+        "imageUrl": "/images/products/rtx-3080-1.jpg",
+        "isMain": true,
+        "alt": "NVIDIA RTX 3080 front view"
+      },
+      {
+        "imageUrl": "/images/products/rtx-3080-2.jpg",
+        "isMain": false,
+        "alt": "NVIDIA RTX 3080 side view"
+      },
+      {
+        "imageUrl": "/images/products/rtx-3080-3.jpg",
+        "isMain": false,
+        "alt": "NVIDIA RTX 3080 back view"
+      }
+    ]
+  }
+]

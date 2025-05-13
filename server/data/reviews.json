@@ -1,0 +1,128 @@
+[
+  {
+    "productName": "Dell XPS 13",
+    "userEmail": "john.doe@example.com",
+    "userName": "John Doe",
+    "rating": 5,
+    "comment": "This laptop exceeded all my expectations. The build quality is outstanding, and the performance is blazing fast. The battery life is impressive, easily lasting a full workday.",
+    "isVerifiedPurchase": true,
+    "createdAt": "2024-04-15T10:30:00.000Z"
+  },
+  {
+    "productName": "Dell XPS 13",
+    "userEmail": "sarah.johnson@example.com",
+    "userName": "Sarah Johnson",
+    "rating": 4,
+    "comment": "Great laptop overall. The display is stunning with vibrant colors and the keyboard feels great to type on. My only complaint is that it runs a bit hot during intensive tasks.",
+    "isVerifiedPurchase": true,
+    "createdAt": "2024-04-20T14:45:00.000Z"
+  },
+  {
+    "productName": "ASUS ROG Zephyrus G15",
+    "userEmail": "michael.chen@example.com",
+    "userName": "Michael Chen",
+    "rating": 5,
+    "comment": "Perfect for gaming and development. Handles AAA games at high settings without breaking a sweat. The screen refresh rate makes for incredibly smooth gameplay.",
+    "isVerifiedPurchase": false,
+    "createdAt": "2024-04-25T09:15:00.000Z"
+  },
+  {
+    "productName": "ASUS ROG Zephyrus G15",
+    "userEmail": "emily.wilson@example.com",
+    "userName": "Emily Wilson",
+    "rating": 4,
+    "comment": "Amazing gaming performance in a relatively thin and light package. The fans can get loud when gaming but that's expected for this level of performance.",
+    "isVerifiedPurchase": true,
+    "createdAt": "2024-05-01T18:20:00.000Z"
+  },
+  {
+    "productName": "Samsung 980 PRO",
+    "userEmail": "david.rodriguez@example.com",
+    "userName": "David Rodriguez",
+    "rating": 5,
+    "comment": "The SSD is insanely fast! Boot times are almost instantaneous, and applications load in a blink. File transfers that used to take minutes now complete in seconds.",
+    "isVerifiedPurchase": true,
+    "createdAt": "2024-04-10T11:15:00.000Z"
+  },
+  {
+    "productName": "Samsung 980 PRO",
+    "userEmail": "guest@example.com",
+    "userName": "Lisa Thompson",
+    "rating": 4,
+    "comment": "Great upgrade from my old SATA SSD. The performance boost is noticeable in everyday tasks. Installation was straightforward, though the drive runs a bit warm under heavy loads.",
+    "isVerifiedPurchase": false,
+    "createdAt": "2024-04-18T16:30:00.000Z"
+  },
+  {
+    "productName": "LG UltraGear 27GN950",
+    "userEmail": "michael.chen@example.com",
+    "userName": "Michael Chen",
+    "rating": 5,
+    "comment": "This monitor is a game-changer. The 4K resolution at 144Hz is breathtaking, and HDR content looks amazing. The colors are accurate right out of the box.",
+    "isVerifiedPurchase": true,
+    "createdAt": "2024-04-22T13:15:00.000Z"
+  },
+  {
+    "productName": "Intel Core i9-12900K",
+    "userEmail": "david.rodriguez@example.com",
+    "userName": "David Rodriguez",
+    "rating": 5,
+    "comment": "Incredible CPU performance. Handles everything I throw at it - gaming, 3D rendering, video editing - with ease. The hybrid core architecture really delivers.",
+    "isVerifiedPurchase": true,
+    "createdAt": "2024-04-05T09:40:00.000Z"
+  },
+  {
+    "productName": "NVIDIA GeForce RTX 3080",
+    "userEmail": "john.doe@example.com",
+    "userName": "John Doe",
+    "rating": 5,
+    "comment": "Finally able to play games at 4K with ray tracing enabled. This card is an absolute beast - worth every penny if you can find it at MSRP.",
+    "isVerifiedPurchase": true,
+    "createdAt": "2024-04-12T17:10:00.000Z"
+  },
+  {
+    "productName": "NVIDIA GeForce RTX 3080",
+    "userEmail": "sarah.johnson@example.com",
+    "userName": "Sarah Johnson",
+    "rating": 4,
+    "comment": "Excellent gaming performance. The only reason I didn't give 5 stars is the power draw and heat output, which is quite high. Make sure you have good cooling.",
+    "isVerifiedPurchase": false,
+    "createdAt": "2024-04-17T11:25:00.000Z"
+  },
+  {
+    "productName": "Dell XPS 13",
+    "userEmail": "jennifer.park@example.com",
+    "userName": "Jennifer Park",
+    "rating": 5,
+    "comment": "Best laptop I've ever owned. The InfinityEdge display is gorgeous, and the keyboard is a joy to type on. Battery life easily lasts through my workday.",
+    "isVerifiedPurchase": true,
+    "createdAt": "2024-04-28T15:45:00.000Z"
+  },
+  {
+    "productName": "ASUS ROG Zephyrus G15",
+    "userEmail": "robert.williams@example.com",
+    "userName": "Robert Williams",
+    "rating": 4,
+    "comment": "Great gaming laptop with excellent performance. The only downside is the limited port selection, but that's a minor issue given the overall quality.",
+    "isVerifiedPurchase": true,
+    "createdAt": "2024-04-30T12:20:00.000Z"
+  },
+  {
+    "productName": "Samsung 980 PRO",
+    "userEmail": "sophia.martinez@example.com",
+    "userName": "Sophia Martinez",
+    "rating": 5,
+    "comment": "Incredible speed and reliability. Perfect for my video editing workflow. The difference in load times is night and day compared to my old SSD.",
+    "isVerifiedPurchase": true,
+    "createdAt": "2024-04-25T09:55:00.000Z"
+  },
+  {
+    "productName": "LG UltraGear 27GN950",
+    "userEmail": "james.brown@example.com",
+    "userName": "James Brown",
+    "rating": 4,
+    "comment": "Excellent monitor for both gaming and work. The HDR implementation is good, though not as bright as some other options. Still, great value for the price.",
+    "isVerifiedPurchase": false,
+    "createdAt": "2024-04-27T16:40:00.000Z"
+  }
+]

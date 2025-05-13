@@ -1,0 +1,47 @@
+[
+  {
+    "code": "FIRST",
+    "discountType": "percentage",
+    "discountValue": 10,
+    "usageLimit": 10,
+    "usedCount": 0,
+    "createdByEmail": "admin@example.com",
+    "isActive": true
+  },
+  {
+    "code": "SAV20",
+    "discountType": "percentage",
+    "discountValue": 20,
+    "usageLimit": 5,
+    "usedCount": 2,
+    "createdByEmail": "admin@example.com",
+    "isActive": true
+  },
+  {
+    "code": "FIX50",
+    "discountType": "fixed",
+    "discountValue": 50000,
+    "usageLimit": 10,
+    "usedCount": 0,
+    "createdByEmail": "admin@example.com",
+    "isActive": true
+  },
+  {
+    "code": "SUM25",
+    "discountType": "percentage",
+    "discountValue": 25,
+    "usageLimit": 10,
+    "usedCount": 1,
+    "createdByEmail": "admin@example.com",
+    "isActive": true
+  },
+  {
+    "code": "WELCM",
+    "discountType": "percentage",
+    "discountValue": 15,
+    "usageLimit": 10,
+    "usedCount": 0,
+    "createdByEmail": "admin@example.com",
+    "isActive": true
+  }
+]
