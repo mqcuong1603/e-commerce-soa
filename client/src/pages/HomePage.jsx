@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import productService from "../../services/product.service";
-import ProductCard from "../../components/ui/ProductCard";
-import Button from "../../components/ui/Button";
+import productService from "../services/product.service";
+import ProductCard from "../components/ui/ProductCard";
+import Button from "../components/ui/Button";
 
 const HomePage = () => {
   const [landingData, setLandingData] = useState({

@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
-import { useCart } from "../../contexts/CartContext";
-import productService from "../../services/product.service";
-import Button from "../../components/ui/Button";
-import ProductCard from "../../components/ui/ProductCard";
+import { useCart } from "../contexts/CartContext";
+import productService from "../services/product.service";
+import Button from "../components/ui/Button";
+import ProductCard from "../components/ui/ProductCard";
 
 const ProductDetailPage = () => {
   const { slug } = useParams();
