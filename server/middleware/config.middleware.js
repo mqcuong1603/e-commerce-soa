@@ -33,8 +33,10 @@ export const configureMiddleware = (app, config, logger) => {
   // CORS middleware
   app.use(
     cors({
-      origin: config.clientUrl,
+      origin: ["http://localhost:8080", "http://client"],
+      methods: ["GET", "POST", "PUT", "DELETE", "PATCH"],
       credentials: true,
+      allowedHeaders: ["Content-Type", "Authorization"],
     })
   );
 
