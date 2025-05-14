@@ -1,5 +1,4 @@
 /* CSS Variables */
-
 :root {
   /* Color Palette */
   --color-primary: 220, 38, 38; /* Tailwind red-600 */
@@ -113,9 +112,7 @@
 
 /* Dark mode overrides */
 @media (prefers-color-scheme: dark) {
-  :root {
-    /* Dark mode adjustments if needed */
-  }
+  /* Add dark mode adjustments here if needed */
 }
 
 /* Responsive breakpoints */

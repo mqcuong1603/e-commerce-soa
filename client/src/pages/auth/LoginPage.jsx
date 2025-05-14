@@ -3,10 +3,6 @@ import { useLocation, useNavigate } from "react-router-dom";
 import LoginForm from "../../components/auth/LoginForm";
 import { useAuth } from "../../contexts/AuthContext";
 
-/**
- * Login Page component
- * Displays login form and handles redirect after successful login
- */
 const LoginPage = () => {
   const { isAuthenticated } = useAuth();
   const navigate = useNavigate();
@@ -21,7 +17,7 @@ const LoginPage = () => {
     if (location.state?.successMessage) {
       setSuccessMessage(location.state.successMessage);
 
-      // Clear the success message from location state to prevent showing it on page refresh
+      // Clear the success message from location state
       navigate(location.pathname, { replace: true });
     }
   }, [location, navigate]);
@@ -34,20 +30,42 @@ const LoginPage = () => {
   }, [isAuthenticated, navigate, from]);
 
   return (
-    <div className="container mx-auto px-4 py-12">
-      <div className="max-w-md mx-auto">
-        <h1 className="text-3xl font-bold text-center text-gray-900 mb-8">
-          Sign in to your account
-        </h1>
+    <div className="container my-5">
+      <div className="row justify-content-center">
+        <div className="col-md-8 col-lg-6 col-xl-5">
+          <h1 className="text-center mb-4 fw-bold">Sign in to your account</h1>
 
-        {/* Success message (e.g., from registration) */}
-        {successMessage && (
-          <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-6 relative">
-            <span className="block sm:inline">{successMessage}</span>
+          {successMessage && (
+            <div
+              className="alert alert-success alert-dismissible fade show mb-4"
+              role="alert"
+            >
+              {successMessage}
+              <button
+                type="button"
+                className="btn-close"
+                onClick={() => setSuccessMessage("")}
+                aria-label="Close"
+              ></button>
+            </div>
+          )}
+
+          <LoginForm />
+
+          <div className="mt-4 text-center">
+            <p className="text-muted small">
+              By signing in, you agree to our{" "}
+              <a href="/terms" className="text-decoration-none">
+                Terms of Service
+              </a>{" "}
+              and{" "}
+              <a href="/privacy" className="text-decoration-none">
+                Privacy Policy
+              </a>
+              .
+            </p>
           </div>
-        )}
-
-        <LoginForm />
+        </div>
       </div>
     </div>
   );
