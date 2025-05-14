@@ -2,7 +2,7 @@ import React from "react";
 import PropTypes from "prop-types";
 
 /**
- * Button component with multiple variants
+ * Button component using Bootstrap classes
  */
 const Button = ({
   children,
@@ -15,36 +15,35 @@ const Button = ({
   className = "",
   ...props
 }) => {
-  const baseClasses =
-    "font-medium rounded-md transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2";
+  // Map our variants to Bootstrap variants
+  const variantClass =
+    {
+      primary: "primary",
+      secondary: "secondary",
+      outlined: "outline-primary",
+      danger: "danger",
+      success: "success",
+      link: "link",
+    }[variant] || "primary";
 
-  const variantClasses = {
-    primary:
-      "bg-primary-600 hover:bg-primary-700 text-white focus:ring-primary-500",
-    secondary:
-      "bg-secondary-600 hover:bg-secondary-700 text-white focus:ring-secondary-500",
-    outlined:
-      "border border-gray-300 bg-white hover:bg-gray-50 text-gray-700 focus:ring-primary-500",
-    danger: "bg-red-600 hover:bg-red-700 text-white focus:ring-red-500",
-    success: "bg-green-600 hover:bg-green-700 text-white focus:ring-green-500",
-    link: "bg-transparent text-primary-600 hover:text-primary-800 underline p-0",
-  };
+  // Map sizes to Bootstrap sizes
+  const sizeClass =
+    {
+      small: "sm",
+      medium: "", // default, no suffix in Bootstrap
+      large: "lg",
+    }[size] || "";
 
-  const sizeClasses = {
-    small: "px-3 py-1.5 text-sm",
-    medium: "px-4 py-2 text-base",
-    large: "px-6 py-3 text-lg",
-  };
-
-  const widthClass = fullWidth ? "w-full" : "";
-  const disabledClass = disabled ? "opacity-50 cursor-not-allowed" : "";
-
+  // Combine classes
   const classes = `
-    ${baseClasses} 
-    ${variantClasses[variant] || variantClasses.primary} 
-    ${sizeClasses[size] || sizeClasses.medium} 
-    ${widthClass} 
-    ${disabledClass} 
+    btn 
+    ${
+      variant === "outlined"
+        ? `btn-outline-${variantClass.replace("outline-", "")}`
+        : `btn-${variantClass}`
+    }
+    ${sizeClass ? `btn-${sizeClass}` : ""} 
+    ${fullWidth ? "w-100" : ""} 
     ${className}
   `.trim();
 

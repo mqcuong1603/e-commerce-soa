@@ -1,20 +1,8 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
 import PropTypes from "prop-types";
 
 /**
- * Pagination component for navigating through multi-page content
- * @param {Object} props - Component props
- * @param {number} props.currentPage - Current active page
- * @param {number} props.totalPages - Total number of pages
- * @param {number} props.totalItems - Total number of items
- * @param {number} props.pageSize - Number of items per page
- * @param {Function} props.onPageChange - Callback when page is changed
- * @param {boolean} props.showPageNumbers - Whether to show page numbers
- * @param {boolean} props.showPageInfo - Whether to show page info text
- * @param {boolean} props.showFirstLastButtons - Whether to show first/last page buttons
- * @param {string} props.variant - Visual style variant ('simple', 'rounded', 'buttons')
- * @param {string} props.size - Size of pagination buttons ('small', 'medium', 'large')
- * @param {string} props.className - Additional CSS classes
+ * Pagination component using Bootstrap styling
  */
 const Pagination = ({
   currentPage,
@@ -25,36 +13,32 @@ const Pagination = ({
   showPageNumbers = true,
   showPageInfo = true,
   showFirstLastButtons = false,
-  variant = "simple",
   size = "medium",
   className = "",
 }) => {
-  const [page, setPage] = useState(currentPage);
+  // No need to render pagination if there's only 1 page
+  if (totalPages <= 1) {
+    // Still render the info text if showPageInfo is true
+    if (showPageInfo) {
+      const startItem = Math.min(totalItems, (currentPage - 1) * pageSize + 1);
+      const endItem = Math.min(totalItems, currentPage * pageSize);
 
-  // Update internal state when props change
-  useEffect(() => {
-    setPage(currentPage);
-  }, [currentPage]);
-
-  // Handle page change
-  const handlePageChange = (newPage) => {
-    // Don't do anything if the requested page is invalid
-    if (newPage < 1 || newPage > totalPages) {
-      return;
+      return (
+        <div
+          className={`d-flex justify-content-between align-items-center ${className}`}
+        >
+          <div className="text-muted small">
+            Showing {startItem} to {endItem} of {totalItems} items
+          </div>
+          <div>
+            <span className="badge bg-secondary">Page 1 of 1</span>
+          </div>
+        </div>
+      );
     }
 
-    setPage(newPage);
-
-    if (onPageChange) {
-      onPageChange(newPage);
-    }
-
-    // Optionally scroll to top
-    window.scrollTo({
-      top: 0,
-      behavior: "smooth",
-    });
-  };
+    return null;
+  }
 
   // Generate array of page numbers to display
   const getPageNumbers = () => {
@@ -70,13 +54,13 @@ const Pagination = ({
     pages.push(1);
 
     // Show ellipsis if needed
-    if (page > 3) {
+    if (currentPage > 3) {
       pages.push("...");
     }
 
     // Calculate range around current page
-    const rangeStart = Math.max(2, page - 1);
-    const rangeEnd = Math.min(totalPages - 1, page + 1);
+    const rangeStart = Math.max(2, currentPage - 1);
+    const rangeEnd = Math.min(totalPages - 1, currentPage + 1);
 
     // Add range pages
     for (let i = rangeStart; i <= rangeEnd; i++) {
@@ -84,7 +68,7 @@ const Pagination = ({
     }
 
     // Show ellipsis if needed
-    if (page < totalPages - 2) {
+    if (currentPage < totalPages - 2) {
       pages.push("...");
     }
 
@@ -96,236 +80,138 @@ const Pagination = ({
     return pages;
   };
 
-  // Calculate starting and ending item numbers
-  const startItem = Math.min(totalItems, (page - 1) * pageSize + 1);
-  const endItem = Math.min(totalItems, page * pageSize);
+  // Map sizes to Bootstrap sizes
+  const sizeClass =
+    {
+      small: "pagination-sm",
+      medium: "", // default, no suffix in Bootstrap
+      large: "pagination-lg",
+    }[size] || "";
 
-  // Size classes
-  const sizeClasses = {
-    small: {
-      button: "h-8 w-8 text-sm",
-      text: "px-2 py-1 text-sm",
-    },
-    medium: {
-      button: "h-10 w-10 text-base",
-      text: "px-3 py-2 text-base",
-    },
-    large: {
-      button: "h-12 w-12 text-lg",
-      text: "px-4 py-3 text-lg",
-    },
-  };
-
-  // Variant classes
-  const getVariantClasses = (isActive, isDisabled) => {
-    const baseClasses = "flex items-center justify-center focus:outline-none";
-    const disabledClasses = isDisabled
-      ? "opacity-50 cursor-not-allowed"
-      : "cursor-pointer";
-
-    switch (variant) {
-      case "rounded":
-        return `${baseClasses} ${disabledClasses} ${
-          isActive
-            ? "bg-primary-600 text-white hover:bg-primary-700 rounded-full"
-            : "text-gray-700 hover:bg-gray-100 rounded-full"
-        }`;
-      case "buttons":
-        return `${baseClasses} ${disabledClasses} border ${
-          isActive
-            ? "bg-primary-600 border-primary-600 text-white hover:bg-primary-700"
-            : "border-gray-300 text-gray-700 hover:bg-gray-50"
-        }`;
-      case "simple":
-      default:
-        return `${baseClasses} ${disabledClasses} ${
-          isActive
-            ? "bg-primary-50 border-primary-500 text-primary-600 z-10"
-            : "border-gray-300 text-gray-500 hover:bg-gray-50"
-        }`;
-    }
-  };
-
-  // If there's only 1 page, don't render pagination unless showSinglePage is true
-  if (totalPages <= 1) {
-    // Still render the info text if showPageInfo is true
-    if (showPageInfo) {
-      return (
-        <div className={`flex justify-between items-center ${className}`}>
-          <div className="text-sm text-gray-500">
-            Showing {startItem} to {endItem} of {totalItems} items
-          </div>
-          <div className="flex">
-            <span
-              className={`border ${sizeClasses[size].text} border-gray-300 bg-gray-100 text-gray-400 rounded-md`}
-            >
-              Page 1 of 1
-            </span>
-          </div>
-        </div>
-      );
-    }
-
-    return null;
-  }
-
-  // Get page numbers to display
-  const pageNumbers = showPageNumbers ? getPageNumbers() : [];
+  // Calculate page information
+  const startItem = Math.min(totalItems, (currentPage - 1) * pageSize + 1);
+  const endItem = Math.min(totalItems, currentPage * pageSize);
 
   return (
-    <div
-      className={`flex flex-col sm:flex-row justify-between items-center space-y-4 sm:space-y-0 ${className}`}
-    >
-      {/* Page info text */}
-      {showPageInfo && (
-        <div className="text-sm text-gray-500">
-          Showing {startItem} to {endItem} of {totalItems} items
-        </div>
-      )}
-
-      {/* Pagination buttons */}
-      <div className="flex items-center">
-        {/* First page button */}
-        {showFirstLastButtons && (
-          <button
-            onClick={() => handlePageChange(1)}
-            disabled={page === 1}
-            className={`${getVariantClasses(false, page === 1)} ${
-              sizeClasses[size].button
-            } rounded-l-md`}
-            aria-label="First page"
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              className="h-5 w-5"
-              viewBox="0 0 20 20"
-              fill="currentColor"
-            >
-              <path
-                fillRule="evenodd"
-                d="M15.707 15.707a1 1 0 01-1.414 0l-5-5a1 1 0 010-1.414l5-5a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 010 1.414zm-6 0a1 1 0 01-1.414 0l-5-5a1 1 0 010-1.414l5-5a1 1 0 011.414 1.414L5.414 10l4.293 4.293a1 1 0 010 1.414z"
-                clipRule="evenodd"
-              />
-            </svg>
-          </button>
+    <div className={`${className}`}>
+      <div className="d-flex flex-column flex-md-row justify-content-between align-items-center mb-2">
+        {/* Page info */}
+        {showPageInfo && (
+          <div className="text-muted small mb-2 mb-md-0">
+            Showing {startItem} to {endItem} of {totalItems} items
+          </div>
         )}
 
-        {/* Previous page button */}
-        <button
-          onClick={() => handlePageChange(page - 1)}
-          disabled={page === 1}
-          className={`${getVariantClasses(false, page === 1)} ${
-            sizeClasses[size].button
-          } ${!showFirstLastButtons ? "rounded-l-md" : ""}`}
-          aria-label="Previous page"
-        >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            className="h-5 w-5"
-            viewBox="0 0 20 20"
-            fill="currentColor"
-          >
-            <path
-              fillRule="evenodd"
-              d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z"
-              clipRule="evenodd"
-            />
-          </svg>
-        </button>
-
-        {/* Page numbers */}
-        {showPageNumbers &&
-          pageNumbers.map((pageNumber, index) => (
-            <React.Fragment key={index}>
-              {pageNumber === "..." ? (
-                <span
-                  className={`${getVariantClasses(false, true)} ${
-                    sizeClasses[size].button
-                  }`}
-                >
-                  ...
-                </span>
-              ) : (
+        {/* Pagination */}
+        <nav aria-label="Page navigation">
+          <ul className={`pagination ${sizeClass} mb-0`}>
+            {/* First page button */}
+            {showFirstLastButtons && (
+              <li
+                className={`page-item ${currentPage === 1 ? "disabled" : ""}`}
+              >
                 <button
-                  onClick={() => handlePageChange(pageNumber)}
-                  className={`${getVariantClasses(
-                    pageNumber === page,
-                    false
-                  )} ${sizeClasses[size].button}`}
-                  aria-label={`Page ${pageNumber}`}
-                  aria-current={pageNumber === page ? "page" : undefined}
+                  className="page-link"
+                  onClick={() => onPageChange(1)}
+                  disabled={currentPage === 1}
+                  aria-label="First page"
                 >
-                  {pageNumber}
+                  <i className="bi bi-chevron-double-left"></i>
                 </button>
-              )}
-            </React.Fragment>
-          ))}
-
-        {/* Next page button */}
-        <button
-          onClick={() => handlePageChange(page + 1)}
-          disabled={page === totalPages}
-          className={`${getVariantClasses(false, page === totalPages)} ${
-            sizeClasses[size].button
-          } ${!showFirstLastButtons ? "rounded-r-md" : ""}`}
-          aria-label="Next page"
-        >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            className="h-5 w-5"
-            viewBox="0 0 20 20"
-            fill="currentColor"
-          >
-            <path
-              fillRule="evenodd"
-              d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
-              clipRule="evenodd"
-            />
-          </svg>
-        </button>
-
-        {/* Last page button */}
-        {showFirstLastButtons && (
-          <button
-            onClick={() => handlePageChange(totalPages)}
-            disabled={page === totalPages}
-            className={`${getVariantClasses(false, page === totalPages)} ${
-              sizeClasses[size].button
-            } rounded-r-md`}
-            aria-label="Last page"
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              className="h-5 w-5"
-              viewBox="0 0 20 20"
-              fill="currentColor"
-            >
-              <path
-                fillRule="evenodd"
-                d="M4.293 15.707a1 1 0 010-1.414L8.586 10 4.293 6.707a1 1 0 011.414-1.414l5 5a1 1 0 010 1.414l-5 5a1 1 0 01-1.414 0zm6 0a1 1 0 010-1.414L14.586 10l-4.293-3.293a1 1 0 011.414-1.414l5 5a1 1 0 010 1.414l-5 5a1 1 0 01-1.414 0z"
-                clipRule="evenodd"
-              />
-            </svg>
-          </button>
-        )}
-
-        {/* Page selector for mobile (simple dropdown-like appearance) */}
-        <div className="sm:hidden ml-4">
-          <select
-            className="border border-gray-300 rounded-md text-gray-700 bg-white px-2 py-1 focus:outline-none focus:ring-2 focus:ring-primary-500"
-            value={page}
-            onChange={(e) => handlePageChange(Number(e.target.value))}
-            aria-label="Select page"
-          >
-            {Array.from({ length: totalPages }, (_, i) => i + 1).map(
-              (pageNum) => (
-                <option key={pageNum} value={pageNum}>
-                  Page {pageNum}
-                </option>
-              )
+              </li>
             )}
-          </select>
-        </div>
+
+            {/* Previous page button */}
+            <li className={`page-item ${currentPage === 1 ? "disabled" : ""}`}>
+              <button
+                className="page-link"
+                onClick={() => onPageChange(currentPage - 1)}
+                disabled={currentPage === 1}
+                aria-label="Previous page"
+              >
+                <i className="bi bi-chevron-left"></i>
+              </button>
+            </li>
+
+            {/* Page numbers */}
+            {showPageNumbers &&
+              getPageNumbers().map((pageNumber, index) => (
+                <li
+                  key={index}
+                  className={`page-item ${
+                    pageNumber === currentPage ? "active" : ""
+                  } ${pageNumber === "..." ? "disabled" : ""}`}
+                >
+                  <button
+                    className="page-link"
+                    onClick={() => {
+                      if (pageNumber !== "...") {
+                        onPageChange(pageNumber);
+                      }
+                    }}
+                    disabled={pageNumber === "..."}
+                  >
+                    {pageNumber}
+                  </button>
+                </li>
+              ))}
+
+            {/* Next page button */}
+            <li
+              className={`page-item ${
+                currentPage === totalPages ? "disabled" : ""
+              }`}
+            >
+              <button
+                className="page-link"
+                onClick={() => onPageChange(currentPage + 1)}
+                disabled={currentPage === totalPages}
+                aria-label="Next page"
+              >
+                <i className="bi bi-chevron-right"></i>
+              </button>
+            </li>
+
+            {/* Last page button */}
+            {showFirstLastButtons && (
+              <li
+                className={`page-item ${
+                  currentPage === totalPages ? "disabled" : ""
+                }`}
+              >
+                <button
+                  className="page-link"
+                  onClick={() => onPageChange(totalPages)}
+                  disabled={currentPage === totalPages}
+                  aria-label="Last page"
+                >
+                  <i className="bi bi-chevron-double-right"></i>
+                </button>
+              </li>
+            )}
+          </ul>
+        </nav>
+      </div>
+
+      {/* Mobile page selector */}
+      <div className="d-md-none mt-2">
+        <label className="form-label small text-muted mb-1">
+          Jump to page:
+        </label>
+        <select
+          className="form-select form-select-sm"
+          value={currentPage}
+          onChange={(e) => onPageChange(Number(e.target.value))}
+          aria-label="Select page"
+        >
+          {Array.from({ length: totalPages }, (_, i) => i + 1).map(
+            (pageNum) => (
+              <option key={pageNum} value={pageNum}>
+                Page {pageNum} of {totalPages}
+              </option>
+            )
+          )}
+        </select>
       </div>
     </div>
   );
@@ -340,7 +226,6 @@ Pagination.propTypes = {
   showPageNumbers: PropTypes.bool,
   showPageInfo: PropTypes.bool,
   showFirstLastButtons: PropTypes.bool,
-  variant: PropTypes.oneOf(["simple", "rounded", "buttons"]),
   size: PropTypes.oneOf(["small", "medium", "large"]),
   className: PropTypes.string,
 };

@@ -81,45 +81,33 @@ const Sidebar = ({ className = "" }) => {
     if (!categories || categories.length === 0) return null;
 
     return (
-      <ul className={`space-y-1 ${level > 0 ? "ml-4" : ""}`}>
+      <ul
+        className={`list-unstyled ${level > 0 ? "ms-3 border-start ps-2" : ""}`}
+      >
         {categories.map((category) => {
           const hasChildren = category.children && category.children.length > 0;
           const isExpanded = expanded[category._id];
+          const isActive = location.pathname === `/category/${category.slug}`;
 
           return (
-            <li key={category._id}>
-              <div className="flex items-center justify-between py-1">
+            <li key={category._id} className="mb-2">
+              <div className="d-flex align-items-center justify-content-between">
                 <Link
                   to={`/category/${category.slug}`}
-                  className={`hover:text-primary-600 flex-grow ${
-                    location.pathname === `/category/${category.slug}`
-                      ? "font-medium text-primary-600"
-                      : "text-gray-700"
+                  className={`text-decoration-none ${
+                    isActive ? "text-danger fw-bold" : "text-dark"
                   }`}
                 >
                   {category.name}
                 </Link>
                 {hasChildren && (
                   <button
-                    className="p-1 text-gray-500 hover:text-gray-700 focus:outline-none"
+                    className="btn btn-sm text-dark p-0 ms-2"
                     onClick={() => toggleCategory(category._id)}
                   >
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      className={`h-4 w-4 transition-transform ${
-                        isExpanded ? "transform rotate-180" : ""
-                      }`}
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke="currentColor"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M19 9l-7 7-7-7"
-                      />
-                    </svg>
+                    <i
+                      className={`bi ${isExpanded ? "bi-dash" : "bi-plus"}`}
+                    ></i>
                   </button>
                 )}
               </div>
@@ -134,15 +122,15 @@ const Sidebar = ({ className = "" }) => {
   };
 
   return (
-    <aside className={`bg-white rounded-lg shadow-md p-4 ${className}`}>
+    <div className={`card shadow-sm ${className}`}>
       {/* Categories Section */}
-      <div className="mb-6">
-        <h3 className="text-lg font-bold mb-3 pb-2 border-b">Categories</h3>
+      <div className="card-body">
+        <h5 className="card-title mb-3 fw-bold">Categories</h5>
         {loading ? (
-          <div className="animate-pulse space-y-2">
-            {[...Array(6)].map((_, index) => (
-              <div key={index} className="h-5 bg-gray-200 rounded"></div>
-            ))}
+          <div className="d-flex justify-content-center py-3">
+            <div className="spinner-border text-primary" role="status">
+              <span className="visually-hidden">Loading...</span>
+            </div>
           </div>
         ) : (
           renderCategories(categories)
@@ -150,228 +138,143 @@ const Sidebar = ({ className = "" }) => {
       </div>
 
       {/* Price Filter */}
-      <div className="mb-6">
-        <h3 className="text-lg font-bold mb-3 pb-2 border-b">Price Range</h3>
-        <div className="space-y-3">
-          <div>
-            <label
-              htmlFor="minPrice"
-              className="block text-sm text-gray-600 mb-1"
-            >
-              Min Price (₫)
-            </label>
-            <input
-              type="number"
-              id="minPrice"
-              value={priceRange.min}
-              onChange={(e) => handlePriceChange(e, "min")}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500"
-              min="0"
-              step="100000"
-            />
-          </div>
-          <div>
-            <label
-              htmlFor="maxPrice"
-              className="block text-sm text-gray-600 mb-1"
-            >
-              Max Price (₫)
-            </label>
-            <input
-              type="number"
-              id="maxPrice"
-              value={priceRange.max}
-              onChange={(e) => handlePriceChange(e, "max")}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500"
-              min="0"
-              step="100000"
-            />
-          </div>
-          <div className="flex space-x-2 pt-2">
-            <button
-              onClick={applyPriceFilter}
-              className="flex-1 bg-primary-600 text-white py-2 px-4 rounded-md hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-primary-500"
-            >
-              Apply
-            </button>
-            <button
-              onClick={resetPriceFilter}
-              className="flex-1 bg-gray-200 text-gray-800 py-2 px-4 rounded-md hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-500"
-            >
-              Reset
-            </button>
-          </div>
+      <div className="card-body border-top">
+        <h5 className="card-title mb-3 fw-bold">Price Range</h5>
+        <div className="mb-3">
+          <label htmlFor="minPrice" className="form-label">
+            Min Price (₫)
+          </label>
+          <input
+            type="number"
+            className="form-control form-control-sm"
+            id="minPrice"
+            value={priceRange.min}
+            onChange={(e) => handlePriceChange(e, "min")}
+            min="0"
+            step="100000"
+          />
+        </div>
+        <div className="mb-3">
+          <label htmlFor="maxPrice" className="form-label">
+            Max Price (₫)
+          </label>
+          <input
+            type="number"
+            className="form-control form-control-sm"
+            id="maxPrice"
+            value={priceRange.max}
+            onChange={(e) => handlePriceChange(e, "max")}
+            min="0"
+            step="100000"
+          />
+        </div>
+        <div className="d-grid gap-2">
+          <button onClick={applyPriceFilter} className="btn btn-sm btn-primary">
+            Apply
+          </button>
+          <button
+            onClick={resetPriceFilter}
+            className="btn btn-sm btn-outline-secondary"
+          >
+            Reset
+          </button>
         </div>
       </div>
 
       {/* Popular Brands */}
-      <div className="mb-6">
-        <h3 className="text-lg font-bold mb-3 pb-2 border-b">Popular Brands</h3>
-        <div className="space-y-2">
-          <div className="flex items-center">
+      <div className="card-body border-top">
+        <h5 className="card-title mb-3 fw-bold">Popular Brands</h5>
+        <div className="mb-1">
+          <div className="form-check">
             <input
-              id="brand-dell"
+              className="form-check-input"
               type="checkbox"
-              className="h-4 w-4 text-primary-600 focus:ring-primary-500 border-gray-300 rounded"
+              id="brand-dell"
             />
-            <label
-              htmlFor="brand-dell"
-              className="ml-2 block text-sm text-gray-700"
-            >
+            <label className="form-check-label" htmlFor="brand-dell">
               Dell
             </label>
           </div>
-          <div className="flex items-center">
-            <input
-              id="brand-hp"
-              type="checkbox"
-              className="h-4 w-4 text-primary-600 focus:ring-primary-500 border-gray-300 rounded"
-            />
-            <label
-              htmlFor="brand-hp"
-              className="ml-2 block text-sm text-gray-700"
-            >
+        </div>
+        <div className="mb-1">
+          <div className="form-check">
+            <input className="form-check-input" type="checkbox" id="brand-hp" />
+            <label className="form-check-label" htmlFor="brand-hp">
               HP
             </label>
           </div>
-          <div className="flex items-center">
+        </div>
+        <div className="mb-1">
+          <div className="form-check">
             <input
-              id="brand-asus"
+              className="form-check-input"
               type="checkbox"
-              className="h-4 w-4 text-primary-600 focus:ring-primary-500 border-gray-300 rounded"
+              id="brand-asus"
             />
-            <label
-              htmlFor="brand-asus"
-              className="ml-2 block text-sm text-gray-700"
-            >
+            <label className="form-check-label" htmlFor="brand-asus">
               ASUS
             </label>
           </div>
-          <div className="flex items-center">
+        </div>
+        <div className="mb-1">
+          <div className="form-check">
             <input
-              id="brand-lenovo"
+              className="form-check-input"
               type="checkbox"
-              className="h-4 w-4 text-primary-600 focus:ring-primary-500 border-gray-300 rounded"
+              id="brand-lenovo"
             />
-            <label
-              htmlFor="brand-lenovo"
-              className="ml-2 block text-sm text-gray-700"
-            >
+            <label className="form-check-label" htmlFor="brand-lenovo">
               Lenovo
             </label>
           </div>
-          <div className="flex items-center">
+        </div>
+        <div className="mb-1">
+          <div className="form-check">
             <input
-              id="brand-msi"
+              className="form-check-input"
               type="checkbox"
-              className="h-4 w-4 text-primary-600 focus:ring-primary-500 border-gray-300 rounded"
+              id="brand-msi"
             />
-            <label
-              htmlFor="brand-msi"
-              className="ml-2 block text-sm text-gray-700"
-            >
+            <label className="form-check-label" htmlFor="brand-msi">
               MSI
             </label>
           </div>
         </div>
         <div className="mt-2">
-          <button className="text-primary-600 hover:text-primary-800 text-sm font-medium">
+          <button className="btn btn-link btn-sm text-decoration-none p-0">
             View All Brands
           </button>
         </div>
       </div>
 
-      {/* Customer Services */}
-      <div className="mb-6">
-        <h3 className="text-lg font-bold mb-3 pb-2 border-b">
-          Customer Services
-        </h3>
-        <ul className="space-y-2 text-sm">
-          <li>
-            <Link
-              to="/contact"
-              className="flex items-center text-gray-700 hover:text-primary-600"
-            >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                className="h-5 w-5 mr-2 text-gray-500"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"
-                />
-              </svg>
+      {/* Customer Service */}
+      <div className="card-body border-top">
+        <h5 className="card-title mb-3 fw-bold">Customer Services</h5>
+        <ul className="list-unstyled">
+          <li className="mb-2">
+            <Link to="/contact" className="text-decoration-none text-dark">
+              <i className="bi bi-telephone-fill text-danger me-2"></i>
               Contact Support
             </Link>
           </li>
-          <li>
-            <Link
-              to="/faq"
-              className="flex items-center text-gray-700 hover:text-primary-600"
-            >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                className="h-5 w-5 mr-2 text-gray-500"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-                />
-              </svg>
+          <li className="mb-2">
+            <Link to="/faq" className="text-decoration-none text-dark">
+              <i className="bi bi-question-circle-fill text-danger me-2"></i>
               FAQs
             </Link>
           </li>
-          <li>
+          <li className="mb-2">
             <Link
               to="/shipping-policy"
-              className="flex items-center text-gray-700 hover:text-primary-600"
+              className="text-decoration-none text-dark"
             >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                className="h-5 w-5 mr-2 text-gray-500"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4"
-                />
-              </svg>
+              <i className="bi bi-truck text-danger me-2"></i>
               Shipping Policy
             </Link>
           </li>
-          <li>
-            <Link
-              to="/returns"
-              className="flex items-center text-gray-700 hover:text-primary-600"
-            >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                className="h-5 w-5 mr-2 text-gray-500"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M16 15v-1a4 4 0 00-4-4H8m0 0l3 3m-3-3l3-3m9 14V5a2 2 0 00-2-2H6a2 2 0 00-2 2v16l4-2 4 2 4-2 4 2z"
-                />
-              </svg>
+          <li className="mb-2">
+            <Link to="/returns" className="text-decoration-none text-dark">
+              <i className="bi bi-arrow-return-left text-danger me-2"></i>
               Returns & Refunds
             </Link>
           </li>
@@ -379,123 +282,66 @@ const Sidebar = ({ className = "" }) => {
       </div>
 
       {/* Featured Product */}
-      <div>
-        <h3 className="text-lg font-bold mb-3 pb-2 border-b">
-          Featured Product
-        </h3>
-        <div className="bg-gray-50 p-3 rounded-md border border-gray-200">
-          <div className="mb-2">
-            <img
-              src="/images/products/featured-product.jpg"
-              alt="Featured Product"
-              className="w-full h-auto rounded"
-            />
-          </div>
-          <h4 className="font-medium text-sm mb-1">
-            ASUS ROG Strix GeForce RTX 4070 OC
-          </h4>
-          <div className="flex items-center mb-2">
-            <div className="flex items-center">
-              {[...Array(5)].map((_, i) => (
-                <svg
-                  key={i}
-                  className={`w-3 h-3 ${
-                    i < 5 ? "text-yellow-400" : "text-gray-300"
-                  }`}
-                  fill="currentColor"
-                  viewBox="0 0 20 20"
-                >
-                  <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                </svg>
-              ))}
-              <span className="text-xs ml-1 text-gray-500">(24)</span>
+      <div className="card-body border-top">
+        <h5 className="card-title mb-3 fw-bold">Featured Product</h5>
+        <div className="card h-100 border-0">
+          <img
+            src="/images/products/featured-product.jpg"
+            className="card-img-top"
+            alt="Featured Product"
+          />
+          <div className="card-body px-0 pb-0">
+            <h6 className="card-title">ASUS ROG Strix GeForce RTX 4070 OC</h6>
+            <div className="mb-2">
+              <div className="d-flex align-items-center mb-1">
+                <div className="text-warning">
+                  <i className="bi bi-star-fill"></i>
+                  <i className="bi bi-star-fill"></i>
+                  <i className="bi bi-star-fill"></i>
+                  <i className="bi bi-star-fill"></i>
+                  <i className="bi bi-star-fill"></i>
+                </div>
+                <span className="ms-1 text-muted small">(24)</span>
+              </div>
             </div>
+            <p className="fw-bold text-danger mb-2">₫24,990,000</p>
+            <Link
+              to="/products/asus-rog-strix-geforce-rtx-4070-oc"
+              className="btn btn-sm btn-outline-danger w-100"
+            >
+              View Details
+            </Link>
           </div>
-          <div className="text-primary-600 font-semibold mb-2">₫24,990,000</div>
-          <Link
-            to="/products/asus-rog-strix-geforce-rtx-4070-oc"
-            className="bg-primary-600 text-white text-xs py-1 px-3 rounded block text-center hover:bg-primary-700"
-          >
-            View Details
-          </Link>
         </div>
       </div>
 
-      {/* User Account (for mobile) - shown only on smaller screens */}
+      {/* User Account - Mobile Only */}
       {isAuthenticated && (
-        <div className="mt-6 lg:hidden">
-          <h3 className="text-lg font-bold mb-3 pb-2 border-b">My Account</h3>
-          <ul className="space-y-2 text-sm">
-            <li>
-              <Link
-                to="/profile"
-                className="flex items-center text-gray-700 hover:text-primary-600"
-              >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="h-5 w-5 mr-2 text-gray-500"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
-                  />
-                </svg>
+        <div className="card-body border-top d-lg-none">
+          <h5 className="card-title mb-3 fw-bold">My Account</h5>
+          <ul className="list-unstyled">
+            <li className="mb-2">
+              <Link to="/profile" className="text-decoration-none text-dark">
+                <i className="bi bi-person-fill text-danger me-2"></i>
                 My Profile
               </Link>
             </li>
-            <li>
-              <Link
-                to="/orders"
-                className="flex items-center text-gray-700 hover:text-primary-600"
-              >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="h-5 w-5 mr-2 text-gray-500"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"
-                  />
-                </svg>
+            <li className="mb-2">
+              <Link to="/orders" className="text-decoration-none text-dark">
+                <i className="bi bi-bag-fill text-danger me-2"></i>
                 My Orders
               </Link>
             </li>
-            <li>
-              <Link
-                to="/wishlist"
-                className="flex items-center text-gray-700 hover:text-primary-600"
-              >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="h-5 w-5 mr-2 text-gray-500"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"
-                  />
-                </svg>
+            <li className="mb-2">
+              <Link to="/wishlist" className="text-decoration-none text-dark">
+                <i className="bi bi-heart-fill text-danger me-2"></i>
                 Wishlist
               </Link>
             </li>
           </ul>
         </div>
       )}
-    </aside>
+    </div>
   );
 };
 

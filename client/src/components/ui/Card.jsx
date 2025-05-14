@@ -2,71 +2,49 @@ import React from "react";
 import PropTypes from "prop-types";
 
 /**
- * Card component for displaying content in a card layout
- * @param {Object} props - Component props
- * @param {ReactNode} props.children - Card content
- * @param {string} props.className - Additional CSS classes
- * @param {boolean} props.hoverable - Whether to add hover effect
- * @param {string} props.padding - Padding size ('none', 'small', 'medium', 'large')
- * @param {boolean} props.shadow - Whether to add shadow
- * @param {string} props.border - Border style ('none', 'thin', 'thick')
- * @param {string} props.rounded - Border radius ('none', 'sm', 'md', 'lg', 'full')
- * @param {Function} props.onClick - Card click handler
+ * Card component built with Bootstrap
  */
 const Card = ({
   children,
   className = "",
+  title,
+  subtitle,
+  footer,
+  headerClass = "",
+  bodyClass = "",
+  footerClass = "",
   hoverable = false,
-  padding = "medium",
-  shadow = true,
-  border = "thin",
-  rounded = "md",
   onClick = null,
 }) => {
-  // Padding classes
-  const paddingClasses = {
-    none: "p-0",
-    small: "p-2",
-    medium: "p-4",
-    large: "p-6",
-  };
-
-  // Shadow classes
-  const shadowClasses = {
-    true: "shadow-md",
-    false: "",
-  };
-
-  // Border classes
-  const borderClasses = {
-    none: "border-0",
-    thin: "border border-gray-200",
-    thick: "border-2 border-gray-300",
-  };
-
-  // Rounded corner classes
-  const roundedClasses = {
-    none: "rounded-none",
-    sm: "rounded-sm",
-    md: "rounded-md",
-    lg: "rounded-lg",
-    full: "rounded-full",
-  };
-
-  // Hoverable effect
-  const hoverableClass = hoverable
-    ? "transition duration-200 hover:shadow-lg"
-    : "";
-
-  // Clickable cursor
-  const clickableClass = onClick ? "cursor-pointer" : "";
-
-  // Combine all classes
-  const combinedClasses = `bg-white ${paddingClasses[padding]} ${shadowClasses[shadow]} ${borderClasses[border]} ${roundedClasses[rounded]} ${hoverableClass} ${clickableClass} ${className}`;
+  const cardClasses = `
+    card 
+    ${hoverable ? "shadow-sm hover-shadow" : ""}
+    ${onClick ? "cursor-pointer" : ""}
+    ${className}
+  `.trim();
 
   return (
-    <div className={combinedClasses} onClick={onClick}>
-      {children}
+    <div
+      className={cardClasses}
+      onClick={onClick}
+      style={hoverable ? { transition: "box-shadow .3s ease-in-out" } : {}}
+    >
+      {title && (
+        <div className={`card-header ${headerClass}`}>
+          {typeof title === "string" ? (
+            <h5 className="card-title mb-0">{title}</h5>
+          ) : (
+            title
+          )}
+          {subtitle && (
+            <h6 className="card-subtitle text-muted mt-1">{subtitle}</h6>
+          )}
+        </div>
+      )}
+
+      <div className={`card-body ${bodyClass}`}>{children}</div>
+
+      {footer && <div className={`card-footer ${footerClass}`}>{footer}</div>}
     </div>
   );
 };
@@ -74,11 +52,13 @@ const Card = ({
 Card.propTypes = {
   children: PropTypes.node.isRequired,
   className: PropTypes.string,
+  title: PropTypes.oneOfType([PropTypes.string, PropTypes.node]),
+  subtitle: PropTypes.oneOfType([PropTypes.string, PropTypes.node]),
+  footer: PropTypes.node,
+  headerClass: PropTypes.string,
+  bodyClass: PropTypes.string,
+  footerClass: PropTypes.string,
   hoverable: PropTypes.bool,
-  padding: PropTypes.oneOf(["none", "small", "medium", "large"]),
-  shadow: PropTypes.bool,
-  border: PropTypes.oneOf(["none", "thin", "thick"]),
-  rounded: PropTypes.oneOf(["none", "sm", "md", "lg", "full"]),
   onClick: PropTypes.func,
 };
 

@@ -4,7 +4,8 @@ import PropTypes from "prop-types";
 import { useCart } from "../../contexts/CartContext";
 
 /**
- * Cart item component showing product information, price, quantity controls, and a remove button
+ * CartItem component showing product information, price, quantity controls, and a remove button
+ * Styled with Bootstrap
  */
 const CartItem = ({ item }) => {
   const { updateCartItem, removeFromCart } = useCart();
@@ -53,128 +54,118 @@ const CartItem = ({ item }) => {
   const subtotal = quantity * price;
 
   return (
-    <div className="flex flex-col md:flex-row border-b py-4">
-      {/* Product image */}
-      <div className="flex-shrink-0 w-full md:w-24 h-24 mb-4 md:mb-0 mr-0 md:mr-4">
-        <Link to={`/products/${product?.slug || "#"}`}>
-          {mainImage ? (
-            <img
-              src={mainImage.imageUrl}
-              alt={mainImage.alt || product?.name || "Product"}
-              className="w-full h-full object-contain"
-            />
-          ) : (
-            <div className="w-full h-full bg-gray-200 flex items-center justify-center">
-              <span className="text-gray-500 text-sm">No image</span>
+    <div className="card mb-3 border-0 border-bottom pb-3">
+      <div className="row g-0">
+        {/* Product image */}
+        <div className="col-4 col-md-2">
+          <Link to={`/products/${product?.slug || "#"}`}>
+            <div className="ratio ratio-1x1 overflow-hidden bg-light">
+              {mainImage ? (
+                <img
+                  src={mainImage.imageUrl}
+                  alt={mainImage.alt || product?.name || "Product"}
+                  className="img-fluid p-2 object-fit-contain"
+                />
+              ) : (
+                <div className="d-flex align-items-center justify-content-center">
+                  <span className="text-muted small">No image</span>
+                </div>
+              )}
             </div>
-          )}
-        </Link>
-      </div>
-
-      {/* Product info */}
-      <div className="flex-grow md:mr-4">
-        <Link
-          to={`/products/${product?.slug || "#"}`}
-          className="text-lg font-medium text-gray-900 hover:text-primary-600"
-        >
-          {product?.name || "Product"}
-        </Link>
-
-        <div className="text-sm text-gray-500 mt-1">
-          {variant?.name || "Standard"}
+          </Link>
         </div>
 
-        {variant.inventory <= 5 && (
-          <div className="text-sm text-red-600 mt-1">
-            Only {variant.inventory} left in stock
+        {/* Product info */}
+        <div className="col-8 col-md-10">
+          <div className="card-body p-0 ps-3 d-flex flex-column h-100">
+            <div className="row h-100">
+              {/* Product details */}
+              <div className="col-12 col-md-5 mb-3 mb-md-0">
+                <Link
+                  to={`/products/${product?.slug || "#"}`}
+                  className="text-decoration-none"
+                >
+                  <h5 className="card-title fs-6 fw-bold text-dark">
+                    {product?.name || "Product"}
+                  </h5>
+                </Link>
+
+                <p className="card-text text-muted small mb-2">
+                  {variant?.name || "Standard"}
+                </p>
+
+                {variant.inventory <= 5 && (
+                  <div className="badge bg-warning text-dark">
+                    Only {variant.inventory} left
+                  </div>
+                )}
+
+                {/* Mobile price (visible on small screens) */}
+                <div className="d-md-none mt-2">
+                  <div className="fw-bold text-danger">
+                    ₫{formatPrice(price)}
+                  </div>
+                </div>
+              </div>
+
+              {/* Quantity controls */}
+              <div className="col-7 col-md-3 d-flex flex-column justify-content-center">
+                <div className="input-group input-group-sm">
+                  <button
+                    type="button"
+                    className="btn btn-outline-secondary"
+                    onClick={decrementQuantity}
+                    disabled={quantity <= 1}
+                  >
+                    <i className="bi bi-dash"></i>
+                  </button>
+
+                  <input
+                    type="number"
+                    min="1"
+                    max={variant.inventory}
+                    value={quantity}
+                    onChange={handleQuantityChange}
+                    className="form-control text-center"
+                  />
+
+                  <button
+                    type="button"
+                    className="btn btn-outline-secondary"
+                    onClick={incrementQuantity}
+                    disabled={quantity >= variant.inventory}
+                  >
+                    <i className="bi bi-plus"></i>
+                  </button>
+                </div>
+
+                <button
+                  type="button"
+                  className="btn btn-link btn-sm text-danger p-0 mt-2 align-self-start"
+                  onClick={handleRemove}
+                >
+                  <i className="bi bi-trash me-1"></i> Remove
+                </button>
+              </div>
+
+              {/* Price and subtotal */}
+              <div className="col-5 col-md-4 text-end d-flex flex-column justify-content-center">
+                {/* Unit price (hidden on small screens) */}
+                <div className="d-none d-md-block text-muted mb-1">
+                  <small>Unit price:</small>
+                  <div>₫{formatPrice(price)}</div>
+                </div>
+
+                {/* Subtotal */}
+                <div>
+                  <small className="text-muted">Subtotal:</small>
+                  <div className="fw-bold text-danger">
+                    ₫{formatPrice(subtotal)}
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
-        )}
-
-        {/* Mobile price (visible on small screens) */}
-        <div className="md:hidden mt-2">
-          <div className="text-lg font-medium text-gray-900">
-            ₫{formatPrice(price)}
-          </div>
-        </div>
-
-        {/* Quantity controls */}
-        <div className="flex items-center mt-2">
-          <div className="flex items-center border border-gray-300 rounded-md">
-            <button
-              type="button"
-              className="px-3 py-1 text-gray-600 hover:text-gray-800 focus:outline-none"
-              onClick={decrementQuantity}
-              disabled={quantity <= 1}
-            >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                className="h-4 w-4"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M20 12H4"
-                />
-              </svg>
-            </button>
-
-            <input
-              type="number"
-              min="1"
-              max={variant.inventory}
-              value={quantity}
-              onChange={handleQuantityChange}
-              className="w-12 text-center border-x border-gray-300 py-1 focus:outline-none"
-            />
-
-            <button
-              type="button"
-              className="px-3 py-1 text-gray-600 hover:text-gray-800 focus:outline-none"
-              onClick={incrementQuantity}
-              disabled={quantity >= variant.inventory}
-            >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                className="h-4 w-4"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M12 6v12m6-6H6"
-                />
-              </svg>
-            </button>
-          </div>
-
-          <button
-            type="button"
-            className="ml-4 text-red-600 hover:text-red-800 focus:outline-none text-sm"
-            onClick={handleRemove}
-          >
-            Remove
-          </button>
-        </div>
-      </div>
-
-      {/* Price (hidden on small screens) */}
-      <div className="hidden md:block text-right flex-shrink-0 w-24">
-        <div className="text-lg font-medium text-gray-900">
-          ₫{formatPrice(price)}
-        </div>
-      </div>
-
-      {/* Subtotal */}
-      <div className="text-right flex-shrink-0 mt-4 md:mt-0 md:w-32">
-        <div className="text-lg font-medium text-gray-900">
-          ₫{formatPrice(subtotal)}
         </div>
       </div>
     </div>

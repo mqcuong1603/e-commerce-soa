@@ -7,10 +7,18 @@ services:
     container_name: ecommerce-client
     restart: always
     ports:
-      - "${CLIENT_PORT:-8080}:80"
+      - "${CLIENT_PORT:-8080}:3000"
     environment:
-      - REACT_APP_API_URL=http://server:3000/api
-      - REACT_APP_SOCKET_URL=http://server:3000
+      - REACT_APP_API_URL=${REACT_APP_API_URL} # API URL for the frontend
+      - REACT_APP_SOCKET_URL=${REACT_APP_SOCKET_URL} # Socket URL for the frontend
+      # Environment variables for development hot reloading
+      - CHOKIDAR_USEPOLLING=true
+      - WATCHPACK_POLLING=true
+      - WDS_SOCKET_PORT=0
+    volumes:
+      - ./client:/app # Mount the client directory for hot reloading
+      - /app/node_modules # Don't override node_modules
+    command: npm start # Run the dev server
     depends_on:
       - server
     networks:
@@ -24,29 +32,24 @@ services:
     container_name: ecommerce-server
     restart: always
     environment:
-      - NODE_ENV=${NODE_ENV}
-      - PORT=${PORT}
-      - MONGO_USER=${MONGO_USER}
-      - MONGO_PASSWORD=${MONGO_PASSWORD}
-      - MONGO_DB=${MONGO_DB}
-      - MONGO_HOST=${MONGO_HOST}
-      - MONGODB_URI=${MONGODB_URI}
-      - JWT_SECRET=${JWT_SECRET}
-      - GOOGLE_CLIENT_ID=${GOOGLE_CLIENT_ID}
-      - GOOGLE_CLIENT_SECRET=${GOOGLE_CLIENT_SECRET}
-      - FACEBOOK_APP_ID=${FACEBOOK_APP_ID}
-      - FACEBOOK_APP_SECRET=${FACEBOOK_APP_SECRET}
-      - CLIENT_URL=${CLIENT_URL}
-      - EMAIL_HOST=${EMAIL_HOST}
-      - EMAIL_PORT=${EMAIL_PORT}
-      - EMAIL_SECURE=${EMAIL_SECURE}
-      - EMAIL_USER=${EMAIL_USER}
-      - EMAIL_PASS=${EMAIL_PASS}
-      - EMAIL_FROM=${EMAIL_FROM}
-      - SEED_DATABASE=${SEED_DATABASE}
-      - REACT_APP_SOCKET_URL=${REACT_APP_SOCKET_URL}
+      - NODE_ENV=development
+      - PORT=${PORT:-3000}
+      - MONGO_USER=${MONGO_USER:-admin}
+      - MONGO_PASSWORD=${MONGO_PASSWORD:-password}
+      - MONGO_DB=${MONGO_DB:-ecommerce}
+      - MONGO_HOST=${MONGO_HOST:-mongo}
+      - MONGODB_URI=${MONGODB_URI:-mongodb://admin:password@mongo:27017/ecommerce?authSource=admin}
+      - JWT_SECRET=${JWT_SECRET:-your_jwt_secret_key}
+      - CLIENT_URL=${CLIENT_URL:-http://localhost:8080}
+      - SEED_DATABASE=${SEED_DATABASE:-true}
     ports:
       - "${SERVER_PORT:-3000}:3000"
+      - "9229:9229" # For Node.js debugging
+    volumes:
+      - ./server:/app # Mount the server directory for hot reloading
+      - /app/node_modules # Don't override node_modules
+    # Correctly reference app.js without duplication
+    command: nodemon --inspect=0.0.0.0:9229 app.js
     depends_on:
       mongo:
         condition: service_healthy
@@ -59,9 +62,9 @@ services:
     container_name: ecommerce-mongo
     restart: always
     environment:
-      - MONGO_INITDB_ROOT_USERNAME=${MONGO_USER}
-      - MONGO_INITDB_ROOT_PASSWORD=${MONGO_PASSWORD}
-      - MONGO_INITDB_DATABASE=${MONGO_DB}
+      - MONGO_INITDB_ROOT_USERNAME=${MONGO_USER:-admin}
+      - MONGO_INITDB_ROOT_PASSWORD=${MONGO_PASSWORD:-password}
+      - MONGO_INITDB_DATABASE=${MONGO_DB:-ecommerce}
     ports:
       - "${MONGO_PORT:-27017}:27017"
     volumes:
@@ -74,9 +77,9 @@ services:
           "CMD",
           "mongosh",
           "-u",
-          "${MONGO_USER}",
+          "${MONGO_USER:-admin}",
           "-p",
-          "${MONGO_PASSWORD}",
+          "${MONGO_PASSWORD:-password}",
           "--eval",
           "db.adminCommand('ping')",
         ]

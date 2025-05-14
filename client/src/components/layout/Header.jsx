@@ -12,9 +12,8 @@ const Header = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [menuOpen, setMenuOpen] = useState(false);
-  const [categoryMenuOpen, setCategoryMenuOpen] = useState(false);
   const [userMenuOpen, setUserMenuOpen] = useState(false);
+  const [categoryMenuOpen, setCategoryMenuOpen] = useState(false);
   const userMenuRef = useRef(null);
   const categoryMenuRef = useRef(null);
 
@@ -56,11 +55,6 @@ const Header = () => {
     };
   }, []);
 
-  // Close mobile menu on navigation
-  useEffect(() => {
-    setMenuOpen(false);
-  }, [location.pathname]);
-
   // Handle search form submission
   const handleSearch = (e) => {
     e.preventDefault();
@@ -77,352 +71,262 @@ const Header = () => {
   };
 
   return (
-    <header className="bg-white shadow-md">
-      {/* Top bar with contact info and quick links */}
-      <div className="bg-primary-800 text-white px-4 py-2">
-        <div className="container mx-auto flex justify-between items-center">
-          <div className="flex items-center space-x-4 text-sm">
-            <a href="tel:+84123456789" className="flex items-center">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                className="h-4 w-4 mr-1"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"
-                />
-              </svg>
-              +84 123 456 789
+    <header>
+      {/* Top header with contact and account info */}
+      <div className="bg-dark text-white py-2">
+        <div className="container d-flex justify-content-between align-items-center">
+          <div className="d-flex align-items-center">
+            <a
+              href="tel:+84123456789"
+              className="text-white text-decoration-none me-3 small"
+            >
+              <i className="bi bi-telephone-fill me-1"></i> +84 123 456 789
             </a>
             <a
               href="mailto:info@techstore.com"
-              className="hidden sm:flex items-center"
+              className="text-white text-decoration-none small d-none d-md-inline"
             >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                className="h-4 w-4 mr-1"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
-                />
-              </svg>
-              info@techstore.com
+              <i className="bi bi-envelope-fill me-1"></i> info@techstore.com
             </a>
           </div>
-          <div className="flex items-center space-x-4 text-sm">
+
+          <div>
             {isAuthenticated ? (
-              <div className="relative" ref={userMenuRef}>
+              <div className="dropdown" ref={userMenuRef}>
                 <button
-                  className="flex items-center space-x-1"
+                  className="btn btn-link text-white text-decoration-none dropdown-toggle p-0"
                   onClick={() => setUserMenuOpen(!userMenuOpen)}
                 >
-                  <span>Hi, {user?.fullName?.split(" ")[0] || "User"}</span>
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    className="h-4 w-4"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M19 9l-7 7-7-7"
-                    />
-                  </svg>
+                  Hi, {user?.fullName?.split(" ")[0] || "User"}
                 </button>
-                {userMenuOpen && (
-                  <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-50 text-gray-800">
-                    <Link
-                      to="/profile"
-                      className="block px-4 py-2 text-sm hover:bg-gray-100"
-                    >
+                <ul
+                  className={`dropdown-menu dropdown-menu-end shadow-sm ${
+                    userMenuOpen ? "show" : ""
+                  }`}
+                >
+                  <li>
+                    <Link className="dropdown-item" to="/profile">
                       My Profile
                     </Link>
-                    <Link
-                      to="/orders"
-                      className="block px-4 py-2 text-sm hover:bg-gray-100"
-                    >
+                  </li>
+                  <li>
+                    <Link className="dropdown-item" to="/orders">
                       My Orders
                     </Link>
+                  </li>
+                  <li>
+                    <hr className="dropdown-divider" />
+                  </li>
+                  <li>
                     <button
+                      className="dropdown-item text-danger"
                       onClick={handleLogout}
-                      className="block w-full text-left px-4 py-2 text-sm hover:bg-gray-100 text-red-600"
                     >
                       Logout
                     </button>
-                  </div>
-                )}
+                  </li>
+                </ul>
               </div>
             ) : (
-              <>
-                <Link to="/login" className="hover:underline">
+              <div className="d-flex gap-3">
+                <Link
+                  to="/login"
+                  className="text-white text-decoration-none small"
+                >
                   Login
                 </Link>
-                <Link to="/register" className="hover:underline">
+                <Link
+                  to="/register"
+                  className="text-white text-decoration-none small"
+                >
                   Register
                 </Link>
-              </>
-            )}
-          </div>
-        </div>
-      </div>
-
-      {/* Main header with logo, search, and cart */}
-      <div className="container mx-auto px-4 py-4">
-        <div className="flex flex-col md:flex-row items-center justify-between space-y-4 md:space-y-0">
-          {/* Logo */}
-          <Link to="/" className="text-2xl font-bold text-primary-600">
-            TechStore
-          </Link>
-
-          {/* Search */}
-          <div className="w-full md:w-1/2 lg:w-2/5">
-            <form onSubmit={handleSearch} className="flex">
-              <input
-                type="text"
-                placeholder="Search products..."
-                className="w-full px-4 py-2 border border-gray-300 rounded-l-md focus:outline-none focus:ring-2 focus:ring-primary-500"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-              />
-              <button
-                type="submit"
-                className="bg-primary-600 text-white px-4 py-2 rounded-r-md hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-primary-500"
-              >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="h-5 w-5"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-                  />
-                </svg>
-              </button>
-            </form>
-          </div>
-
-          {/* Cart */}
-          <Link to="/cart" className="relative flex items-center space-x-2">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              className="h-6 w-6 text-gray-600"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"
-              />
-            </svg>
-            <div>
-              <div className="text-xs text-gray-500">Shopping Cart</div>
-              <div className="text-sm font-medium">
-                {cart.itemCount || 0} items
               </div>
-            </div>
-            {cart.itemCount > 0 && (
-              <span className="absolute -top-2 -right-2 bg-red-600 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
-                {cart.itemCount}
-              </span>
             )}
-          </Link>
+          </div>
         </div>
       </div>
 
-      {/* Navigation */}
-      <nav className="bg-gray-100 border-y border-gray-200">
-        <div className="container mx-auto px-4">
-          <div className="flex justify-between items-center">
-            {/* Categories dropdown */}
-            <div className="relative" ref={categoryMenuRef}>
-              <button
-                className="flex items-center space-x-2 px-4 py-3 font-medium hover:bg-gray-200"
-                onClick={() => setCategoryMenuOpen(!categoryMenuOpen)}
+      {/* Main header with logo, search and cart */}
+      <div className="bg-white py-3 border-bottom">
+        <div className="container">
+          <div className="row align-items-center">
+            {/* Logo */}
+            <div className="col-md-3 mb-3 mb-md-0 text-center text-md-start">
+              <Link to="/" className="text-decoration-none">
+                <h1 className="m-0 h3 fw-bold text-danger">TechStore</h1>
+              </Link>
+            </div>
+
+            {/* Search form */}
+            <div className="col-md-6 mb-3 mb-md-0">
+              <form onSubmit={handleSearch} className="d-flex">
+                <input
+                  type="text"
+                  placeholder="Search products..."
+                  className="form-control me-2"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                />
+                <button type="submit" className="btn btn-danger">
+                  <i className="bi bi-search"></i>
+                </button>
+              </form>
+            </div>
+
+            {/* Cart */}
+            <div className="col-md-3 text-end">
+              <Link
+                to="/cart"
+                className="btn btn-outline-danger position-relative"
               >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="h-5 w-5"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M4 6h16M4 12h16M4 18h16"
-                  />
-                </svg>
-                <span>Categories</span>
-              </button>
+                <i className="bi bi-cart3 me-1"></i> Cart
+                {cart.itemCount > 0 && (
+                  <span className="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                    {cart.itemCount}
+                  </span>
+                )}
+              </Link>
+            </div>
+          </div>
+        </div>
+      </div>
 
-              {categoryMenuOpen && (
-                <div className="absolute top-full left-0 w-60 bg-white shadow-lg z-50">
-                  {loading ? (
-                    <div className="p-4 text-center">Loading...</div>
-                  ) : (
-                    <div className="py-2">
-                      {categories.map((category) => (
-                        <div key={category._id} className="group relative">
-                          <Link
-                            to={`/category/${category.slug}`}
-                            className="block px-4 py-2 hover:bg-gray-100 flex justify-between items-center"
-                          >
-                            {category.name}
-                            {category.children &&
-                              category.children.length > 0 && (
-                                <svg
-                                  xmlns="http://www.w3.org/2000/svg"
-                                  className="h-4 w-4"
-                                  fill="none"
-                                  viewBox="0 0 24 24"
-                                  stroke="currentColor"
-                                >
-                                  <path
-                                    strokeLinecap="round"
-                                    strokeLinejoin="round"
-                                    strokeWidth={2}
-                                    d="M9 5l7 7-7 7"
-                                  />
-                                </svg>
-                              )}
-                          </Link>
+      {/* Navigation bar */}
+      <nav className="navbar navbar-expand-lg navbar-light bg-light">
+        <div className="container">
+          <div className="dropdown me-3" ref={categoryMenuRef}>
+            <button
+              className="btn btn-danger dropdown-toggle d-flex align-items-center"
+              onClick={() => setCategoryMenuOpen(!categoryMenuOpen)}
+            >
+              <i className="bi bi-list me-2"></i> Categories
+            </button>
 
-                          {/* Submenu */}
-                          {category.children &&
-                            category.children.length > 0 && (
-                              <div className="hidden group-hover:block absolute top-0 left-full w-60 bg-white shadow-lg">
-                                {category.children.map((subCategory) => (
-                                  <Link
-                                    key={subCategory._id}
-                                    to={`/category/${subCategory.slug}`}
-                                    className="block px-4 py-2 hover:bg-gray-100"
-                                  >
-                                    {subCategory.name}
-                                  </Link>
-                                ))}
-                              </div>
-                            )}
-                        </div>
-                      ))}
-                    </div>
-                  )}
+            <div
+              className={`dropdown-menu shadow-sm ${
+                categoryMenuOpen ? "show" : ""
+              }`}
+              style={{ width: "250px" }}
+            >
+              {loading ? (
+                <div className="text-center py-2">
+                  <div
+                    className="spinner-border spinner-border-sm text-primary"
+                    role="status"
+                  >
+                    <span className="visually-hidden">Loading...</span>
+                  </div>
                 </div>
+              ) : (
+                categories.map((category) => (
+                  <div key={category._id} className="dropend">
+                    <Link
+                      to={`/category/${category.slug}`}
+                      className="dropdown-item d-flex justify-content-between align-items-center"
+                    >
+                      {category.name}
+                      {category.children && category.children.length > 0 && (
+                        <i className="bi bi-chevron-right"></i>
+                      )}
+                    </Link>
+
+                    {category.children && category.children.length > 0 && (
+                      <div className="dropdown-menu shadow-sm dropdown-menu-end">
+                        {category.children.map((subcategory) => (
+                          <Link
+                            key={subcategory._id}
+                            to={`/category/${subcategory.slug}`}
+                            className="dropdown-item"
+                          >
+                            {subcategory.name}
+                          </Link>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                ))
               )}
             </div>
-
-            {/* Main navigation links */}
-            <div className="hidden md:flex space-x-8">
-              <Link to="/" className="py-3 font-medium hover:text-primary-600">
-                Home
-              </Link>
-              <Link
-                to="/products"
-                className="py-3 font-medium hover:text-primary-600"
-              >
-                All Products
-              </Link>
-              <Link
-                to="/category/laptops"
-                className="py-3 font-medium hover:text-primary-600"
-              >
-                Laptops
-              </Link>
-              <Link
-                to="/category/monitors"
-                className="py-3 font-medium hover:text-primary-600"
-              >
-                Monitors
-              </Link>
-              <Link
-                to="/about"
-                className="py-3 font-medium hover:text-primary-600"
-              >
-                About Us
-              </Link>
-              <Link
-                to="/contact"
-                className="py-3 font-medium hover:text-primary-600"
-              >
-                Contact
-              </Link>
-            </div>
-
-            {/* Mobile menu button */}
-            <div className="md:hidden">
-              <button className="p-2" onClick={() => setMenuOpen(!menuOpen)}>
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="h-6 w-6"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M4 6h16M4 12h16M4 18h16"
-                  />
-                </svg>
-              </button>
-            </div>
           </div>
 
-          {/* Mobile menu */}
-          {menuOpen && (
-            <div className="md:hidden py-2 border-t border-gray-200">
-              <Link to="/" className="block py-2 px-4 hover:bg-gray-200">
-                Home
-              </Link>
-              <Link
-                to="/products"
-                className="block py-2 px-4 hover:bg-gray-200"
-              >
-                All Products
-              </Link>
-              <Link
-                to="/category/laptops"
-                className="block py-2 px-4 hover:bg-gray-200"
-              >
-                Laptops
-              </Link>
-              <Link
-                to="/category/monitors"
-                className="block py-2 px-4 hover:bg-gray-200"
-              >
-                Monitors
-              </Link>
-              <Link to="/about" className="block py-2 px-4 hover:bg-gray-200">
-                About Us
-              </Link>
-              <Link to="/contact" className="block py-2 px-4 hover:bg-gray-200">
-                Contact
-              </Link>
-            </div>
-          )}
+          <button
+            className="navbar-toggler"
+            type="button"
+            data-bs-toggle="collapse"
+            data-bs-target="#navbarNav"
+          >
+            <span className="navbar-toggler-icon"></span>
+          </button>
+
+          <div className="collapse navbar-collapse" id="navbarNav">
+            <ul className="navbar-nav">
+              <li className="nav-item">
+                <Link
+                  to="/"
+                  className={`nav-link ${
+                    location.pathname === "/" ? "active fw-bold" : ""
+                  }`}
+                >
+                  Home
+                </Link>
+              </li>
+              <li className="nav-item">
+                <Link
+                  to="/products"
+                  className={`nav-link ${
+                    location.pathname === "/products" ? "active fw-bold" : ""
+                  }`}
+                >
+                  All Products
+                </Link>
+              </li>
+              <li className="nav-item">
+                <Link
+                  to="/category/laptops"
+                  className={`nav-link ${
+                    location.pathname === "/category/laptops"
+                      ? "active fw-bold"
+                      : ""
+                  }`}
+                >
+                  Laptops
+                </Link>
+              </li>
+              <li className="nav-item">
+                <Link
+                  to="/category/monitors"
+                  className={`nav-link ${
+                    location.pathname === "/category/monitors"
+                      ? "active fw-bold"
+                      : ""
+                  }`}
+                >
+                  Monitors
+                </Link>
+              </li>
+              <li className="nav-item">
+                <Link
+                  to="/about"
+                  className={`nav-link ${
+                    location.pathname === "/about" ? "active fw-bold" : ""
+                  }`}
+                >
+                  About
+                </Link>
+              </li>
+              <li className="nav-item">
+                <Link
+                  to="/contact"
+                  className={`nav-link ${
+                    location.pathname === "/contact" ? "active fw-bold" : ""
+                  }`}
+                >
+                  Contact
+                </Link>
+              </li>
+            </ul>
+          </div>
         </div>
       </nav>
     </header>
