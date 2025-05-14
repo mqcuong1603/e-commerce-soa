@@ -1,6 +1,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import Button from "../components/ui/Button";
+import Card from "../components/ui/Card";
 
 /**
  * 404 Not Found page
@@ -8,58 +9,60 @@ import Button from "../components/ui/Button";
  */
 const NotFoundPage = () => {
   return (
-    <div className="container mx-auto px-4 py-16">
-      <div className="max-w-lg mx-auto text-center">
-        <h1 className="text-9xl font-bold text-primary-600 mb-4">404</h1>
+    <div className="container py-5">
+      <div className="row justify-content-center">
+        <div className="col-md-8 col-lg-6 text-center">
+          <h1 className="display-1 fw-bold text-danger mb-3">404</h1>
 
-        <div className="mb-8">
-          <h2 className="text-3xl font-bold text-gray-900 mb-4">
-            Page Not Found
-          </h2>
-          <p className="text-lg text-gray-600">
-            The page you are looking for doesn't exist or has been moved.
-          </p>
-        </div>
+          <Card className="mb-4 p-5">
+            <h2 className="h3 fw-bold mb-3">Page Not Found</h2>
+            <p className="text-muted mb-4">
+              The page you are looking for doesn't exist or has been moved.
+            </p>
 
-        <div className="flex justify-center space-x-4">
-          <Link to="/">
-            <Button variant="primary">Return Home</Button>
-          </Link>
-          <Link to="/products">
-            <Button variant="outlined">Browse Products</Button>
-          </Link>
-        </div>
+            <div className="d-flex gap-3 justify-content-center">
+              <Link to="/">
+                <Button variant="primary">Return Home</Button>
+              </Link>
+              <Link to="/products">
+                <Button variant="outlined">Browse Products</Button>
+              </Link>
+            </div>
+          </Card>
 
-        {/* Suggested links */}
-        <div className="mt-12">
-          <h3 className="text-lg font-medium text-gray-900 mb-4">
-            You might be interested in:
-          </h3>
-          <div className="flex flex-wrap justify-center gap-4">
-            <Link
-              to="/category/laptops"
-              className="px-4 py-2 bg-gray-100 rounded-full text-gray-700 hover:bg-gray-200"
-            >
-              Laptops
-            </Link>
-            <Link
-              to="/category/monitors"
-              className="px-4 py-2 bg-gray-100 rounded-full text-gray-700 hover:bg-gray-200"
-            >
-              Monitors
-            </Link>
-            <Link
-              to="/category/graphics-cards"
-              className="px-4 py-2 bg-gray-100 rounded-full text-gray-700 hover:bg-gray-200"
-            >
-              Graphics Cards
-            </Link>
-            <Link
-              to="/category/processors"
-              className="px-4 py-2 bg-gray-100 rounded-full text-gray-700 hover:bg-gray-200"
-            >
-              Processors
-            </Link>
+          {/* Suggested links */}
+          <div className="mt-4">
+            <h3 className="h5 fw-bold mb-3">You might be interested in:</h3>
+            <div className="d-flex flex-wrap justify-content-center gap-2">
+              <Link
+                to="/category/laptops"
+                className="btn btn-outline-secondary rounded-pill"
+              >
+                <i className="bi bi-laptop me-2"></i>
+                Laptops
+              </Link>
+              <Link
+                to="/category/monitors"
+                className="btn btn-outline-secondary rounded-pill"
+              >
+                <i className="bi bi-display me-2"></i>
+                Monitors
+              </Link>
+              <Link
+                to="/category/graphics-cards"
+                className="btn btn-outline-secondary rounded-pill"
+              >
+                <i className="bi bi-gpu-card me-2"></i>
+                Graphics Cards
+              </Link>
+              <Link
+                to="/category/processors"
+                className="btn btn-outline-secondary rounded-pill"
+              >
+                <i className="bi bi-cpu me-2"></i>
+                Processors
+              </Link>
+            </div>
           </div>
         </div>
       </div>

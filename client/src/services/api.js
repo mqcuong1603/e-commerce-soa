@@ -31,6 +31,18 @@ const handleResponse = async (response) => {
       localStorage.removeItem("token");
     }
 
+    // Additional cart-specific error handling
+    if (response.status === 400 && data.message.includes("inventory")) {
+      // Handle inventory errors specially
+      return {
+        success: false,
+        message: data.message || "Not enough inventory available",
+        errors: data.errors,
+        status: response.status,
+        isInventoryError: true,
+      };
+    }
+
     return {
       success: false,
       message: data.message || "An error occurred",
@@ -55,11 +67,12 @@ const api = {
    * @param {string} endpoint - API endpoint
    * @returns {Promise<Object>} Response data
    */
-  get: async (endpoint) => {
+  get: async (endpoint, options = {}) => {
     try {
       const response = await fetch(`${API_URL}${endpoint}`, {
         method: "GET",
-        headers: getHeaders(),
+        headers: { ...getHeaders(), ...options.headers },
+        credentials: "include", // Important for session cookies
       });
 
       return handleResponse(response);
@@ -78,12 +91,15 @@ const api = {
    * @param {Object} data - Request payload
    * @returns {Promise<Object>} Response data
    */
-  post: async (endpoint, data) => {
+  post: async (endpoint, data, options = {}) => {
     try {
+      const headers = { ...getHeaders(), ...(options.headers || {}) };
+
       const response = await fetch(`${API_URL}${endpoint}`, {
         method: "POST",
-        headers: getHeaders(),
+        headers,
         body: JSON.stringify(data),
+        credentials: "include", // Important for session cookies
       });
 
       return handleResponse(response);
@@ -97,39 +113,18 @@ const api = {
   },
 
   /**
-   * Perform PUT request
-   * @param {string} endpoint - API endpoint
-   * @param {Object} data - Request payload
-   * @returns {Promise<Object>} Response data
-   */
-  put: async (endpoint, data) => {
-    try {
-      const response = await fetch(`${API_URL}${endpoint}`, {
-        method: "PUT",
-        headers: getHeaders(),
-        body: JSON.stringify(data),
-      });
-
-      return handleResponse(response);
-    } catch (error) {
-      console.error("API PUT Error:", error);
-      return {
-        success: false,
-        message: error.message || "Network error",
-      };
-    }
-  },
-
-  /**
    * Perform DELETE request
    * @param {string} endpoint - API endpoint
    * @returns {Promise<Object>} Response data
    */
-  delete: async (endpoint) => {
+  delete: async (endpoint, options = {}) => {
     try {
+      const headers = { ...getHeaders(), ...(options.headers || {}) };
+
       const response = await fetch(`${API_URL}${endpoint}`, {
         method: "DELETE",
-        headers: getHeaders(),
+        headers,
+        credentials: "include", // Important for session cookies
       });
 
       return handleResponse(response);
@@ -143,17 +138,47 @@ const api = {
   },
 
   /**
+   * Perform PUT request
+   * @param {string} endpoint - API endpoint
+   * @param {Object} data - Request payload
+   * @returns {Promise<Object>} Response data
+   */
+  put: async (endpoint, data, options = {}) => {
+    try {
+      const headers = { ...getHeaders(), ...(options.headers || {}) };
+
+      const response = await fetch(`${API_URL}${endpoint}`, {
+        method: "PUT",
+        headers,
+        body: JSON.stringify(data),
+        credentials: "include", // Important for session cookies
+      });
+
+      return handleResponse(response);
+    } catch (error) {
+      console.error("API PUT Error:", error);
+      return {
+        success: false,
+        message: error.message || "Network error",
+      };
+    }
+  },
+
+  /**
    * Perform PATCH request
    * @param {string} endpoint - API endpoint
    * @param {Object} data - Request payload
    * @returns {Promise<Object>} Response data
    */
-  patch: async (endpoint, data) => {
+  patch: async (endpoint, data, options = {}) => {
     try {
+      const headers = { ...getHeaders(), ...(options.headers || {}) };
+
       const response = await fetch(`${API_URL}${endpoint}`, {
         method: "PATCH",
-        headers: getHeaders(),
+        headers,
         body: JSON.stringify(data),
+        credentials: "include", // Important for session cookies
       });
 
       return handleResponse(response);

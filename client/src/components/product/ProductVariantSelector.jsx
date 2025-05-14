@@ -3,6 +3,7 @@ import PropTypes from "prop-types";
 
 /**
  * ProductVariantSelector component for selecting product variants
+ * Enhanced with elegant Bootstrap 5 styling and smooth transitions
  */
 const ProductVariantSelector = ({
   variants,
@@ -12,6 +13,7 @@ const ProductVariantSelector = ({
   layout,
 }) => {
   const [selected, setSelected] = useState(null);
+  const [hovered, setHovered] = useState(null);
 
   // Set initial selected variant
   useEffect(() => {
@@ -85,81 +87,127 @@ const ProductVariantSelector = ({
     return null;
   }
 
-  // For variants without attributes, just show a simple list
+  // For variants without attributes, display a simple elegant list
   if (
     !variants[0]?.attributes ||
     Object.keys(variants[0].attributes).length === 0
   ) {
     return (
-      <div className="mb-3">
-        <h6 className="mb-2">Variants</h6>
+      <div className="mb-4">
+        <h6 className="fw-bold mb-3 border-bottom pb-2">Variants</h6>
 
-        <div className={layout === "grid" ? "row row-cols-2 g-2" : ""}>
-          {variants.map((variant) => (
-            <div
-              key={variant._id}
-              className={layout === "grid" ? "col" : "mb-2"}
-            >
-              <button
-                className={`btn w-100 text-start ${
-                  selected && selected._id === variant._id
-                    ? "btn-outline-danger border-danger"
-                    : "btn-outline-secondary"
-                } ${variant.inventory <= 0 ? "opacity-50 disabled" : ""}`}
-                onClick={() => handleVariantSelect(variant)}
-                disabled={variant.inventory <= 0}
+        <div className={layout === "grid" ? "row row-cols-2 g-3" : ""}>
+          {variants.map((variant) => {
+            const isSelected = selected && selected._id === variant._id;
+            const isOutOfStock = variant.inventory <= 0;
+            const isLowStock = variant.inventory > 0 && variant.inventory <= 5;
+
+            return (
+              <div
+                key={variant._id}
+                className={layout === "grid" ? "col" : "mb-2"}
+                onMouseEnter={() => setHovered(variant._id)}
+                onMouseLeave={() => setHovered(null)}
               >
-                <div className="d-flex justify-content-between align-items-center">
-                  <span>{variant.name}</span>
+                <button
+                  className={`btn w-100 text-start shadow-sm transition-all p-3 ${
+                    isSelected
+                      ? "btn-danger text-white border-0"
+                      : "btn-outline-secondary border-1"
+                  } ${isOutOfStock ? "opacity-50 disabled" : ""} ${
+                    hovered === variant._id && !isOutOfStock && !isSelected
+                      ? "shadow border-danger border-opacity-25"
+                      : ""
+                  }`}
+                  style={{
+                    transition: "all 0.2s ease",
+                    borderWidth: isSelected ? "2px" : "1px",
+                    transform:
+                      hovered === variant._id && !isOutOfStock && !isSelected
+                        ? "translateY(-2px)"
+                        : "translateY(0)",
+                  }}
+                  onClick={() => handleVariantSelect(variant)}
+                  disabled={isOutOfStock}
+                >
+                  <div className="d-flex justify-content-between align-items-center">
+                    <span className={isSelected ? "fw-bold" : "fw-normal"}>
+                      {variant.name}
+                    </span>
 
-                  {showPrice && (
-                    <div>
-                      {variant.salePrice ? (
-                        <div className="text-end">
-                          <span className="text-danger fw-bold">
-                            ₫{formatPrice(variant.salePrice)}
-                          </span>
-                          <span className="text-muted text-decoration-line-through ms-1 small">
+                    {showPrice && (
+                      <div>
+                        {variant.salePrice ? (
+                          <div className="text-end">
+                            <span
+                              className={`fw-bold ${
+                                isSelected ? "text-white" : "text-danger"
+                              }`}
+                            >
+                              ₫{formatPrice(variant.salePrice)}
+                            </span>
+                            <span
+                              className={`text-decoration-line-through ms-2 small ${
+                                isSelected
+                                  ? "text-white text-opacity-75"
+                                  : "text-muted"
+                              }`}
+                            >
+                              ₫{formatPrice(variant.price)}
+                            </span>
+                          </div>
+                        ) : (
+                          <span className="fw-bold">
                             ₫{formatPrice(variant.price)}
                           </span>
-                        </div>
-                      ) : (
-                        <span className="fw-bold">
-                          ₫{formatPrice(variant.price)}
-                        </span>
-                      )}
+                        )}
 
-                      {variant.inventory <= 0 && (
-                        <span className="text-danger small d-block">
-                          Out of stock
-                        </span>
-                      )}
-                      {variant.inventory > 0 && variant.inventory <= 5 && (
-                        <span className="text-warning small d-block">
-                          Only {variant.inventory} left
-                        </span>
-                      )}
-                    </div>
-                  )}
-                </div>
-              </button>
-            </div>
-          ))}
+                        {isOutOfStock && (
+                          <div className="mt-1 d-flex align-items-center justify-content-end">
+                            <i className="bi bi-x-circle-fill me-1 text-danger"></i>
+                            <span
+                              className={`small ${
+                                isSelected ? "text-white" : "text-danger"
+                              }`}
+                            >
+                              Out of stock
+                            </span>
+                          </div>
+                        )}
+
+                        {isLowStock && (
+                          <div className="mt-1 d-flex align-items-center justify-content-end">
+                            <i className="bi bi-exclamation-triangle-fill me-1 text-warning"></i>
+                            <span
+                              className={`small ${
+                                isSelected ? "text-white" : "text-warning"
+                              }`}
+                            >
+                              Only {variant.inventory} left
+                            </span>
+                          </div>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                </button>
+              </div>
+            );
+          })}
         </div>
       </div>
     );
   }
 
-  // For variants with attributes, try to create a more structured selector
+  // For variants with attributes, using a beautiful button selector
   const { primaryAttribute, groups } = getGroupedVariants();
 
-  // Display variants grouped by primary attribute
+  // Display variants grouped by primary attribute as elegant buttons
   if (layout === "buttons" && primaryAttribute) {
-    // For simple attributes like size, color, etc. use button-style layout
     return (
-      <div className="mb-3">
-        <div className="mb-3">
-          <h6 className="mb-2 text-capitalize">
+      <div className="mb-4">
+        <div className="mb-4">
+          <h6 className="fw-bold mb-3 text-capitalize border-bottom pb-2">
             {primaryAttribute.replace(/([A-Z])/g, " $1").trim()}
           </h6>
 
@@ -177,15 +225,29 @@ const ProductVariantSelector = ({
               return (
                 <button
                   key={attrValue}
-                  className={`btn ${
-                    isSelected ? "btn-danger" : "btn-outline-secondary"
+                  className={`btn position-relative ${
+                    isSelected
+                      ? "btn-danger shadow-sm"
+                      : "btn-outline-secondary"
                   } ${!hasAvailable ? "opacity-50 disabled" : ""}`}
-                  style={{ minWidth: "4rem" }}
+                  style={{
+                    minWidth: "4rem",
+                    transition: "all 0.2s ease",
+                    transform: isSelected
+                      ? "translateY(-2px)"
+                      : "translateY(0)",
+                  }}
                   onClick={() =>
                     hasAvailable && handleVariantSelect(groups[attrValue][0])
                   }
                   disabled={!hasAvailable}
                 >
+                  {!hasAvailable && (
+                    <i
+                      className="bi bi-slash-circle position-absolute top-0 end-0 text-danger translate-middle"
+                      style={{ fontSize: "0.75rem" }}
+                    ></i>
+                  )}
                   {attrValue}
                 </button>
               );
@@ -193,53 +255,85 @@ const ProductVariantSelector = ({
           </div>
         </div>
 
-        {/* If there are secondary attributes, show them as options after selection */}
+        {/* Secondary attributes with elegant styling */}
         {selected && Object.keys(selected.attributes).length > 1 && (
-          <div className="mb-3">
-            {Object.keys(selected.attributes)
-              .filter((key) => key !== primaryAttribute)
-              .map((attrKey) => (
-                <div key={attrKey} className="mt-3">
-                  <h6 className="mb-2 text-capitalize">
-                    {attrKey.replace(/([A-Z])/g, " $1").trim()}
-                  </h6>
-                  <p>{selected.attributes[attrKey]}</p>
-                </div>
-              ))}
+          <div className="mb-4 card border-0 shadow-sm">
+            <div className="card-body">
+              {Object.keys(selected.attributes)
+                .filter((key) => key !== primaryAttribute)
+                .map((attrKey) => (
+                  <div key={attrKey} className="mb-2 last-mb-0">
+                    <div className="row align-items-center">
+                      <div className="col-5 col-md-4 text-secondary">
+                        <span className="text-capitalize">
+                          {attrKey.replace(/([A-Z])/g, " $1").trim()}:
+                        </span>
+                      </div>
+                      <div className="col-7 col-md-8 fw-medium">
+                        {selected.attributes[attrKey]}
+                      </div>
+                    </div>
+                  </div>
+                ))}
+            </div>
           </div>
         )}
 
-        {/* Display selected variant info */}
+        {/* Display selected variant info with elegant card */}
         {selected && showPrice && (
-          <div className="mt-3 p-3 bg-light rounded">
-            <div className="d-flex justify-content-between align-items-center">
-              <span className="fw-medium">{selected.name}</span>
-              <div>
-                {selected.salePrice ? (
-                  <div>
-                    <span className="text-danger fw-bold">
-                      ₫{formatPrice(selected.salePrice)}
+          <div className="mt-3 card border-0 bg-light shadow-sm rounded">
+            <div className="card-body py-3">
+              <div className="d-flex justify-content-between align-items-center">
+                <div>
+                  <span className="fw-medium d-block mb-1">
+                    {selected.name}
+                  </span>
+                  {selected.inventory > 0 && (
+                    <span className="badge bg-success bg-opacity-10 text-success border border-success border-opacity-25">
+                      <i className="bi bi-check2-circle me-1"></i>
+                      In Stock
                     </span>
-                    <span className="text-muted text-decoration-line-through ms-1 small">
+                  )}
+                </div>
+
+                <div className="text-end">
+                  {selected.salePrice ? (
+                    <div>
+                      <div className="d-flex flex-column align-items-end">
+                        <span className="text-danger fw-bold fs-5">
+                          ₫{formatPrice(selected.salePrice)}
+                        </span>
+                        <span className="text-muted text-decoration-line-through small">
+                          ₫{formatPrice(selected.price)}
+                        </span>
+                      </div>
+                      {calculateDiscount(
+                        selected.price,
+                        selected.salePrice
+                      ) && (
+                        <span className="ms-2 badge bg-danger rounded-pill">
+                          -
+                          {calculateDiscount(
+                            selected.price,
+                            selected.salePrice
+                          )}
+                          %
+                        </span>
+                      )}
+                    </div>
+                  ) : (
+                    <span className="fw-bold fs-5">
                       ₫{formatPrice(selected.price)}
                     </span>
-                    {calculateDiscount(selected.price, selected.salePrice) && (
-                      <span className="ms-1 badge bg-danger">
-                        -{calculateDiscount(selected.price, selected.salePrice)}
-                        %
-                      </span>
-                    )}
-                  </div>
-                ) : (
-                  <span className="fw-bold">
-                    ₫{formatPrice(selected.price)}
-                  </span>
-                )}
-                {selected.inventory <= 5 && selected.inventory > 0 && (
-                  <span className="text-warning small d-block text-end">
-                    Only {selected.inventory} left
-                  </span>
-                )}
+                  )}
+
+                  {selected.inventory <= 5 && selected.inventory > 0 && (
+                    <div className="mt-1 text-warning small">
+                      <i className="bi bi-exclamation-triangle-fill me-1"></i>
+                      Only {selected.inventory} left
+                    </div>
+                  )}
+                </div>
               </div>
             </div>
           </div>
@@ -248,76 +342,126 @@ const ProductVariantSelector = ({
     );
   }
 
-  // Default layout for complex variants
+  // Default layout for complex variants with elegant cards
   return (
-    <div className="mb-3">
-      <h6 className="mb-2">Variants</h6>
+    <div className="mb-4">
+      <h6 className="fw-bold mb-3 border-bottom pb-2">Variants</h6>
 
-      <div className="d-flex flex-column gap-2">
-        {variants.map((variant) => (
-          <button
-            key={variant._id}
-            className={`btn w-100 text-start ${
-              selected && selected._id === variant._id
-                ? "btn-outline-danger border-danger"
-                : "btn-outline-secondary"
-            } ${variant.inventory <= 0 ? "opacity-50 disabled" : ""}`}
-            onClick={() => handleVariantSelect(variant)}
-            disabled={variant.inventory <= 0}
-          >
-            <div className="d-flex justify-content-between align-items-center">
-              <div>
-                <span className="fw-medium">{variant.name}</span>
-                {variant.attributes &&
-                  Object.entries(variant.attributes).length > 0 && (
-                    <div className="small text-muted mt-1">
-                      {Object.entries(variant.attributes).map(
-                        ([key, value], index, array) => (
-                          <span key={key}>
-                            <span className="text-capitalize">
-                              {key.replace(/([A-Z])/g, " $1").trim()}:
-                            </span>{" "}
-                            {value}
-                            {index < array.length - 1 ? ", " : ""}
+      <div className="d-flex flex-column gap-3">
+        {variants.map((variant) => {
+          const isSelected = selected && selected._id === variant._id;
+          const isOutOfStock = variant.inventory <= 0;
+
+          return (
+            <button
+              key={variant._id}
+              className={`btn w-100 text-start p-0 overflow-hidden ${
+                isOutOfStock ? "opacity-75 disabled" : ""
+              }`}
+              style={{
+                transition: "all 0.3s ease",
+                border: "none",
+              }}
+              onClick={() => handleVariantSelect(variant)}
+              disabled={isOutOfStock}
+            >
+              <div
+                className={`p-3 rounded shadow-sm ${
+                  isSelected
+                    ? "bg-danger bg-opacity-10 border border-danger"
+                    : "bg-white border"
+                }`}
+                style={{ transition: "all 0.3s ease" }}
+              >
+                <div className="d-flex justify-content-between align-items-center">
+                  <div>
+                    <span
+                      className={`${
+                        isSelected ? "fw-bold text-danger" : "fw-medium"
+                      }`}
+                    >
+                      {variant.name}
+                    </span>
+
+                    {variant.attributes &&
+                      Object.entries(variant.attributes).length > 0 && (
+                        <div className="mt-2 small">
+                          {Object.entries(variant.attributes).map(
+                            ([key, value], index, array) => (
+                              <span
+                                key={key}
+                                className={`badge me-2 ${
+                                  isSelected
+                                    ? "bg-danger bg-opacity-10 text-danger"
+                                    : "bg-light text-secondary"
+                                }`}
+                                style={{ fontWeight: "normal" }}
+                              >
+                                <span className="text-capitalize">
+                                  {key.replace(/([A-Z])/g, " $1").trim()}:
+                                </span>{" "}
+                                <span className="fw-medium">{value}</span>
+                              </span>
+                            )
+                          )}
+                        </div>
+                      )}
+                  </div>
+
+                  {showPrice && (
+                    <div className="ms-3 text-end">
+                      {variant.salePrice ? (
+                        <div>
+                          <span
+                            className={`fw-bold ${
+                              isSelected ? "text-danger" : ""
+                            }`}
+                          >
+                            ₫{formatPrice(variant.salePrice)}
                           </span>
-                        )
+                          <div className="text-muted text-decoration-line-through small">
+                            ₫{formatPrice(variant.price)}
+                          </div>
+                          {calculateDiscount(
+                            variant.price,
+                            variant.salePrice
+                          ) && (
+                            <span className="ms-1 badge bg-danger rounded-pill">
+                              -
+                              {calculateDiscount(
+                                variant.price,
+                                variant.salePrice
+                              )}
+                              %
+                            </span>
+                          )}
+                        </div>
+                      ) : (
+                        <span className="fw-bold">
+                          ₫{formatPrice(variant.price)}
+                        </span>
+                      )}
+
+                      {isOutOfStock && (
+                        <div className="mt-1 text-danger small">
+                          <i className="bi bi-x-circle-fill me-1"></i>
+                          Out of stock
+                        </div>
+                      )}
+
+                      {variant.inventory > 0 && variant.inventory <= 5 && (
+                        <div className="mt-1 text-warning small">
+                          <i className="bi bi-exclamation-triangle-fill me-1"></i>
+                          Only {variant.inventory} left
+                        </div>
                       )}
                     </div>
                   )}
-              </div>
-
-              {showPrice && (
-                <div>
-                  {variant.salePrice ? (
-                    <div className="text-end">
-                      <span className="text-danger fw-bold">
-                        ₫{formatPrice(variant.salePrice)}
-                      </span>
-                      <span className="text-muted text-decoration-line-through ms-1 small">
-                        ₫{formatPrice(variant.price)}
-                      </span>
-                    </div>
-                  ) : (
-                    <span className="fw-bold">
-                      ₫{formatPrice(variant.price)}
-                    </span>
-                  )}
-
-                  {variant.inventory <= 0 && (
-                    <span className="text-danger small d-block text-end">
-                      Out of stock
-                    </span>
-                  )}
-                  {variant.inventory > 0 && variant.inventory <= 5 && (
-                    <span className="text-warning small d-block text-end">
-                      Only {variant.inventory} left
-                    </span>
-                  )}
                 </div>
-              )}
-            </div>
-          </button>
-        ))}
+              </div>
+            </button>
+          );
+        })}
       </div>
     </div>
   );

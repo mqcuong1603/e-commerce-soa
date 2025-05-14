@@ -1,17 +1,21 @@
-import React from "react";
-import { Link } from "react-router-dom";
+import React, { useState } from "react";
 import PropTypes from "prop-types";
+import { Link } from "react-router-dom";
 import { useCart } from "../../contexts/CartContext";
 
 /**
- * CartItem component showing product information, price, quantity controls, and a remove button
- * Styled with Bootstrap
+ * Enhanced CartItem component showing product information with improved UX
+ * Real-time quantity controls, inventory awareness, and visual feedback
  */
 const CartItem = ({ item }) => {
   const { updateCartItem, removeFromCart } = useCart();
+  const [isUpdating, setIsUpdating] = useState(false);
+  const [isRemoving, setIsRemoving] = useState(false);
+  const [quantity, setQuantity] = useState(item.quantity);
+  const [showQuantityError, setShowQuantityError] = useState(false);
 
   // Extract product details
-  const { productVariantId, quantity, price } = item;
+  const { productVariantId, price } = item;
   const product = productVariantId.productId;
   const variant = productVariantId;
   const mainImage =
@@ -24,142 +28,256 @@ const CartItem = ({ item }) => {
     return price?.toLocaleString("en-US") || "";
   };
 
-  // Handle quantity change
+  // Handle quantity input change
   const handleQuantityChange = (e) => {
-    const newQuantity = parseInt(e.target.value);
-    if (!isNaN(newQuantity) && newQuantity > 0) {
-      updateCartItem(productVariantId._id, newQuantity);
+    const newValue = parseInt(e.target.value);
+
+    // Validate input
+    if (isNaN(newValue) || newValue < 1) {
+      setQuantity(1);
+      return;
+    }
+
+    // Check inventory limits
+    if (variant && newValue > variant.inventory) {
+      setQuantity(variant.inventory);
+      setShowQuantityError(true);
+      // Auto-hide error after 3 seconds
+      setTimeout(() => setShowQuantityError(false), 3000);
+      return;
+    }
+
+    setQuantity(newValue);
+
+    // Debounce update to reduce API calls
+    if (!isUpdating) {
+      const timer = setTimeout(() => {
+        updateItemQuantity(newValue);
+      }, 500);
+
+      return () => clearTimeout(timer);
     }
   };
 
   // Handle increment/decrement
   const decrementQuantity = () => {
     if (quantity > 1) {
-      updateCartItem(productVariantId._id, quantity - 1);
+      const newQuantity = quantity - 1;
+      setQuantity(newQuantity);
+      updateItemQuantity(newQuantity);
     }
   };
 
   const incrementQuantity = () => {
-    if (quantity < variant.inventory) {
-      updateCartItem(productVariantId._id, quantity + 1);
+    if (variant && quantity < variant.inventory) {
+      const newQuantity = quantity + 1;
+      setQuantity(newQuantity);
+      updateItemQuantity(newQuantity);
+    } else {
+      setShowQuantityError(true);
+      // Auto-hide error after 3 seconds
+      setTimeout(() => setShowQuantityError(false), 3000);
+    }
+  };
+
+  // Update item quantity with API call
+  const updateItemQuantity = async (newQuantity) => {
+    if (newQuantity === item.quantity) return;
+
+    setIsUpdating(true);
+    try {
+      await updateCartItem(productVariantId._id, newQuantity);
+    } catch (error) {
+      console.error("Error updating quantity:", error);
+      // Revert to original quantity on failure
+      setQuantity(item.quantity);
+    } finally {
+      setIsUpdating(false);
     }
   };
 
   // Handle remove item
-  const handleRemove = () => {
-    removeFromCart(productVariantId._id);
+  const handleRemove = async () => {
+    setIsRemoving(true);
+    try {
+      await removeFromCart(productVariantId._id);
+    } catch (error) {
+      console.error("Error removing item:", error);
+      setIsRemoving(false);
+    }
   };
 
   // Calculate total for this item
   const subtotal = quantity * price;
 
   return (
-    <div className="card mb-3 border-0 border-bottom pb-3">
+    <div className="card mb-4 border-0 shadow-sm rounded-3 overflow-hidden bg-white">
       <div className="row g-0">
-        {/* Product image */}
-        <div className="col-4 col-md-2">
-          <Link to={`/products/${product?.slug || "#"}`}>
-            <div className="ratio ratio-1x1 overflow-hidden bg-light">
+        {/* Product image with colorful border accent */}
+        <div className="col-4 col-md-2 p-2 bg-light">
+          <Link
+            to={`/products/${product?.slug || "#"}`}
+            className="d-block h-100"
+          >
+            <div className="position-relative h-100 rounded-3 overflow-hidden bg-gradient">
               {mainImage ? (
-                <img
-                  src={mainImage.imageUrl}
-                  alt={mainImage.alt || product?.name || "Product"}
-                  className="img-fluid p-2 object-fit-contain"
-                />
+                <div className="ratio ratio-1x1 border-start border-5 border-danger rounded-3 shadow-sm bg-white p-1">
+                  <img
+                    src={mainImage.imageUrl}
+                    alt={mainImage.alt || product?.name || "Product"}
+                    className="img-fluid p-2 object-fit-contain"
+                  />
+                </div>
               ) : (
-                <div className="d-flex align-items-center justify-content-center">
-                  <span className="text-muted small">No image</span>
+                <div className="d-flex align-items-center justify-content-center h-100 border-start border-5 border-warning rounded-3 bg-light">
+                  <span className="text-muted small fw-bold">No image</span>
                 </div>
               )}
             </div>
           </Link>
         </div>
 
-        {/* Product info */}
+        {/* Product info with vibrant accents */}
         <div className="col-8 col-md-10">
-          <div className="card-body p-0 ps-3 d-flex flex-column h-100">
+          <div className="card-body p-3 h-100">
             <div className="row h-100">
-              {/* Product details */}
+              {/* Product details with colorful badges */}
               <div className="col-12 col-md-5 mb-3 mb-md-0">
                 <Link
                   to={`/products/${product?.slug || "#"}`}
                   className="text-decoration-none"
                 >
-                  <h5 className="card-title fs-6 fw-bold text-dark">
+                  <h5 className="card-title fw-bold text-primary mb-1">
                     {product?.name || "Product"}
                   </h5>
                 </Link>
 
                 <p className="card-text text-muted small mb-2">
-                  {variant?.name || "Standard"}
+                  <span className="badge bg-light text-secondary border rounded-pill me-2">
+                    <i className="bi bi-tag-fill me-1 text-primary"></i>
+                    {variant?.name || "Standard"}
+                  </span>
+
+                  {/* Brand badge */}
+                  {product?.brand && (
+                    <span className="badge bg-light text-secondary border rounded-pill">
+                      {product.brand}
+                    </span>
+                  )}
                 </p>
 
-                {variant.inventory <= 5 && (
-                  <div className="badge bg-warning text-dark">
+                {/* Inventory warning */}
+                {variant && variant.inventory <= 5 && (
+                  <div className="badge bg-warning text-dark rounded-pill px-3 py-2 shadow-sm">
+                    <i className="bi bi-exclamation-triangle-fill me-1"></i>
                     Only {variant.inventory} left
                   </div>
                 )}
 
                 {/* Mobile price (visible on small screens) */}
-                <div className="d-md-none mt-2">
-                  <div className="fw-bold text-danger">
+                <div className="d-md-none mt-3">
+                  <div className="fw-bold text-danger fs-5">
                     ₫{formatPrice(price)}
                   </div>
                 </div>
               </div>
 
-              {/* Quantity controls */}
+              {/* Quantity controls with vibrant design */}
               <div className="col-7 col-md-3 d-flex flex-column justify-content-center">
-                <div className="input-group input-group-sm">
+                <div className="input-group input-group-sm shadow-sm">
                   <button
                     type="button"
-                    className="btn btn-outline-secondary"
+                    className="btn btn-outline-danger"
                     onClick={decrementQuantity}
-                    disabled={quantity <= 1}
+                    disabled={isUpdating || quantity <= 1}
                   >
-                    <i className="bi bi-dash"></i>
+                    <i className="bi bi-dash-lg"></i>
                   </button>
 
                   <input
                     type="number"
                     min="1"
-                    max={variant.inventory}
+                    max={variant ? variant.inventory : 99}
                     value={quantity}
                     onChange={handleQuantityChange}
-                    className="form-control text-center"
+                    className={`form-control text-center fw-bold ${
+                      isUpdating ? "bg-light opacity-75" : "bg-white"
+                    }`}
+                    disabled={isUpdating}
                   />
 
                   <button
                     type="button"
-                    className="btn btn-outline-secondary"
+                    className="btn btn-outline-success"
                     onClick={incrementQuantity}
-                    disabled={quantity >= variant.inventory}
+                    disabled={
+                      isUpdating || (variant && quantity >= variant.inventory)
+                    }
                   >
-                    <i className="bi bi-plus"></i>
+                    <i className="bi bi-plus-lg"></i>
                   </button>
                 </div>
 
+                {/* Quantity update indicator */}
+                {isUpdating && (
+                  <div className="small text-primary text-center mt-1">
+                    <span
+                      className="spinner-border spinner-border-sm me-1"
+                      role="status"
+                      aria-hidden="true"
+                    ></span>
+                    Updating...
+                  </div>
+                )}
+
+                {/* Quantity error message */}
+                {showQuantityError && (
+                  <div className="small text-danger text-center mt-1">
+                    <i className="bi bi-exclamation-circle me-1"></i>
+                    Max quantity reached
+                  </div>
+                )}
+
                 <button
                   type="button"
-                  className="btn btn-link btn-sm text-danger p-0 mt-2 align-self-start"
+                  className={`btn btn-sm text-danger p-0 mt-3 d-flex align-items-center ${
+                    isRemoving ? "opacity-50" : ""
+                  }`}
                   onClick={handleRemove}
+                  disabled={isRemoving}
                 >
-                  <i className="bi bi-trash me-1"></i> Remove
+                  {isRemoving ? (
+                    <>
+                      <span
+                        className="spinner-border spinner-border-sm me-2"
+                        role="status"
+                        aria-hidden="true"
+                      ></span>
+                      <span className="small fw-semibold">Removing...</span>
+                    </>
+                  ) : (
+                    <>
+                      <i className="bi bi-trash-fill me-2"></i>
+                      <span className="small fw-semibold">Remove</span>
+                    </>
+                  )}
                 </button>
               </div>
 
-              {/* Price and subtotal */}
+              {/* Price and subtotal with accent colors */}
               <div className="col-5 col-md-4 text-end d-flex flex-column justify-content-center">
                 {/* Unit price (hidden on small screens) */}
-                <div className="d-none d-md-block text-muted mb-1">
-                  <small>Unit price:</small>
-                  <div>₫{formatPrice(price)}</div>
+                <div className="d-none d-md-block mb-2">
+                  <small className="text-muted d-block">Unit price:</small>
+                  <div className="badge bg-light text-secondary border px-3 py-2">
+                    ₫{formatPrice(price)}
+                  </div>
                 </div>
 
-                {/* Subtotal */}
+                {/* Subtotal with vibrant styling */}
                 <div>
-                  <small className="text-muted">Subtotal:</small>
-                  <div className="fw-bold text-danger">
+                  <small className="text-muted d-block">Subtotal:</small>
+                  <div className="badge bg-danger text-white px-3 py-2 fs-6 shadow-sm">
                     ₫{formatPrice(subtotal)}
                   </div>
                 </div>
@@ -168,6 +286,14 @@ const CartItem = ({ item }) => {
           </div>
         </div>
       </div>
+
+      {/* Bottom border with gradient */}
+      <div
+        className="bg-gradient p-1"
+        style={{
+          background: "linear-gradient(90deg, #dc3545, #fd7e14, #ffc107)",
+        }}
+      ></div>
     </div>
   );
 };
@@ -186,6 +312,7 @@ CartItem.propTypes = {
           _id: PropTypes.string,
           name: PropTypes.string,
           slug: PropTypes.string,
+          brand: PropTypes.string,
         }),
         images: PropTypes.array,
       }),

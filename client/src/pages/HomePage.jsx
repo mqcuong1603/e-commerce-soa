@@ -9,6 +9,7 @@ const HomePage = () => {
     newProducts: [],
     bestSellers: [],
     categoryProducts: {},
+    parentCategories: [],
   });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -46,13 +47,28 @@ const HomePage = () => {
     const fetchLandingData = async () => {
       try {
         setLoading(true);
+
+        // Get landing page products
         const response = await productService.getLandingPageProducts();
 
-        if (response.success) {
-          setLandingData(response.data);
+        // Fetch parent categories for "Shop By Category" section
+        const categoryResponse = await productService.getCategoryTree();
+
+        if (response.success && categoryResponse.success) {
+          // Get only parent categories (categories with no parentId)
+          const parentCategories = categoryResponse.data.filter(
+            (cat) => !cat.parentId && cat.isActive !== false
+          );
+
+          setLandingData({
+            ...response.data,
+            parentCategories: parentCategories.slice(0, 6), // Limit to 6 parent categories
+          });
         } else {
           throw new Error(
-            response.message || "Failed to fetch landing page data"
+            response.message ||
+              categoryResponse.message ||
+              "Failed to fetch landing page data"
           );
         }
       } catch (err) {
@@ -85,9 +101,11 @@ const HomePage = () => {
   // Render loading state
   if (loading) {
     return (
-      <div className="container mx-auto px-4 py-8">
-        <div className="flex justify-center items-center h-96">
-          <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-primary-600"></div>
+      <div className="container py-5">
+        <div className="d-flex justify-content-center align-items-center min-vh-40">
+          <div className="spinner-border text-danger" role="status">
+            <span className="visually-hidden">Loading...</span>
+          </div>
         </div>
       </div>
     );
@@ -96,13 +114,14 @@ const HomePage = () => {
   // Render error state
   if (error) {
     return (
-      <div className="container mx-auto px-4 py-8">
-        <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
-          <p>{error}</p>
+      <div className="container py-5">
+        <div className="alert alert-danger" role="alert">
+          <p className="mb-3">{error}</p>
           <button
             onClick={() => window.location.reload()}
-            className="mt-2 bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700"
+            className="btn btn-danger"
           >
+            <i className="bi bi-arrow-clockwise me-2"></i>
             Retry
           </button>
         </div>
@@ -113,32 +132,41 @@ const HomePage = () => {
   return (
     <div>
       {/* Hero Slider */}
-      <div className="relative bg-gray-900 overflow-hidden">
-        <div className="h-[500px] relative">
+      <section className="position-relative bg-dark mb-4">
+        <div className="position-relative" style={{ height: "500px" }}>
           {heroSlides.map((slide, index) => (
             <div
               key={slide.id}
-              className={`absolute inset-0 transition-opacity duration-1000 ${
+              className={`position-absolute top-0 start-0 w-100 h-100 ${
                 index === currentSlide ? "opacity-100" : "opacity-0"
               }`}
+              style={{
+                transition: "opacity 1s ease-in-out",
+                zIndex: index === currentSlide ? 1 : 0,
+              }}
             >
               <div
-                className="h-full bg-cover bg-center"
-                style={{ backgroundImage: `url(${slide.imageUrl})` }}
+                className="h-100 d-flex align-items-center"
+                style={{
+                  backgroundImage: `url(${slide.imageUrl})`,
+                  backgroundSize: "cover",
+                  backgroundPosition: "center",
+                }}
               >
-                <div className="container mx-auto px-4 h-full flex items-center">
-                  <div className="max-w-lg bg-black bg-opacity-70 p-8 rounded-lg">
-                    <h1 className="text-4xl font-bold text-white mb-4">
-                      {slide.title}
-                    </h1>
-                    <p className="text-xl text-gray-200 mb-6">
-                      {slide.description}
-                    </p>
-                    <Link to={slide.link}>
-                      <Button variant="primary" size="large">
-                        Shop Now
-                      </Button>
-                    </Link>
+                <div className="container">
+                  <div
+                    className="card bg-dark bg-opacity-75 text-white p-4 p-md-5"
+                    style={{ maxWidth: "550px" }}
+                  >
+                    <h1 className="display-5 fw-bold mb-3">{slide.title}</h1>
+                    <p className="lead mb-4">{slide.description}</p>
+                    <div>
+                      <Link to={slide.link}>
+                        <Button variant="primary" size="large">
+                          Shop Now
+                        </Button>
+                      </Link>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -146,358 +174,244 @@ const HomePage = () => {
           ))}
         </div>
 
-        {/* Slider controls */}
-        <div className="absolute bottom-4 left-0 right-0 flex justify-center space-x-2">
-          {heroSlides.map((_, index) => (
-            <button
-              key={index}
-              onClick={() => navigateSlide(index)}
-              className={`w-3 h-3 rounded-full ${
-                index === currentSlide ? "bg-white" : "bg-gray-500"
-              }`}
-              aria-label={`Go to slide ${index + 1}`}
-            />
-          ))}
+        {/* Slider indicators */}
+        <div className="position-absolute bottom-0 start-50 translate-middle-x mb-3">
+          <div className="d-flex gap-2">
+            {heroSlides.map((_, index) => (
+              <button
+                key={index}
+                onClick={() => navigateSlide(index)}
+                className={`rounded-circle border-0 ${
+                  index === currentSlide
+                    ? "bg-danger"
+                    : "bg-secondary bg-opacity-50"
+                }`}
+                style={{ width: "12px", height: "12px" }}
+                aria-label={`Go to slide ${index + 1}`}
+              />
+            ))}
+          </div>
         </div>
-      </div>
+      </section>
 
-      {/* Featured Categories */}
-      <section className="py-10 bg-gray-100">
-        <div className="container mx-auto px-4">
-          <h2 className="text-3xl font-bold mb-8 text-center">
-            Shop By Category
-          </h2>
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
-            <Link
-              to="/category/laptops"
-              className="bg-white rounded-lg shadow-md p-4 hover:shadow-lg transition-shadow"
-            >
-              <div className="flex flex-col items-center">
-                <img
-                  src="/images/categories/laptops.jpg"
-                  alt="Laptops"
-                  className="w-16 h-16 object-contain mb-2"
-                />
-                <span className="font-medium">Laptops</span>
-              </div>
+      {/* Shop By Category - UPDATED to display only parent categories */}
+      <section className="py-5 bg-light">
+        <div className="container">
+          <div className="d-flex flex-wrap justify-content-between align-items-center mb-4 gap-3">
+            <h2 className="text-center fw-bold mb-0">Shop By Category</h2>
+            <Link to="/products">
+              <Button variant="outlined">
+                View All Categories <i className="bi bi-arrow-right ms-1"></i>
+              </Button>
             </Link>
-            <Link
-              to="/category/monitors"
-              className="bg-white rounded-lg shadow-md p-4 hover:shadow-lg transition-shadow"
-            >
-              <div className="flex flex-col items-center">
-                <img
-                  src="/images/categories/monitors.jpg"
-                  alt="Monitors"
-                  className="w-16 h-16 object-contain mb-2"
-                />
-                <span className="font-medium">Monitors</span>
+          </div>
+
+          <div className="row row-cols-2 row-cols-md-3 row-cols-lg-6 g-3">
+            {landingData.parentCategories &&
+            landingData.parentCategories.length > 0 ? (
+              landingData.parentCategories.map((category) => (
+                <div className="col" key={category._id}>
+                  <Link
+                    to={`/category/${category.slug}`}
+                    className="text-decoration-none"
+                  >
+                    <div className="card h-100 border-0 shadow-sm product-card">
+                      <div className="card-body text-center p-3">
+                        <div
+                          className="rounded-circle bg-white shadow-sm mx-auto mb-3 d-flex align-items-center justify-content-center"
+                          style={{ width: "80px", height: "80px" }}
+                        >
+                          <img
+                            src={
+                              category.image ||
+                              `/images/categories/${category.slug}.jpg`
+                            }
+                            alt={category.name}
+                            className="object-fit-contain"
+                            width="64"
+                            height="64"
+                            onError={(e) => {
+                              e.target.onerror = null;
+                              e.target.src =
+                                "/images/categories/placeholder.jpg";
+                            }}
+                          />
+                        </div>
+                        <h6 className="card-title fw-medium text-dark">
+                          {category.name}
+                        </h6>
+                      </div>
+                    </div>
+                  </Link>
+                </div>
+              ))
+            ) : (
+              <div className="col-12 text-center py-3">
+                <p className="text-muted">No categories available.</p>
               </div>
-            </Link>
-            <Link
-              to="/category/storage"
-              className="bg-white rounded-lg shadow-md p-4 hover:shadow-lg transition-shadow"
-            >
-              <div className="flex flex-col items-center">
-                <img
-                  src="/images/categories/storage.jpg"
-                  alt="Storage"
-                  className="w-16 h-16 object-contain mb-2"
-                />
-                <span className="font-medium">Storage</span>
-              </div>
-            </Link>
-            <Link
-              to="/category/processors"
-              className="bg-white rounded-lg shadow-md p-4 hover:shadow-lg transition-shadow"
-            >
-              <div className="flex flex-col items-center">
-                <img
-                  src="/images/categories/processors.jpg"
-                  alt="Processors"
-                  className="w-16 h-16 object-contain mb-2"
-                />
-                <span className="font-medium">Processors</span>
-              </div>
-            </Link>
-            <Link
-              to="/category/graphics-cards"
-              className="bg-white rounded-lg shadow-md p-4 hover:shadow-lg transition-shadow"
-            >
-              <div className="flex flex-col items-center">
-                <img
-                  src="/images/categories/gpu.jpg"
-                  alt="Graphics Cards"
-                  className="w-16 h-16 object-contain mb-2"
-                />
-                <span className="font-medium">Graphics Cards</span>
-              </div>
-            </Link>
-            <Link
-              to="/category/motherboards"
-              className="bg-white rounded-lg shadow-md p-4 hover:shadow-lg transition-shadow"
-            >
-              <div className="flex flex-col items-center">
-                <img
-                  src="/images/categories/motherboards.jpg"
-                  alt="Motherboards"
-                  className="w-16 h-16 object-contain mb-2"
-                />
-                <span className="font-medium">Motherboards</span>
-              </div>
-            </Link>
+            )}
           </div>
         </div>
       </section>
 
       {/* Best Sellers */}
-      <section className="py-10">
-        <div className="container mx-auto px-4">
-          <div className="flex justify-between items-center mb-8">
-            <h2 className="text-3xl font-bold">Best Sellers</h2>
+      <section className="py-5">
+        <div className="container">
+          <div className="d-flex flex-wrap justify-content-between align-items-center mb-4 gap-3">
+            <h2 className="fw-bold mb-0">Best Sellers</h2>
             <Link to="/products?sort=bestSellers">
-              <Button variant="outlined">View All</Button>
+              <Button variant="outlined">
+                View All <i className="bi bi-arrow-right ms-1"></i>
+              </Button>
             </Link>
           </div>
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+          <div className="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-4">
             {landingData.bestSellers?.length > 0 ? (
-              landingData.bestSellers.map((product) => (
-                <ProductCard key={product._id} product={product} />
+              landingData.bestSellers.slice(0, 4).map((product) => (
+                <div className="col" key={product._id}>
+                  <ProductCard product={product} />
+                </div>
               ))
             ) : (
-              <p className="col-span-4 text-center text-gray-500">
-                No best sellers found.
-              </p>
+              <div className="col-12 text-center py-5">
+                <i className="bi bi-inbox text-secondary fs-1 d-block mb-3"></i>
+                <p className="text-muted">No best sellers found.</p>
+              </div>
             )}
           </div>
         </div>
       </section>
 
       {/* New Arrivals */}
-      <section className="py-10 bg-gray-100">
-        <div className="container mx-auto px-4">
-          <div className="flex justify-between items-center mb-8">
-            <h2 className="text-3xl font-bold">New Arrivals</h2>
+      <section className="py-5 bg-light">
+        <div className="container">
+          <div className="d-flex flex-wrap justify-content-between align-items-center mb-4 gap-3">
+            <h2 className="fw-bold mb-0">New Arrivals</h2>
             <Link to="/products?sort=newest">
-              <Button variant="outlined">View All</Button>
+              <Button variant="outlined">
+                View All <i className="bi bi-arrow-right ms-1"></i>
+              </Button>
             </Link>
           </div>
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+          <div className="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-4">
             {landingData.newProducts?.length > 0 ? (
-              landingData.newProducts.map((product) => (
-                <ProductCard key={product._id} product={product} />
+              landingData.newProducts.slice(0, 4).map((product) => (
+                <div className="col" key={product._id}>
+                  <ProductCard product={product} />
+                </div>
               ))
             ) : (
-              <p className="col-span-4 text-center text-gray-500">
-                No new products found.
-              </p>
+              <div className="col-12 text-center py-5">
+                <i className="bi bi-inbox text-secondary fs-1 d-block mb-3"></i>
+                <p className="text-muted">No new products found.</p>
+              </div>
             )}
           </div>
         </div>
       </section>
 
-      {/* Category Specific Products */}
+      {/* Category Specific Products - UPDATED to show only 3 parent categories with max 4 products each */}
       {Object.keys(landingData.categoryProducts || {}).length > 0 &&
-        Object.keys(landingData.categoryProducts).map((categoryId) => {
-          const category = landingData.categoryProducts[categoryId];
-          return (
-            <section key={categoryId} className="py-10">
-              <div className="container mx-auto px-4">
-                <div className="flex justify-between items-center mb-8">
-                  <h2 className="text-3xl font-bold">
-                    {category.category.name}
-                  </h2>
-                  <Link to={`/category/${category.category.slug}`}>
-                    <Button variant="outlined">View All</Button>
-                  </Link>
+        Object.keys(landingData.categoryProducts)
+          .slice(0, 3) // Limit to 3 parent categories
+          .map((categoryId, index) => {
+            const category = landingData.categoryProducts[categoryId];
+
+            // Check if this is a parent category (no parentId)
+            const isParentCategory = !category.category.parentId;
+
+            // Skip if not a parent category (we only want to show parent categories)
+            if (!isParentCategory) return null;
+
+            return (
+              <section
+                key={categoryId}
+                className={`py-5 ${index % 2 !== 0 ? "bg-light" : ""}`}
+              >
+                <div className="container">
+                  <div className="d-flex flex-wrap justify-content-between align-items-center mb-4 gap-3">
+                    <h2 className="fw-bold mb-0">{category.category.name}</h2>
+                    <Link to={`/category/${category.category.slug}`}>
+                      <Button variant="outlined">
+                        View All <i className="bi bi-arrow-right ms-1"></i>
+                      </Button>
+                    </Link>
+                  </div>
+                  <div className="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-4">
+                    {category.products?.length > 0 ? (
+                      category.products.slice(0, 4).map(
+                        (
+                          product // Limit to 4 products
+                        ) => (
+                          <div className="col" key={product._id}>
+                            <ProductCard product={product} />
+                          </div>
+                        )
+                      )
+                    ) : (
+                      <div className="col-12 text-center py-5">
+                        <i className="bi bi-inbox text-secondary fs-1 d-block mb-3"></i>
+                        <p className="text-muted">
+                          No products found in this category.
+                        </p>
+                      </div>
+                    )}
+                  </div>
                 </div>
-                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-                  {category.products?.length > 0 ? (
-                    category.products.map((product) => (
-                      <ProductCard key={product._id} product={product} />
-                    ))
-                  ) : (
-                    <p className="col-span-4 text-center text-gray-500">
-                      No products found in this category.
-                    </p>
-                  )}
-                </div>
-              </div>
-            </section>
-          );
-        })}
+              </section>
+            );
+          })}
 
       {/* Features Section */}
-      <section className="py-10 bg-gray-100">
-        <div className="container mx-auto px-4">
-          <h2 className="text-3xl font-bold mb-8 text-center">Why Choose Us</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            <div className="bg-white p-6 rounded-lg shadow-md text-center">
-              <div className="mx-auto w-16 h-16 flex items-center justify-center bg-primary-100 rounded-full mb-4">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="h-8 w-8 text-primary-600"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M5 13l4 4L19 7"
-                  />
-                </svg>
+      <section className="py-5 bg-light">
+        <div className="container">
+          <h2 className="text-center fw-bold mb-4">Why Choose Us</h2>
+          <div className="row row-cols-1 row-cols-md-2 row-cols-lg-4 g-4">
+            {[
+              {
+                icon: "bi-check-lg",
+                title: "Genuine Products",
+                text: "All our products are 100% genuine with manufacturer warranty",
+                color: "primary",
+              },
+              {
+                icon: "bi-clock",
+                title: "Fast Delivery",
+                text: "We deliver your orders within 24-48 hours in major cities",
+                color: "success",
+              },
+              {
+                icon: "bi-shield-check",
+                title: "Secure Payments",
+                text: "Multiple secure payment options including cash on delivery",
+                color: "danger",
+              },
+              {
+                icon: "bi-arrow-return-left",
+                title: "Easy Returns",
+                text: "Hassle-free 7-day return policy on most products",
+                color: "info",
+              },
+            ].map((feature, index) => (
+              <div className="col" key={index}>
+                <div className="card h-100 border-0 shadow-sm text-center product-card">
+                  <div className="card-body p-4">
+                    <div
+                      className={`rounded-circle bg-${feature.color} bg-opacity-10 d-flex align-items-center justify-content-center mx-auto mb-3`}
+                      style={{ width: "70px", height: "70px" }}
+                    >
+                      <i
+                        className={`bi ${feature.icon} text-${feature.color} fs-3`}
+                      ></i>
+                    </div>
+                    <h5 className="card-title fw-bold mb-3">{feature.title}</h5>
+                    <p className="card-text text-muted mb-0 small">
+                      {feature.text}
+                    </p>
+                  </div>
+                </div>
               </div>
-              <h3 className="text-xl font-semibold mb-2">Genuine Products</h3>
-              <p className="text-gray-600">
-                All our products are 100% genuine with manufacturer warranty
-              </p>
-            </div>
-            <div className="bg-white p-6 rounded-lg shadow-md text-center">
-              <div className="mx-auto w-16 h-16 flex items-center justify-center bg-primary-100 rounded-full mb-4">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="h-8 w-8 text-primary-600"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
-                  />
-                </svg>
-              </div>
-              <h3 className="text-xl font-semibold mb-2">Fast Delivery</h3>
-              <p className="text-gray-600">
-                We deliver your orders within 24-48 hours in major cities
-              </p>
-            </div>
-            <div className="bg-white p-6 rounded-lg shadow-md text-center">
-              <div className="mx-auto w-16 h-16 flex items-center justify-center bg-primary-100 rounded-full mb-4">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="h-8 w-8 text-primary-600"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"
-                  />
-                </svg>
-              </div>
-              <h3 className="text-xl font-semibold mb-2">Secure Payments</h3>
-              <p className="text-gray-600">
-                Multiple secure payment options including cash on delivery
-              </p>
-            </div>
-            <div className="bg-white p-6 rounded-lg shadow-md text-center">
-              <div className="mx-auto w-16 h-16 flex items-center justify-center bg-primary-100 rounded-full mb-4">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="h-8 w-8 text-primary-600"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"
-                  />
-                </svg>
-              </div>
-              <h3 className="text-xl font-semibold mb-2">Easy Returns</h3>
-              <p className="text-gray-600">
-                Hassle-free 7-day return policy on most products
-              </p>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Brands Section */}
-      <section className="py-10">
-        <div className="container mx-auto px-4">
-          <h2 className="text-3xl font-bold mb-8 text-center">Top Brands</h2>
-          <div className="grid grid-cols-3 md:grid-cols-6 gap-4">
-            <div className="flex items-center justify-center p-4 grayscale hover:grayscale-0 transition-all">
-              <img
-                src="/images/brands/dell.png"
-                alt="Dell"
-                className="h-12 object-contain"
-              />
-            </div>
-            <div className="flex items-center justify-center p-4 grayscale hover:grayscale-0 transition-all">
-              <img
-                src="/images/brands/hp.png"
-                alt="HP"
-                className="h-12 object-contain"
-              />
-            </div>
-            <div className="flex items-center justify-center p-4 grayscale hover:grayscale-0 transition-all">
-              <img
-                src="/images/brands/lenovo.png"
-                alt="Lenovo"
-                className="h-12 object-contain"
-              />
-            </div>
-            <div className="flex items-center justify-center p-4 grayscale hover:grayscale-0 transition-all">
-              <img
-                src="/images/brands/samsung.png"
-                alt="Samsung"
-                className="h-12 object-contain"
-              />
-            </div>
-            <div className="flex items-center justify-center p-4 grayscale hover:grayscale-0 transition-all">
-              <img
-                src="/images/brands/asus.png"
-                alt="ASUS"
-                className="h-12 object-contain"
-              />
-            </div>
-            <div className="flex items-center justify-center p-4 grayscale hover:grayscale-0 transition-all">
-              <img
-                src="/images/brands/msi.png"
-                alt="MSI"
-                className="h-12 object-contain"
-              />
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Newsletter Section */}
-      <section className="py-16 bg-primary-900 text-white">
-        <div className="container mx-auto px-4">
-          <div className="max-w-xl mx-auto text-center">
-            <h2 className="text-3xl font-bold mb-4">
-              Subscribe to Our Newsletter
-            </h2>
-            <p className="text-lg mb-6">
-              Stay updated with our latest products, deals and tech news
-            </p>
-            <form className="flex">
-              <input
-                type="email"
-                placeholder="Your email address"
-                className="flex-grow px-4 py-3 rounded-l-md focus:outline-none text-gray-900"
-              />
-              <button
-                type="submit"
-                className="bg-primary-600 px-6 py-3 rounded-r-md hover:bg-primary-700 focus:outline-none"
-              >
-                Subscribe
-              </button>
-            </form>
+            ))}
           </div>
         </div>
       </section>

@@ -48,14 +48,15 @@ const LoginForm = () => {
   };
 
   return (
-    <div className="card shadow-sm border-0">
+    <div className="card shadow border-0">
       <div className="card-body p-4">
         <h2 className="card-title text-center mb-4 fw-bold">
           Login to Your Account
         </h2>
 
         {loginError && (
-          <div className="alert alert-danger py-2" role="alert">
+          <div className="alert alert-danger py-2 mb-4" role="alert">
+            <i className="bi bi-exclamation-triangle-fill me-2"></i>
             {loginError}
           </div>
         )}
@@ -63,23 +64,26 @@ const LoginForm = () => {
         <form onSubmit={handleSubmit}>
           <div className="mb-3">
             <label htmlFor="email" className="form-label">
-              Email
+              Email Address
             </label>
-            <input
-              type="email"
-              className={`form-control form-control-lg ${
-                errors.email ? "is-invalid" : ""
-              }`}
-              id="email"
-              name="email"
-              placeholder="you@example.com"
-              value={formData.email}
-              onChange={handleChange}
-              required
-            />
-            {errors.email && (
-              <div className="invalid-feedback">{errors.email}</div>
-            )}
+            <div className="input-group mb-1">
+              <span className="input-group-text">
+                <i className="bi bi-envelope"></i>
+              </span>
+              <input
+                type="email"
+                className={`form-control ${errors.email ? "is-invalid" : ""}`}
+                id="email"
+                name="email"
+                placeholder="you@example.com"
+                value={formData.email}
+                onChange={handleChange}
+                required
+              />
+              {errors.email && (
+                <div className="invalid-feedback">{errors.email}</div>
+              )}
+            </div>
           </div>
 
           <div className="mb-3">
@@ -91,24 +95,29 @@ const LoginForm = () => {
                 to="/forgot-password"
                 className="text-decoration-none text-danger small"
               >
-                Forgot password
+                <i className="bi bi-question-circle me-1"></i>Forgot password?
               </Link>
             </div>
-            <input
-              type="password"
-              className={`form-control form-control-lg ${
-                errors.password ? "is-invalid" : ""
-              }`}
-              id="password"
-              name="password"
-              placeholder="••••••••"
-              value={formData.password}
-              onChange={handleChange}
-              required
-            />
-            {errors.password && (
-              <div className="invalid-feedback">{errors.password}</div>
-            )}
+            <div className="input-group mb-1">
+              <span className="input-group-text">
+                <i className="bi bi-lock"></i>
+              </span>
+              <input
+                type="password"
+                className={`form-control ${
+                  errors.password ? "is-invalid" : ""
+                }`}
+                id="password"
+                name="password"
+                placeholder="••••••••"
+                value={formData.password}
+                onChange={handleChange}
+                required
+              />
+              {errors.password && (
+                <div className="invalid-feedback">{errors.password}</div>
+              )}
+            </div>
           </div>
 
           <div className="mb-4 form-check">
@@ -126,7 +135,7 @@ const LoginForm = () => {
           <div className="d-grid mb-4">
             <button
               type="submit"
-              className="btn btn-primary btn-lg"
+              className="btn btn-danger"
               disabled={isSubmitting}
             >
               {isSubmitting ? (
@@ -139,14 +148,19 @@ const LoginForm = () => {
                   Signing in...
                 </>
               ) : (
-                "Sign In"
+                <>
+                  <i className="bi bi-box-arrow-in-right me-2"></i>Sign In
+                </>
               )}
             </button>
           </div>
 
-          <div className="text-center mb-3">
+          <div className="text-center mb-4">
             <span className="text-muted">Don't have an account? </span>
-            <Link to="/register" className="text-decoration-none text-danger">
+            <Link
+              to="/register"
+              className="text-decoration-none text-danger fw-bold"
+            >
               Create an account
             </Link>
           </div>
@@ -154,7 +168,7 @@ const LoginForm = () => {
           <div className="position-relative my-4">
             <hr />
             <div className="position-absolute top-50 start-50 translate-middle px-3 bg-white">
-              <span className="text-muted">Or continue with</span>
+              <span className="text-muted small">Or continue with</span>
             </div>
           </div>
 

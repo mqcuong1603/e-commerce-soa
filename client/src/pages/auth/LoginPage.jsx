@@ -33,8 +33,6 @@ const LoginPage = () => {
     <div className="container my-5">
       <div className="row justify-content-center">
         <div className="col-md-8 col-lg-6 col-xl-5">
-          <h1 className="text-center mb-4 fw-bold">Sign in to your account</h1>
-
           {successMessage && (
             <div
               className="alert alert-success alert-dismissible fade show mb-4"

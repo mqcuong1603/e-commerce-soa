@@ -5,6 +5,7 @@ import { useCart } from "../contexts/CartContext";
 import CheckoutForm from "../components/checkout/CheckoutForm";
 import Loader from "../components/ui/Loader";
 import Button from "../components/ui/Button";
+import Card from "../components/ui/Card";
 
 /**
  * Checkout page component
@@ -75,8 +76,10 @@ const CheckoutPage = () => {
   // Loading state
   if (loading || cartLoading) {
     return (
-      <div className="container mx-auto px-4 py-12">
-        <Loader text="Preparing checkout..." />
+      <div className="container py-5">
+        <div className="text-center">
+          <Loader text="Preparing checkout..." centered />
+        </div>
       </div>
     );
   }
@@ -84,18 +87,23 @@ const CheckoutPage = () => {
   // Error state
   if (error || cartError) {
     return (
-      <div className="container mx-auto px-4 py-12">
-        <div className="max-w-4xl mx-auto bg-white p-8 rounded-lg shadow-md">
-          <h1 className="text-2xl font-bold text-center mb-8">Checkout</h1>
+      <div className="container py-5">
+        <div className="row justify-content-center">
+          <div className="col-lg-8">
+            <Card>
+              <h1 className="h3 fw-bold text-center mb-4">Checkout</h1>
 
-          <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-6">
-            <p>{error || cartError}</p>
-          </div>
+              <div className="alert alert-danger mb-4" role="alert">
+                <p className="mb-0">{error || cartError}</p>
+              </div>
 
-          <div className="flex justify-center">
-            <Button variant="primary" onClick={() => navigate("/cart")}>
-              Return to Cart
-            </Button>
+              <div className="text-center">
+                <Button variant="primary" onClick={() => navigate("/cart")}>
+                  <i className="bi bi-arrow-left me-2"></i>
+                  Return to Cart
+                </Button>
+              </div>
+            </Card>
           </div>
         </div>
       </div>
@@ -103,12 +111,12 @@ const CheckoutPage = () => {
   }
 
   return (
-    <div className="container mx-auto px-4 py-12">
-      <h1 className="text-2xl font-bold mb-8">Checkout</h1>
+    <div className="container py-5">
+      <h1 className="h3 fw-bold mb-4">Checkout</h1>
 
-      <div className="flex flex-col lg:flex-row gap-8">
+      <div className="row g-4">
         {/* Main checkout form */}
-        <div className="w-full lg:w-2/3">
+        <div className="col-lg-8">
           <CheckoutForm
             discountCode={discountCode}
             usingLoyaltyPoints={usingLoyaltyPoints}
@@ -117,99 +125,107 @@ const CheckoutPage = () => {
         </div>
 
         {/* Order summary */}
-        <div className="w-full lg:w-1/3">
-          <div className="bg-white rounded-lg shadow-md p-6">
-            <h2 className="text-lg font-bold mb-4">Order Summary</h2>
-
+        <div className="col-lg-4">
+          <Card title="Order Summary">
             {/* Cart items summary */}
-            <div className="max-h-80 overflow-y-auto mb-4">
-              <div className="divide-y">
-                {cart?.items?.map((item) => (
-                  <div
-                    key={item.productVariantId._id}
-                    className="py-3 flex items-center"
-                  >
-                    <div className="flex-shrink-0 w-16 h-16 border rounded-md overflow-hidden">
-                      {item.productVariantId.images &&
-                      item.productVariantId.images.length > 0 ? (
-                        <img
-                          src={item.productVariantId.images[0].imageUrl}
-                          alt={
-                            item.productVariantId.productId?.name || "Product"
-                          }
-                          className="w-full h-full object-contain"
-                        />
-                      ) : (
-                        <div className="w-full h-full bg-gray-200 flex items-center justify-center">
-                          <span className="text-gray-500 text-xs">
-                            No image
-                          </span>
+            <div className="card-body p-0">
+              <div style={{ maxHeight: "320px", overflowY: "auto" }}>
+                <ul className="list-group list-group-flush">
+                  {cart?.items?.map((item) => (
+                    <li
+                      key={item.productVariantId._id}
+                      className="list-group-item px-0"
+                    >
+                      <div className="d-flex align-items-center">
+                        <div
+                          style={{ width: "60px", height: "60px" }}
+                          className="border rounded me-3"
+                        >
+                          {item.productVariantId.images &&
+                          item.productVariantId.images.length > 0 ? (
+                            <img
+                              src={item.productVariantId.images[0].imageUrl}
+                              alt={
+                                item.productVariantId.productId?.name ||
+                                "Product"
+                              }
+                              className="img-fluid h-100 w-100 object-fit-contain p-1"
+                            />
+                          ) : (
+                            <div className="d-flex align-items-center justify-content-center h-100 bg-light">
+                              <span className="text-muted small">No image</span>
+                            </div>
+                          )}
                         </div>
-                      )}
-                    </div>
-                    <div className="ml-4 flex-grow">
-                      <div className="font-medium text-sm">
-                        {item.productVariantId.productId?.name || "Product"}
+                        <div className="flex-grow-1">
+                          <div className="fw-medium small">
+                            {item.productVariantId.productId?.name || "Product"}
+                          </div>
+                          <div className="text-muted small">
+                            {item.productVariantId?.name || "Variant"} ×{" "}
+                            {item.quantity}
+                          </div>
+                        </div>
+                        <div className="fw-medium">
+                          ₫{item.price.toLocaleString()}
+                        </div>
                       </div>
-                      <div className="text-xs text-gray-600">
-                        {item.productVariantId?.name || "Variant"}
-                      </div>
-                      <div className="text-xs text-gray-600">
-                        Qty: {item.quantity}
-                      </div>
-                    </div>
-                    <div className="text-sm font-medium">
-                      ₫{item.price.toLocaleString()}
-                    </div>
-                  </div>
-                ))}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+
+              {/* Price details */}
+              <div className="border-top pt-3 mt-3">
+                <ul className="list-group list-group-flush">
+                  <li className="list-group-item d-flex justify-content-between px-0">
+                    <span className="text-muted">Subtotal</span>
+                    <span>₫{cart?.subtotal?.toLocaleString() || "0"}</span>
+                  </li>
+                  <li className="list-group-item d-flex justify-content-between px-0">
+                    <span className="text-muted">Shipping</span>
+                    <span>₫35,000</span>
+                  </li>
+
+                  {discountCode && (
+                    <li className="list-group-item d-flex justify-content-between px-0 text-success">
+                      <span>Discount ({discountCode})</span>
+                      <span>
+                        -₫{(cart?.discountAmount || 0).toLocaleString()}
+                      </span>
+                    </li>
+                  )}
+
+                  {usingLoyaltyPoints && (
+                    <li className="list-group-item d-flex justify-content-between px-0 text-success">
+                      <span>Loyalty Points</span>
+                      <span>
+                        -₫{(cart?.loyaltyPointsValue || 0).toLocaleString()}
+                      </span>
+                    </li>
+                  )}
+
+                  <li className="list-group-item d-flex justify-content-between px-0 border-top">
+                    <span className="fw-bold">Total</span>
+                    <span className="fw-bold fs-5 text-danger">
+                      ₫{cart?.total?.toLocaleString() || "0"}
+                    </span>
+                  </li>
+                </ul>
+              </div>
+
+              <div className="mt-4">
+                <Button
+                  variant="outlined"
+                  fullWidth
+                  onClick={() => navigate("/cart")}
+                >
+                  <i className="bi bi-arrow-left me-2"></i>
+                  Return to Cart
+                </Button>
               </div>
             </div>
-
-            {/* Price details */}
-            <div className="border-t pt-4 space-y-2">
-              <div className="flex justify-between text-sm">
-                <span className="text-gray-600">Subtotal</span>
-                <span>₫{cart?.subtotal?.toLocaleString() || "0"}</span>
-              </div>
-
-              <div className="flex justify-between text-sm">
-                <span className="text-gray-600">Shipping</span>
-                <span>₫35,000</span>
-              </div>
-
-              {discountCode && (
-                <div className="flex justify-between text-sm text-green-600">
-                  <span>Discount ({discountCode})</span>
-                  <span>-₫{(cart?.discountAmount || 0).toLocaleString()}</span>
-                </div>
-              )}
-
-              {usingLoyaltyPoints && (
-                <div className="flex justify-between text-sm text-green-600">
-                  <span>Loyalty Points</span>
-                  <span>
-                    -₫{(cart?.loyaltyPointsValue || 0).toLocaleString()}
-                  </span>
-                </div>
-              )}
-
-              <div className="flex justify-between font-bold pt-2 border-t">
-                <span>Total</span>
-                <span>₫{cart?.total?.toLocaleString() || "0"}</span>
-              </div>
-            </div>
-
-            <div className="mt-6">
-              <Button
-                variant="outlined"
-                fullWidth
-                onClick={() => navigate("/cart")}
-              >
-                Return to Cart
-              </Button>
-            </div>
-          </div>
+          </Card>
         </div>
       </div>
     </div>

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useNavigate, useLocation, Link } from "react-router-dom";
 import productService from "../services/product.service";
 import ProductList from "../components/product/ProductList";
 import Sidebar from "../components/layout/Sidebar";
@@ -7,8 +7,8 @@ import Loader from "../components/ui/Loader";
 import Button from "../components/ui/Button";
 
 /**
- * Products Page component
- * Displays products with filtering, sorting, and pagination options
+ * Elegant Products Page component
+ * Features structured category navigation, beautiful filtering, and enhanced visual presentation
  */
 const ProductsPage = () => {
   const navigate = useNavigate();
@@ -43,11 +43,19 @@ const ProductsPage = () => {
   const [activeFilters, setActiveFilters] = useState([]);
   const [availableBrands, setAvailableBrands] = useState([]);
   const [availablePriceRanges, setAvailablePriceRanges] = useState([]);
+  const [categoryHierarchy, setCategoryHierarchy] = useState([]);
+  const [categoryPath, setCategoryPath] = useState([]);
+  const [showMobileFilters, setShowMobileFilters] = useState(false);
 
   // Fetch products on component mount or when filters/sort/pagination change
   useEffect(() => {
     fetchProducts();
   }, [filters, sort, pagination.page]);
+
+  // Fetch category hierarchy on mount
+  useEffect(() => {
+    fetchCategoryHierarchy();
+  }, []);
 
   // Update URL when filters or sort change
   useEffect(() => {
@@ -73,6 +81,59 @@ const ProductsPage = () => {
     }`;
     window.history.pushState({}, "", newUrl);
   }, [filters, sort, pagination.page, location.pathname]);
+
+  // Update category path when category filter changes
+  useEffect(() => {
+    if (filters.category && categoryHierarchy.length > 0) {
+      updateCategoryPath(filters.category);
+    } else {
+      setCategoryPath([]);
+    }
+  }, [filters.category, categoryHierarchy]);
+
+  // Fetch category hierarchy
+  const fetchCategoryHierarchy = async () => {
+    try {
+      const response = await productService.getCategoryTree();
+      if (response.success) {
+        setCategoryHierarchy(response.data || []);
+
+        // If category is already set, update the path
+        if (filters.category) {
+          updateCategoryPath(filters.category);
+        }
+      }
+    } catch (err) {
+      console.error("Error fetching category hierarchy:", err);
+    }
+  };
+
+  // Update the category path based on selected category
+  const updateCategoryPath = (categorySlug) => {
+    // This function would traverse the category hierarchy to find the path
+    // For this example, we'll create a simple placeholder
+    const findCategoryPath = (categories, slug, currentPath = []) => {
+      for (const category of categories) {
+        // Check if this is the category we're looking for
+        if (category.slug === slug) {
+          return [...currentPath, category];
+        }
+
+        // Check children if they exist
+        if (category.children?.length) {
+          const path = findCategoryPath(category.children, slug, [
+            ...currentPath,
+            category,
+          ]);
+          if (path) return path;
+        }
+      }
+      return null;
+    };
+
+    const path = findCategoryPath(categoryHierarchy, categorySlug) || [];
+    setCategoryPath(path);
+  };
 
   // Fetch products from API
   const fetchProducts = async () => {
@@ -175,6 +236,12 @@ const ProductsPage = () => {
   // Handle price range filter change
   const handlePriceRangeFilter = (minPrice, maxPrice) => {
     setFilters({ ...filters, minPrice, maxPrice });
+    setPagination({ ...pagination, page: 1 }); // Reset to first page
+  };
+
+  // Handle category filter change
+  const handleCategoryFilter = (category) => {
+    setFilters({ ...filters, category });
     setPagination({ ...pagination, page: 1 }); // Reset to first page
   };
 
@@ -291,147 +358,297 @@ const ProductsPage = () => {
   };
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      {/* Page title and breadcrumbs */}
-      <div className="mb-6">
-        <h1 className="text-2xl font-bold mb-2">Products</h1>
-        <div className="text-sm text-gray-500">
-          <span>Home</span> &gt; <span className="text-gray-700">Products</span>
-          {filters.category && (
-            <>
-              {" "}
-              &gt; <span className="text-gray-700">{filters.category}</span>
-            </>
+    <div className="container py-4">
+      {/* Page header with elegant styling */}
+      <div className="mb-4 pb-3 border-bottom">
+        <h1 className="display-6 fw-bold mb-2">
+          {filters.category
+            ? categoryPath[categoryPath.length - 1]?.name || filters.category
+            : "All Products"}
+        </h1>
+
+        {/* Enhanced breadcrumbs with path */}
+        <nav aria-label="breadcrumb" className="mb-2">
+          <ol className="breadcrumb mb-0">
+            <li className="breadcrumb-item">
+              <Link to="/" className="text-decoration-none">
+                Home
+              </Link>
+            </li>
+            <li className="breadcrumb-item">
+              <Link to="/products" className="text-decoration-none">
+                Products
+              </Link>
+            </li>
+
+            {/* Render category path as breadcrumbs */}
+            {categoryPath.map((cat, index) => (
+              <li
+                key={cat._id || index}
+                className={`breadcrumb-item ${
+                  index === categoryPath.length - 1 ? "active" : ""
+                }`}
+              >
+                {index === categoryPath.length - 1 ? (
+                  cat.name
+                ) : (
+                  <Link
+                    to={`/category/${cat.slug}`}
+                    className="text-decoration-none"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      handleCategoryFilter(cat.slug);
+                    }}
+                  >
+                    {cat.name}
+                  </Link>
+                )}
+              </li>
+            ))}
+          </ol>
+        </nav>
+
+        {/* Category description if available */}
+        {categoryPath.length > 0 &&
+          categoryPath[categoryPath.length - 1]?.description && (
+            <p className="text-muted mb-0">
+              {categoryPath[categoryPath.length - 1].description}
+            </p>
           )}
-        </div>
       </div>
 
-      <div className="flex flex-col lg:flex-row gap-8">
-        {/* Sidebar with filters */}
-        <div className="w-full lg:w-1/4">
-          <Sidebar className="sticky top-4" />
+      <div className="row g-4">
+        {/* Mobile filter toggle button */}
+        <div className="d-lg-none mb-3">
+          <button
+            className="btn btn-outline-secondary w-100 d-flex justify-content-between align-items-center"
+            onClick={() => setShowMobileFilters(!showMobileFilters)}
+          >
+            <span>
+              <i className="bi bi-funnel me-2"></i>
+              Filters & Sorting
+            </span>
+            {activeFilters.length > 0 && (
+              <span className="badge bg-danger rounded-pill">
+                {activeFilters.length}
+              </span>
+            )}
+          </button>
+        </div>
+
+        {/* Sidebar with elegant styling */}
+        <div className="col-lg-3 d-none d-lg-block">
+          <Sidebar
+            className="shadow-sm rounded"
+            priceRange={{
+              min: filters.minPrice ? parseInt(filters.minPrice) : 0,
+              max: filters.maxPrice ? parseInt(filters.maxPrice) : 100000000,
+            }}
+            selectedBrands={filters.brand ? [filters.brand] : []}
+            onBrandChange={(brand, isChecked) => {
+              handleBrandFilter(isChecked ? brand : "");
+            }}
+            onPriceRangeChange={handlePriceRangeFilter}
+            onResetFilters={handleClearAllFilters}
+          />
+        </div>
+
+        {/* Mobile filters offcanvas */}
+        <div
+          className={`offcanvas offcanvas-start ${
+            showMobileFilters ? "show" : ""
+          }`}
+          tabIndex="-1"
+          id="filterOffcanvas"
+        >
+          <div className="offcanvas-header">
+            <h5 className="offcanvas-title">Filters & Sorting</h5>
+            <button
+              type="button"
+              className="btn-close text-reset"
+              onClick={() => setShowMobileFilters(false)}
+              aria-label="Close"
+            ></button>
+          </div>
+          <div className="offcanvas-body">
+            <Sidebar
+              priceRange={{
+                min: filters.minPrice ? parseInt(filters.minPrice) : 0,
+                max: filters.maxPrice ? parseInt(filters.maxPrice) : 100000000,
+              }}
+              selectedBrands={filters.brand ? [filters.brand] : []}
+              onBrandChange={(brand, isChecked) => {
+                handleBrandFilter(isChecked ? brand : "");
+              }}
+              onPriceRangeChange={handlePriceRangeFilter}
+              onResetFilters={handleClearAllFilters}
+              onClose={() => setShowMobileFilters(false)}
+            />
+          </div>
         </div>
 
         {/* Main content */}
-        <div className="w-full lg:w-3/4">
-          {/* Active filters */}
+        <div className="col-lg-9">
+          {/* Active filters with elegant styling */}
           {activeFilters.length > 0 && (
-            <div className="mb-6 bg-gray-50 p-4 rounded-lg">
-              <div className="flex justify-between items-center mb-2">
-                <h2 className="text-sm font-medium text-gray-700">
-                  Active Filters
-                </h2>
-                <button
-                  onClick={handleClearAllFilters}
-                  className="text-sm text-primary-600 hover:text-primary-800"
-                >
-                  Clear All
-                </button>
-              </div>
-              <div className="flex flex-wrap gap-2">
-                {activeFilters.map((filter, index) => (
-                  <div
-                    key={index}
-                    className="bg-white px-3 py-1 rounded-full border border-gray-300 flex items-center text-sm"
+            <div className="card border-0 shadow-sm mb-4">
+              <div className="card-body">
+                <div className="d-flex justify-content-between align-items-center mb-2">
+                  <h6 className="mb-0 fw-bold">Active Filters</h6>
+                  <button
+                    onClick={handleClearAllFilters}
+                    className="btn btn-sm btn-link text-danger p-0 text-decoration-none"
                   >
-                    <span className="mr-2">{filter.label}</span>
-                    <button
-                      onClick={() => handleRemoveFilter(filter)}
-                      className="text-gray-500 hover:text-gray-700"
+                    <i className="bi bi-x-circle me-1"></i>
+                    Clear All
+                  </button>
+                </div>
+                <div className="d-flex flex-wrap gap-2">
+                  {activeFilters.map((filter, index) => (
+                    <div
+                      key={index}
+                      className="badge bg-light text-dark border px-3 py-2 rounded-pill d-flex align-items-center"
                     >
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        className="h-4 w-4"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke="currentColor"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M6 18L18 6M6 6l12 12"
-                        />
-                      </svg>
-                    </button>
-                  </div>
-                ))}
+                      <span className="me-2">{filter.label}</span>
+                      <button
+                        onClick={() => handleRemoveFilter(filter)}
+                        className="btn-close btn-close-sm"
+                        style={{ fontSize: "0.65rem" }}
+                        aria-label="Remove filter"
+                      ></button>
+                    </div>
+                  ))}
+                </div>
               </div>
             </div>
           )}
 
-          {/* Sort and count info */}
-          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
-            <div className="text-sm text-gray-500">
-              Showing{" "}
-              <span className="font-medium text-gray-700">
-                {products.length > 0
-                  ? (pagination.page - 1) * pagination.limit + 1
-                  : 0}
-                -
-                {Math.min(pagination.page * pagination.limit, pagination.total)}
-              </span>{" "}
-              of{" "}
-              <span className="font-medium text-gray-700">
-                {pagination.total}
-              </span>{" "}
-              products
-            </div>
-            <div className="flex items-center">
-              <label htmlFor="sort" className="mr-2 text-sm text-gray-600">
-                Sort by:
-              </label>
-              <select
-                id="sort"
-                className="border-gray-300 rounded-md shadow-sm focus:border-primary-500 focus:ring-primary-500"
-                value={getSortValue()}
-                onChange={handleSortChange}
-              >
-                <option value="newest">Newest First</option>
-                <option value="oldest">Oldest First</option>
-                <option value="priceAsc">Price Low to High</option>
-                <option value="priceDesc">Price High to Low</option>
-                <option value="nameAsc">Name A-Z</option>
-                <option value="nameDesc">Name Z-A</option>
-                <option value="rating">Highest Rated</option>
-              </select>
+          {/* Sort and count info with enhanced styling */}
+          <div className="card border-0 shadow-sm mb-4">
+            <div className="card-body p-3">
+              <div className="d-flex flex-column flex-sm-row justify-content-between align-items-start align-items-sm-center gap-3">
+                <div className="text-muted">
+                  <i className="bi bi-grid-3x3-gap me-2"></i>
+                  Showing{" "}
+                  <span className="fw-medium">
+                    {products.length > 0
+                      ? (pagination.page - 1) * pagination.limit + 1
+                      : 0}{" "}
+                    -{" "}
+                    {Math.min(
+                      pagination.page * pagination.limit,
+                      pagination.total
+                    )}
+                  </span>{" "}
+                  of <span className="fw-medium">{pagination.total}</span>{" "}
+                  products
+                </div>
+                <div className="d-flex align-items-center">
+                  <label htmlFor="sort" className="me-2 text-muted mb-0">
+                    Sort by:
+                  </label>
+                  <select
+                    id="sort"
+                    className="form-select form-select-sm"
+                    value={getSortValue()}
+                    onChange={handleSortChange}
+                    style={{ minWidth: "180px" }}
+                  >
+                    <option value="newest">Newest First</option>
+                    <option value="oldest">Oldest First</option>
+                    <option value="priceAsc">Price: Low to High</option>
+                    <option value="priceDesc">Price: High to Low</option>
+                    <option value="nameAsc">Name: A to Z</option>
+                    <option value="nameDesc">Name: Z to A</option>
+                    <option value="rating">Highest Rated</option>
+                  </select>
+                </div>
+              </div>
             </div>
           </div>
 
-          {/* Error message */}
+          {/* Error message with elegant styling */}
           {error && (
-            <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-6">
-              <p>{error}</p>
-              <button
-                onClick={() => fetchProducts()}
-                className="mt-2 bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700"
-              >
-                Try Again
-              </button>
+            <div
+              className="alert alert-danger border-0 shadow-sm mb-4 rounded-3"
+              role="alert"
+            >
+              <div className="d-flex align-items-center">
+                <div className="me-3">
+                  <i className="bi bi-exclamation-triangle-fill fs-3"></i>
+                </div>
+                <div>
+                  <h5 className="mb-1">Something went wrong</h5>
+                  <p className="mb-2">{error}</p>
+                  <Button
+                    variant="danger"
+                    size="small"
+                    onClick={() => fetchProducts()}
+                  >
+                    <i className="bi bi-arrow-clockwise me-2"></i>
+                    Try Again
+                  </Button>
+                </div>
+              </div>
             </div>
           )}
 
-          {/* Product list */}
-          {loading && products.length === 0 ? (
-            <div className="flex justify-center items-center h-96">
-              <Loader text="Loading products..." />
-            </div>
-          ) : (
-            <ProductList
-              products={products}
-              pagination={pagination}
-              loading={loading}
-              error={error}
-              onPageChange={handlePageChange}
-              emptyMessage={
-                activeFilters.length > 0
-                  ? "No products match your filters. Try adjusting or clearing them."
-                  : "No products found."
-              }
-            />
-          )}
+          {/* Product list with elegant fade-in animation */}
+          <div className="fade-in">
+            {loading && products.length === 0 ? (
+              <div
+                className="d-flex justify-content-center align-items-center py-5"
+                style={{ minHeight: "400px" }}
+              >
+                <div className="text-center">
+                  <Loader
+                    color="primary"
+                    size="large"
+                    text="Loading products..."
+                    centered
+                  />
+                  <p className="text-muted mt-3 fst-italic">
+                    Finding the best products for you...
+                  </p>
+                </div>
+              </div>
+            ) : (
+              <ProductList
+                products={products}
+                pagination={pagination}
+                loading={loading}
+                error={error}
+                onPageChange={handlePageChange}
+                emptyMessage={
+                  activeFilters.length > 0
+                    ? "No products match your filters. Try adjusting or clearing them."
+                    : "No products found."
+                }
+              />
+            )}
+          </div>
         </div>
       </div>
+
+      {/* CSS for animations */}
+      <style jsx>{`
+        .fade-in {
+          animation: fadeIn 0.4s ease-in;
+        }
+
+        @keyframes fadeIn {
+          from {
+            opacity: 0;
+          }
+          to {
+            opacity: 1;
+          }
+        }
+
+        .offcanvas-backdrop {
+          z-index: 1040;
+        }
+      `}</style>
     </div>
   );
 };

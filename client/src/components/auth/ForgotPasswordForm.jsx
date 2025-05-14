@@ -42,28 +42,28 @@ const ForgotPasswordForm = () => {
   };
 
   return (
-    <div className="card shadow-sm border-0">
+    <div className="card shadow border-0">
       <div className="card-body p-4">
         {submitted ? (
           <div className="text-center py-4">
             <div className="mb-4">
               <i
-                className="bi bi-check-circle text-success"
-                style={{ fontSize: "3rem" }}
+                className="bi bi-check-circle-fill text-success"
+                style={{ fontSize: "3.5rem" }}
               ></i>
             </div>
-            <h2 className="h4 mb-3">Check Your Email</h2>
-            <p className="mb-4">
+            <h2 className="fs-4 fw-bold mb-3">Check Your Email</h2>
+            <p className="mb-3">
               We've sent a password reset link to: <strong>{email}</strong>
             </p>
-            <p className="text-muted mb-4">
+            <p className="text-muted small mb-4">
               If you don't receive an email within a few minutes, please check
               your spam folder or try again.
             </p>
             <div className="d-grid gap-2">
               <button
                 onClick={() => setSubmitted(false)}
-                className="btn btn-outline-primary"
+                className="btn btn-outline-danger"
               >
                 Try Again
               </button>
@@ -74,41 +74,46 @@ const ForgotPasswordForm = () => {
           </div>
         ) : (
           <>
-            <h2 className="card-title text-center mb-4 fw-bold">
+            <h2 className="card-title text-center mb-3 fw-bold">
               Reset Your Password
             </h2>
 
-            <p className="card-text text-muted mb-4">
-              Enter your email address and we'll send you a link to reset your
-              password.
+            <p className="card-text text-muted mb-4 text-center">
+              Enter your email address to receive a password reset link
             </p>
 
             {error && (
-              <div className="alert alert-danger py-2" role="alert">
+              <div className="alert alert-danger py-2 mb-3" role="alert">
+                <i className="bi bi-exclamation-triangle-fill me-2"></i>
                 {error}
               </div>
             )}
 
             <form onSubmit={handleSubmit}>
-              <div className="mb-4">
+              <div className="mb-3">
                 <label htmlFor="email" className="form-label">
                   Email Address
                 </label>
-                <input
-                  type="email"
-                  className="form-control form-control-lg"
-                  id="email"
-                  placeholder="you@example.com"
-                  value={email}
-                  onChange={handleChange}
-                  required
-                />
+                <div className="input-group mb-1">
+                  <span className="input-group-text">
+                    <i className="bi bi-envelope"></i>
+                  </span>
+                  <input
+                    type="email"
+                    className="form-control"
+                    id="email"
+                    placeholder="you@example.com"
+                    value={email}
+                    onChange={handleChange}
+                    required
+                  />
+                </div>
               </div>
 
-              <div className="d-grid mb-4">
+              <div className="d-grid mb-3">
                 <button
                   type="submit"
-                  className="btn btn-primary btn-lg"
+                  className="btn btn-danger"
                   disabled={isSubmitting}
                 >
                   {isSubmitting ? (
@@ -127,7 +132,7 @@ const ForgotPasswordForm = () => {
               </div>
 
               <div className="text-center">
-                <Link to="/login" className="text-decoration-none">
+                <Link to="/login" className="text-decoration-none text-danger">
                   <i className="bi bi-arrow-left me-1"></i> Back to Login
                 </Link>
               </div>

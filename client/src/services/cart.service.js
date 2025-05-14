@@ -1,7 +1,7 @@
 import api from "./api";
 
 /**
- * Cart service module
+ * Cart service module for handling all cart-related API operations
  */
 const cartService = {
   /**
@@ -19,7 +19,26 @@ const cartService = {
    * @returns {Promise<Object>} Updated cart
    */
   addItem: async (productVariantId, quantity) => {
-    return api.post("/cart/items", { productVariantId, quantity });
+    try {
+      const response = await api.post("/cart/items", {
+        productVariantId,
+        quantity,
+      });
+      return response;
+    } catch (error) {
+      // Special handling for inventory errors
+      if (error.isInventoryError) {
+        return {
+          success: false,
+          message: error.message || "Not enough inventory available",
+          isInventoryError: true,
+        };
+      }
+      return {
+        success: false,
+        message: error.message || "Failed to add item to cart",
+      };
+    }
   },
 
   /**
@@ -29,7 +48,25 @@ const cartService = {
    * @returns {Promise<Object>} Updated cart
    */
   updateItem: async (productVariantId, quantity) => {
-    return api.put(`/cart/items/${productVariantId}`, { quantity });
+    try {
+      const response = await api.put(`/cart/items/${productVariantId}`, {
+        quantity,
+      });
+      return response;
+    } catch (error) {
+      // Special handling for inventory errors
+      if (error.isInventoryError) {
+        return {
+          success: false,
+          message: error.message || "Not enough inventory available",
+          isInventoryError: true,
+        };
+      }
+      return {
+        success: false,
+        message: error.message || "Failed to update cart item",
+      };
+    }
   },
 
   /**
@@ -55,7 +92,23 @@ const cartService = {
    * @returns {Promise<Object>} Discount details and calculated amount
    */
   verifyDiscount: async (code) => {
-    return api.post("/orders/verify-discount", { code });
+    if (!code || !code.trim()) {
+      return {
+        success: false,
+        message: "Please enter a valid discount code",
+      };
+    }
+
+    // Enforce 5-character alphanumeric requirement
+    const codeRegex = /^[A-Z0-9]{5}$/;
+    if (!codeRegex.test(code.toUpperCase())) {
+      return {
+        success: false,
+        message: "Discount code must be 5 alphanumeric characters",
+      };
+    }
+
+    return api.post("/orders/verify-discount", { code: code.toUpperCase() });
   },
 
   /**
@@ -64,7 +117,46 @@ const cartService = {
    * @returns {Promise<Object>} Points value and new total
    */
   applyLoyaltyPoints: async (points) => {
+    if (!points || isNaN(points) || points <= 0) {
+      return {
+        success: false,
+        message: "Please enter a valid number of points",
+      };
+    }
+
     return api.post("/orders/user/apply-loyalty-points", { points });
+  },
+
+  /**
+   * Proceed to checkout with current cart
+   * This method creates an order from the current cart
+   * @param {Object} checkoutData - Checkout data including shipping address, payment info
+   * @returns {Promise<Object>} Order confirmation data
+   */
+  checkout: async (checkoutData) => {
+    if (!checkoutData.shippingAddress) {
+      return {
+        success: false,
+        message: "Shipping address is required",
+      };
+    }
+
+    if (!checkoutData.paymentMethod) {
+      return {
+        success: false,
+        message: "Payment method is required",
+      };
+    }
+
+    // For guest checkout, ensure email is provided
+    if (!checkoutData.email && !localStorage.getItem("token")) {
+      return {
+        success: false,
+        message: "Email is required for guest checkout",
+      };
+    }
+
+    return api.post("/orders", checkoutData);
   },
 };
 

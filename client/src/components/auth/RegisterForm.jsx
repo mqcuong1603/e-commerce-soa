@@ -10,14 +10,15 @@ const RegisterForm = () => {
   const [formData, setFormData] = useState({
     fullName: "",
     email: "",
-    phoneNumber: "",
-    password: "",
-    confirmPassword: "",
-    addressLine1: "",
-    city: "",
-    state: "",
-    postalCode: "",
-    country: "Vietnam",
+    address: {
+      phoneNumber: "",
+      addressLine1: "",
+      addressLine2: "",
+      city: "",
+      state: "",
+      postalCode: "",
+      country: "Vietnam",
+    },
   });
   const [errors, setErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -25,8 +26,22 @@ const RegisterForm = () => {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData({ ...formData, [name]: value });
 
+    // Handle nested address fields
+    if (name.startsWith("address.")) {
+      const addressField = name.split(".")[1];
+      setFormData({
+        ...formData,
+        address: {
+          ...formData.address,
+          [addressField]: value,
+        },
+      });
+    } else {
+      setFormData({ ...formData, [name]: value });
+    }
+
+    // Clear errors
     if (errors[name]) {
       setErrors({ ...errors, [name]: "" });
     }
@@ -48,16 +63,6 @@ const RegisterForm = () => {
       newErrors.email = "Email is invalid";
     }
 
-    if (!formData.password) {
-      newErrors.password = "Password is required";
-    } else if (formData.password.length < 6) {
-      newErrors.password = "Password must be at least 6 characters";
-    }
-
-    if (formData.password !== formData.confirmPassword) {
-      newErrors.confirmPassword = "Passwords do not match";
-    }
-
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -65,16 +70,24 @@ const RegisterForm = () => {
   const validateStep2 = () => {
     const newErrors = {};
 
-    if (!formData.phoneNumber) {
-      newErrors.phoneNumber = "Phone number is required";
+    if (!formData.address.phoneNumber) {
+      newErrors["address.phoneNumber"] = "Phone number is required";
     }
 
-    if (!formData.addressLine1) {
-      newErrors.addressLine1 = "Address is required";
+    if (!formData.address.addressLine1) {
+      newErrors["address.addressLine1"] = "Address is required";
     }
 
-    if (!formData.city) {
-      newErrors.city = "City is required";
+    if (!formData.address.city) {
+      newErrors["address.city"] = "City is required";
+    }
+
+    if (!formData.address.state) {
+      newErrors["address.state"] = "State/Province is required";
+    }
+
+    if (!formData.address.postalCode) {
+      newErrors["address.postalCode"] = "Postal code is required";
     }
 
     setErrors(newErrors);
@@ -113,7 +126,7 @@ const RegisterForm = () => {
         navigate("/login", {
           state: {
             successMessage:
-              "Registration successful! Please check your email to verify your account.",
+              "Registration successful! Please check your email to verify your account and set your password.",
           },
         });
       } else {
@@ -129,14 +142,15 @@ const RegisterForm = () => {
   };
 
   return (
-    <div className="card shadow-sm border-0">
+    <div className="card shadow border-0">
       <div className="card-body p-4">
         <h2 className="card-title text-center mb-4 fw-bold">
           Create an Account
         </h2>
 
         {registerError && (
-          <div className="alert alert-danger py-2" role="alert">
+          <div className="alert alert-danger py-2 mb-4" role="alert">
+            <i className="bi bi-exclamation-triangle-fill me-2"></i>
             {registerError}
           </div>
         )}
@@ -144,7 +158,7 @@ const RegisterForm = () => {
         <div className="mb-4">
           <div className="progress" style={{ height: "8px" }}>
             <div
-              className="progress-bar bg-success"
+              className="progress-bar bg-danger"
               role="progressbar"
               style={{ width: step === 1 ? "50%" : "100%" }}
               aria-valuenow={step === 1 ? 50 : 100}
@@ -153,15 +167,13 @@ const RegisterForm = () => {
             ></div>
           </div>
           <div className="d-flex justify-content-between mt-1">
-            <span
-              className={`small ${step >= 1 ? "text-success fw-bold" : ""}`}
-            >
-              Account Details
+            <span className={`small ${step >= 1 ? "text-danger fw-bold" : ""}`}>
+              <i className="bi bi-person-circle me-1"></i>
+              Account Info
             </span>
-            <span
-              className={`small ${step >= 2 ? "text-success fw-bold" : ""}`}
-            >
-              Personal Information
+            <span className={`small ${step >= 2 ? "text-danger fw-bold" : ""}`}>
+              <i className="bi bi-geo-alt me-1"></i>
+              Shipping Address
             </span>
           </div>
         </div>
@@ -173,195 +185,236 @@ const RegisterForm = () => {
                 <label htmlFor="fullName" className="form-label">
                   Full Name
                 </label>
-                <input
-                  type="text"
-                  className={`form-control ${
-                    errors.fullName ? "is-invalid" : ""
-                  }`}
-                  id="fullName"
-                  name="fullName"
-                  value={formData.fullName}
-                  onChange={handleChange}
-                  required
-                />
-                {errors.fullName && (
-                  <div className="invalid-feedback">{errors.fullName}</div>
-                )}
-              </div>
-
-              <div className="mb-3">
-                <label htmlFor="email" className="form-label">
-                  Email
-                </label>
-                <input
-                  type="email"
-                  className={`form-control ${errors.email ? "is-invalid" : ""}`}
-                  id="email"
-                  name="email"
-                  value={formData.email}
-                  onChange={handleChange}
-                  required
-                />
-                {errors.email && (
-                  <div className="invalid-feedback">{errors.email}</div>
-                )}
-              </div>
-
-              <div className="mb-3">
-                <label htmlFor="password" className="form-label">
-                  Password
-                </label>
-                <input
-                  type="password"
-                  className={`form-control ${
-                    errors.password ? "is-invalid" : ""
-                  }`}
-                  id="password"
-                  name="password"
-                  value={formData.password}
-                  onChange={handleChange}
-                  required
-                />
-                {errors.password && (
-                  <div className="invalid-feedback">{errors.password}</div>
-                )}
-                <div className="form-text">
-                  Password must be at least 6 characters
+                <div className="input-group mb-1">
+                  <span className="input-group-text">
+                    <i className="bi bi-person"></i>
+                  </span>
+                  <input
+                    type="text"
+                    className={`form-control ${
+                      errors.fullName ? "is-invalid" : ""
+                    }`}
+                    id="fullName"
+                    name="fullName"
+                    placeholder="John Doe"
+                    value={formData.fullName}
+                    onChange={handleChange}
+                    required
+                  />
+                  {errors.fullName && (
+                    <div className="invalid-feedback">{errors.fullName}</div>
+                  )}
                 </div>
               </div>
 
               <div className="mb-4">
-                <label htmlFor="confirmPassword" className="form-label">
-                  Confirm Password
+                <label htmlFor="email" className="form-label">
+                  Email
                 </label>
-                <input
-                  type="password"
-                  className={`form-control ${
-                    errors.confirmPassword ? "is-invalid" : ""
-                  }`}
-                  id="confirmPassword"
-                  name="confirmPassword"
-                  value={formData.confirmPassword}
-                  onChange={handleChange}
-                  required
-                />
-                {errors.confirmPassword && (
-                  <div className="invalid-feedback">
-                    {errors.confirmPassword}
-                  </div>
-                )}
+                <div className="input-group mb-1">
+                  <span className="input-group-text">
+                    <i className="bi bi-envelope"></i>
+                  </span>
+                  <input
+                    type="email"
+                    className={`form-control ${
+                      errors.email ? "is-invalid" : ""
+                    }`}
+                    id="email"
+                    name="email"
+                    placeholder="you@example.com"
+                    value={formData.email}
+                    onChange={handleChange}
+                    required
+                  />
+                  {errors.email && (
+                    <div className="invalid-feedback">{errors.email}</div>
+                  )}
+                </div>
+                <div className="form-text">
+                  <i className="bi bi-info-circle me-1"></i>
+                  You'll receive a verification email to set your password
+                </div>
               </div>
 
               <div className="d-grid">
                 <button
                   type="button"
-                  className="btn btn-primary btn-lg"
+                  className="btn btn-danger btn-lg"
                   onClick={handleNext}
                 >
-                  Next
+                  <i className="bi bi-arrow-right-circle me-2"></i>
+                  Continue to Address Details
                 </button>
               </div>
             </>
           ) : (
             <>
               <div className="mb-3">
-                <label htmlFor="phoneNumber" className="form-label">
+                <label htmlFor="address.phoneNumber" className="form-label">
                   Phone Number
                 </label>
-                <input
-                  type="tel"
-                  className={`form-control ${
-                    errors.phoneNumber ? "is-invalid" : ""
-                  }`}
-                  id="phoneNumber"
-                  name="phoneNumber"
-                  value={formData.phoneNumber}
-                  onChange={handleChange}
-                  required
-                />
-                {errors.phoneNumber && (
-                  <div className="invalid-feedback">{errors.phoneNumber}</div>
-                )}
-              </div>
-
-              <div className="mb-3">
-                <label htmlFor="addressLine1" className="form-label">
-                  Address
-                </label>
-                <input
-                  type="text"
-                  className={`form-control ${
-                    errors.addressLine1 ? "is-invalid" : ""
-                  }`}
-                  id="addressLine1"
-                  name="addressLine1"
-                  value={formData.addressLine1}
-                  onChange={handleChange}
-                  required
-                />
-                {errors.addressLine1 && (
-                  <div className="invalid-feedback">{errors.addressLine1}</div>
-                )}
-              </div>
-
-              <div className="row mb-3">
-                <div className="col">
-                  <label htmlFor="city" className="form-label">
-                    City
-                  </label>
+                <div className="input-group mb-1">
+                  <span className="input-group-text">
+                    <i className="bi bi-telephone"></i>
+                  </span>
                   <input
-                    type="text"
+                    type="tel"
                     className={`form-control ${
-                      errors.city ? "is-invalid" : ""
+                      errors["address.phoneNumber"] ? "is-invalid" : ""
                     }`}
-                    id="city"
-                    name="city"
-                    value={formData.city}
+                    id="address.phoneNumber"
+                    name="address.phoneNumber"
+                    placeholder="(+84) 123 456 789"
+                    value={formData.address.phoneNumber}
                     onChange={handleChange}
                     required
                   />
-                  {errors.city && (
-                    <div className="invalid-feedback">{errors.city}</div>
+                  {errors["address.phoneNumber"] && (
+                    <div className="invalid-feedback">
+                      {errors["address.phoneNumber"]}
+                    </div>
                   )}
                 </div>
-                <div className="col">
-                  <label htmlFor="state" className="form-label">
-                    State/Province
-                  </label>
+              </div>
+
+              <div className="mb-3">
+                <label htmlFor="address.addressLine1" className="form-label">
+                  Street Address
+                </label>
+                <div className="input-group mb-1">
+                  <span className="input-group-text">
+                    <i className="bi bi-house"></i>
+                  </span>
                   <input
                     type="text"
-                    className="form-control"
-                    id="state"
-                    name="state"
-                    value={formData.state}
+                    className={`form-control ${
+                      errors["address.addressLine1"] ? "is-invalid" : ""
+                    }`}
+                    id="address.addressLine1"
+                    name="address.addressLine1"
+                    placeholder="123 Main Street"
+                    value={formData.address.addressLine1}
                     onChange={handleChange}
+                    required
                   />
+                  {errors["address.addressLine1"] && (
+                    <div className="invalid-feedback">
+                      {errors["address.addressLine1"]}
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              <div className="mb-3">
+                <label htmlFor="address.addressLine2" className="form-label">
+                  Apartment, Suite, etc. (optional)
+                </label>
+                <input
+                  type="text"
+                  className="form-control"
+                  id="address.addressLine2"
+                  name="address.addressLine2"
+                  placeholder="Apt #123, Floor 4, etc."
+                  value={formData.address.addressLine2}
+                  onChange={handleChange}
+                />
+              </div>
+
+              <div className="row mb-3">
+                <div className="col-md-6">
+                  <label htmlFor="address.city" className="form-label">
+                    City
+                  </label>
+                  <div className="input-group mb-1">
+                    <span className="input-group-text">
+                      <i className="bi bi-building"></i>
+                    </span>
+                    <input
+                      type="text"
+                      className={`form-control ${
+                        errors["address.city"] ? "is-invalid" : ""
+                      }`}
+                      id="address.city"
+                      name="address.city"
+                      placeholder="Ho Chi Minh City"
+                      value={formData.address.city}
+                      onChange={handleChange}
+                      required
+                    />
+                    {errors["address.city"] && (
+                      <div className="invalid-feedback">
+                        {errors["address.city"]}
+                      </div>
+                    )}
+                  </div>
+                </div>
+                <div className="col-md-6">
+                  <label htmlFor="address.state" className="form-label">
+                    State/Province
+                  </label>
+                  <div className="input-group mb-1">
+                    <span className="input-group-text">
+                      <i className="bi bi-map"></i>
+                    </span>
+                    <input
+                      type="text"
+                      className={`form-control ${
+                        errors["address.state"] ? "is-invalid" : ""
+                      }`}
+                      id="address.state"
+                      name="address.state"
+                      placeholder="Ho Chi Minh"
+                      value={formData.address.state}
+                      onChange={handleChange}
+                      required
+                    />
+                    {errors["address.state"] && (
+                      <div className="invalid-feedback">
+                        {errors["address.state"]}
+                      </div>
+                    )}
+                  </div>
                 </div>
               </div>
 
               <div className="row mb-4">
-                <div className="col">
-                  <label htmlFor="postalCode" className="form-label">
+                <div className="col-md-6">
+                  <label htmlFor="address.postalCode" className="form-label">
                     Postal Code
                   </label>
-                  <input
-                    type="text"
-                    className="form-control"
-                    id="postalCode"
-                    name="postalCode"
-                    value={formData.postalCode}
-                    onChange={handleChange}
-                  />
+                  <div className="input-group mb-1">
+                    <span className="input-group-text">
+                      <i className="bi bi-mailbox"></i>
+                    </span>
+                    <input
+                      type="text"
+                      className={`form-control ${
+                        errors["address.postalCode"] ? "is-invalid" : ""
+                      }`}
+                      id="address.postalCode"
+                      name="address.postalCode"
+                      placeholder="70000"
+                      value={formData.address.postalCode}
+                      onChange={handleChange}
+                      required
+                    />
+                    {errors["address.postalCode"] && (
+                      <div className="invalid-feedback">
+                        {errors["address.postalCode"]}
+                      </div>
+                    )}
+                  </div>
                 </div>
-                <div className="col">
-                  <label htmlFor="country" className="form-label">
+                <div className="col-md-6">
+                  <label htmlFor="address.country" className="form-label">
                     Country
                   </label>
                   <select
                     className="form-select"
-                    id="country"
-                    name="country"
-                    value={formData.country}
+                    id="address.country"
+                    name="address.country"
+                    value={formData.address.country}
                     onChange={handleChange}
                   >
                     <option value="Vietnam">Vietnam</option>
@@ -379,11 +432,12 @@ const RegisterForm = () => {
                   className="btn btn-outline-secondary flex-grow-1"
                   onClick={handlePrev}
                 >
+                  <i className="bi bi-arrow-left me-2"></i>
                   Back
                 </button>
                 <button
                   type="submit"
-                  className="btn btn-primary flex-grow-1"
+                  className="btn btn-danger flex-grow-1"
                   disabled={isSubmitting}
                 >
                   {isSubmitting ? (
@@ -393,10 +447,13 @@ const RegisterForm = () => {
                         role="status"
                         aria-hidden="true"
                       ></span>
-                      Registering...
+                      Creating Account...
                     </>
                   ) : (
-                    "Register"
+                    <>
+                      <i className="bi bi-person-plus me-2"></i>
+                      Register
+                    </>
                   )}
                 </button>
               </div>
@@ -405,7 +462,10 @@ const RegisterForm = () => {
 
           <div className="text-center mt-4">
             <span className="text-muted">Already have an account? </span>
-            <Link to="/login" className="text-decoration-none text-danger">
+            <Link
+              to="/login"
+              className="text-decoration-none text-danger fw-bold"
+            >
               Sign in
             </Link>
           </div>
@@ -415,7 +475,7 @@ const RegisterForm = () => {
               <div className="position-relative my-4">
                 <hr />
                 <div className="position-absolute top-50 start-50 translate-middle px-3 bg-white">
-                  <span className="text-muted">Or register with</span>
+                  <span className="text-muted small">Or register with</span>
                 </div>
               </div>
 

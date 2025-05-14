@@ -1,13 +1,14 @@
-import React, { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import React, { useState, useEffect } from "react";
 import PropTypes from "prop-types";
-import { useCart } from "../../contexts/CartContext";
+import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../../contexts/AuthContext";
+import { useCart } from "../../contexts/CartContext";
 import Button from "../ui/Button";
+import { toast } from "react-toastify";
 
 /**
  * Cart summary component displaying cart totals, discount code input, and checkout button
- * Styled with Bootstrap
+ * Enhanced with Bootstrap 5 utilities for vibrant, colorful design and proper loyalty points handling
  */
 const CartSummary = ({
   onApplyDiscount,
@@ -15,16 +16,20 @@ const CartSummary = ({
   discountAmount,
   loyaltyPoints,
 }) => {
-  const { cart } = useCart();
-  const { isAuthenticated } = useAuth();
+  const { cart, applyLoyaltyPoints } = useCart();
+  const { isAuthenticated, user } = useAuth();
   const navigate = useNavigate();
 
   const [code, setCode] = useState(discountCode || "");
   const [applyingDiscount, setApplyingDiscount] = useState(false);
   const [discountError, setDiscountError] = useState("");
+  const [discountSuccess, setDiscountSuccess] = useState("");
   const [usingLoyaltyPoints, setUsingLoyaltyPoints] = useState(!!loyaltyPoints);
+  const [pointsToUse, setPointsToUse] = useState(loyaltyPoints || 0);
+  const [loyaltyPointsEffect, setLoyaltyPointsEffect] = useState(null);
+  const [applyingPoints, setApplyingPoints] = useState(false);
 
-  // Format price with comma for thousands
+  // Format price with comma for thousands and currency symbol
   const formatPrice = (price) => {
     return price?.toLocaleString("en-US") || "0";
   };
@@ -35,12 +40,15 @@ const CartSummary = ({
 
   // Calculate user loyalty points value (if authenticated)
   const availableLoyaltyPoints = isAuthenticated
-    ? cart.userLoyaltyPoints || 0
+    ? user?.loyaltyPoints || cart.userLoyaltyPoints || 0
     : 0;
-  const pointsValue =
-    usingLoyaltyPoints && isAuthenticated
-      ? Math.min(availableLoyaltyPoints * 1000, subtotal)
-      : 0;
+
+  // Use loyalty points effect or calculate directly for preview
+  const pointsValue = loyaltyPointsEffect
+    ? loyaltyPointsEffect.pointsValue
+    : usingLoyaltyPoints && isAuthenticated
+    ? Math.min(pointsToUse * 1000, subtotal - (discountAmount || 0))
+    : 0;
 
   // Calculate final total
   const total = Math.max(
@@ -50,9 +58,17 @@ const CartSummary = ({
 
   // Handle discount code input
   const handleDiscountChange = (e) => {
-    setCode(e.target.value.toUpperCase());
+    const newCode = e.target.value.toUpperCase();
+    setCode(newCode);
+
+    // Clear any previous errors when typing
     if (discountError) {
       setDiscountError("");
+    }
+
+    // Clear success message when changing code
+    if (discountSuccess && newCode !== discountCode) {
+      setDiscountSuccess("");
     }
   };
 
@@ -63,12 +79,26 @@ const CartSummary = ({
       return;
     }
 
+    // Basic client-side validation for 5-character alphanumeric code
+    const codeRegex = /^[A-Z0-9]{5}$/;
+    if (!codeRegex.test(code)) {
+      setDiscountError("Discount code must be 5 alphanumeric characters");
+      return;
+    }
+
     setApplyingDiscount(true);
     setDiscountError("");
 
     try {
       const result = await onApplyDiscount(code);
-      if (!result.success) {
+      if (result.success) {
+        setDiscountSuccess(`Code "${code}" applied successfully!`);
+
+        // Recalculate loyalty points effect if points are being used
+        if (usingLoyaltyPoints && pointsToUse > 0) {
+          handleApplyLoyaltyPoints();
+        }
+      } else {
         setDiscountError(result.message || "Invalid discount code");
       }
     } catch (error) {
@@ -78,15 +108,76 @@ const CartSummary = ({
     }
   };
 
+  // Handle loyalty points input change
+  const handlePointsChange = (e) => {
+    let points = parseInt(e.target.value, 10);
+
+    // Validate input - ensure it's a number and not greater than available points
+    if (isNaN(points) || points < 0) {
+      points = 0;
+    } else if (points > availableLoyaltyPoints) {
+      points = availableLoyaltyPoints;
+    }
+
+    setPointsToUse(points);
+  };
+
   // Handle loyalty points toggle
   const handleLoyaltyPointsToggle = () => {
-    setUsingLoyaltyPoints(!usingLoyaltyPoints);
+    const newState = !usingLoyaltyPoints;
+    setUsingLoyaltyPoints(newState);
+
+    // If turning on points, calculate effect
+    if (newState && availableLoyaltyPoints > 0) {
+      handleApplyLoyaltyPoints();
+    } else {
+      // If turning off points, clear effect
+      setLoyaltyPointsEffect(null);
+    }
   };
+
+  // Apply loyalty points to see effect
+  const handleApplyLoyaltyPoints = async () => {
+    if (!isAuthenticated || !usingLoyaltyPoints || pointsToUse <= 0) {
+      setLoyaltyPointsEffect(null);
+      return;
+    }
+
+    setApplyingPoints(true);
+
+    try {
+      const result = await applyLoyaltyPoints(pointsToUse);
+
+      if (result.success) {
+        setLoyaltyPointsEffect(result.data);
+      } else {
+        toast.error(result.error || "Could not apply loyalty points");
+        setLoyaltyPointsEffect(null);
+      }
+    } catch (error) {
+      console.error("Error applying loyalty points", error);
+      setLoyaltyPointsEffect(null);
+    } finally {
+      setApplyingPoints(false);
+    }
+  };
+
+  // Apply loyalty points when points to use changes and toggle is on
+  useEffect(() => {
+    if (usingLoyaltyPoints && isAuthenticated) {
+      const delayDebounceFn = setTimeout(() => {
+        handleApplyLoyaltyPoints();
+      }, 500);
+
+      return () => clearTimeout(delayDebounceFn);
+    }
+  }, [pointsToUse, usingLoyaltyPoints, discountAmount]);
 
   // Handle proceed to checkout
   const handleCheckout = () => {
     // If cart is empty, prevent checkout
     if (!cart.items || cart.items.length === 0) {
+      toast.error("Your cart is empty");
       return;
     }
 
@@ -94,75 +185,101 @@ const CartSummary = ({
     navigate("/checkout", {
       state: {
         discountCode: discountCode,
+        discountAmount: discountAmount,
         usingLoyaltyPoints: usingLoyaltyPoints,
+        loyaltyPoints: usingLoyaltyPoints ? pointsToUse : 0,
       },
     });
   };
 
   return (
-    <div className="card shadow-sm">
-      <div className="card-header bg-white py-3">
-        <h5 className="card-title mb-0">Order Summary</h5>
+    <div className="card border-0 shadow-sm rounded-3 overflow-hidden">
+      {/* Colorful header with gradient */}
+      <div
+        className="card-header border-0 py-3"
+        style={{ background: "linear-gradient(45deg, #dc3545, #fd7e14)" }}
+      >
+        <h5 className="card-title mb-0 text-white fw-bold">
+          <i className="bi bi-receipt me-2"></i>
+          Order Summary
+        </h5>
       </div>
-      <div className="card-body">
-        {/* Cart totals */}
-        <ul className="list-group list-group-flush mb-3">
-          <li className="list-group-item d-flex justify-content-between px-0">
-            <span>Subtotal</span>
+
+      <div className="card-body p-4">
+        {/* Cart totals with enhanced styling */}
+        <ul className="list-group list-group-flush mb-4">
+          <li className="list-group-item d-flex justify-content-between px-0 py-3 border-0">
+            <span className="text-muted">Subtotal</span>
             <span className="fw-medium">₫{formatPrice(subtotal)}</span>
           </li>
 
-          <li className="list-group-item d-flex justify-content-between px-0">
-            <span>Shipping</span>
+          <li className="list-group-item d-flex justify-content-between px-0 py-3 border-0">
+            <span className="text-muted">Shipping</span>
             <span className="fw-medium">₫{formatPrice(shipping)}</span>
           </li>
 
           {discountAmount > 0 && (
-            <li className="list-group-item d-flex justify-content-between px-0 text-success">
-              <span>Discount</span>
-              <span>-₫{formatPrice(discountAmount)}</span>
+            <li className="list-group-item d-flex justify-content-between px-0 py-3 border-0">
+              <span className="text-success d-flex align-items-center">
+                <i className="bi bi-tag-fill me-2"></i>
+                Discount
+                {discountCode && <span className="ms-2">({discountCode})</span>}
+              </span>
+              <span className="text-success fw-medium">
+                -₫{formatPrice(discountAmount)}
+              </span>
             </li>
           )}
 
           {isAuthenticated && pointsValue > 0 && (
-            <li className="list-group-item d-flex justify-content-between px-0 text-success">
-              <span>Loyalty Points</span>
-              <span>-₫{formatPrice(pointsValue)}</span>
+            <li className="list-group-item d-flex justify-content-between px-0 py-3 border-0">
+              <span className="text-success d-flex align-items-center">
+                <i className="bi bi-star-fill me-2"></i>
+                Loyalty Points
+                <span className="ms-2">({pointsToUse} points)</span>
+              </span>
+              <span className="text-success fw-medium">
+                -₫{formatPrice(pointsValue)}
+              </span>
             </li>
           )}
 
-          <li className="list-group-item d-flex justify-content-between px-0 border-top border-2 py-3">
-            <span className="fw-bold">Total</span>
-            <span className="fw-bold fs-5 text-danger">
+          <li className="list-group-item d-flex justify-content-between px-0 py-3 mt-2 border-top border-2">
+            <span className="fw-bold fs-5">Total</span>
+            <span className="fw-bold fs-4 text-danger">
               ₫{formatPrice(total)}
             </span>
           </li>
         </ul>
 
-        {/* Discount code */}
-        <div className="mb-4">
-          <label htmlFor="discountCode" className="form-label fw-medium">
+        {/* Discount code with colorful validation */}
+        <div className="mb-4 p-3 bg-light rounded-3">
+          <label htmlFor="discountCode" className="form-label fw-medium mb-2">
+            <i className="bi bi-ticket-perforated-fill me-2 text-primary"></i>
             Discount Code
           </label>
           <div className="input-group">
             <input
               type="text"
               id="discountCode"
-              className={`form-control ${discountError ? "is-invalid" : ""}`}
+              className={`form-control ${
+                discountError ? "is-invalid" : discountSuccess ? "is-valid" : ""
+              }`}
               value={code}
               onChange={handleDiscountChange}
-              placeholder="Enter code"
+              placeholder="Enter 5-character code"
+              maxLength={5}
             />
             <button
-              className="btn btn-primary"
+              className="btn btn-primary fw-medium"
               type="button"
               onClick={handleApplyDiscount}
-              disabled={applyingDiscount || !code.trim()}
+              disabled={applyingDiscount || !code.trim() || code.length !== 5}
             >
               {applyingDiscount ? (
                 <>
                   <span
-                    className="spinner-border spinner-border-sm me-1"
+                    className="spinner-border spinner-border-sm me-2"
                     role="status"
                     aria-hidden="true"
                   ></span>
@@ -175,56 +292,125 @@ const CartSummary = ({
           </div>
 
           {discountError && (
-            <div className="invalid-feedback d-block">{discountError}</div>
+            <div className="text-danger mt-2 d-flex align-items-center small">
+              <i className="bi bi-exclamation-circle-fill me-2"></i>
+              {discountError}
+            </div>
           )}
 
-          {discountCode && !discountError && (
-            <div className="text-success small mt-1">
-              <i className="bi bi-check-circle me-1"></i>
-              Discount code "{discountCode}" applied successfully!
+          {discountSuccess && (
+            <div className="text-success mt-2 d-flex align-items-center small">
+              <i className="bi bi-check-circle-fill me-2"></i>
+              {discountSuccess}
             </div>
           )}
         </div>
 
-        {/* Loyalty points (only for authenticated users) */}
+        {/* Loyalty points with badge and visual enhancement */}
         {isAuthenticated && availableLoyaltyPoints > 0 && (
-          <div className="mb-4">
-            <div className="form-check">
-              <input
-                type="checkbox"
-                className="form-check-input"
-                id="useLoyaltyPoints"
-                checked={usingLoyaltyPoints}
-                onChange={handleLoyaltyPointsToggle}
-              />
-              <label className="form-check-label" htmlFor="useLoyaltyPoints">
-                Use {availableLoyaltyPoints} loyalty points
-                <span className="text-muted ms-1">
-                  (₫{formatPrice(availableLoyaltyPoints * 1000)})
+          <div className="mb-4 p-3 bg-light rounded-3">
+            <div className="mb-3 d-flex align-items-center">
+              <div className="form-check me-3">
+                <input
+                  type="checkbox"
+                  className="form-check-input"
+                  id="useLoyaltyPoints"
+                  checked={usingLoyaltyPoints}
+                  onChange={handleLoyaltyPointsToggle}
+                />
+                <label
+                  className="form-check-label fw-medium"
+                  htmlFor="useLoyaltyPoints"
+                >
+                  Use loyalty points
+                </label>
+              </div>
+              <div className="ms-auto">
+                <span className="badge bg-primary rounded-pill">
+                  {availableLoyaltyPoints} points available
                 </span>
-              </label>
+              </div>
             </div>
+
+            {usingLoyaltyPoints && (
+              <div className="mt-2">
+                <div className="input-group">
+                  <input
+                    type="number"
+                    className="form-control"
+                    min="0"
+                    max={availableLoyaltyPoints}
+                    value={pointsToUse}
+                    onChange={handlePointsChange}
+                    disabled={applyingPoints}
+                  />
+                  <span className="input-group-text">points</span>
+                </div>
+                <div className="mt-2 d-flex justify-content-between align-items-center small">
+                  <span className="text-muted">1 point = ₫1,000 discount</span>
+                  <button
+                    type="button"
+                    className="btn btn-sm btn-outline-primary"
+                    onClick={() => setPointsToUse(availableLoyaltyPoints)}
+                  >
+                    Use all points
+                  </button>
+                </div>
+                {applyingPoints && (
+                  <div className="text-primary mt-2 small">
+                    <span
+                      className="spinner-border spinner-border-sm me-2"
+                      role="status"
+                      aria-hidden="true"
+                    ></span>
+                    Calculating...
+                  </div>
+                )}
+                {loyaltyPointsEffect && (
+                  <div className="alert alert-success mt-2 py-2 px-3 small mb-0">
+                    <div className="d-flex justify-content-between">
+                      <span>Points value:</span>
+                      <span>
+                        ₫{formatPrice(loyaltyPointsEffect.pointsValue)}
+                      </span>
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
           </div>
         )}
 
-        {/* Checkout button */}
-        <div className="d-grid gap-2">
+        {/* Checkout button with animation effects */}
+        <div className="d-grid gap-3 mt-4">
           <Button
-            variant="primary"
+            variant="danger"
             size="large"
             fullWidth
             onClick={handleCheckout}
             disabled={!cart.items || cart.items.length === 0}
+            className="py-3 fw-bold shadow-sm"
           >
             <i className="bi bi-credit-card me-2"></i>
             Proceed to Checkout
           </Button>
 
-          <Link to="/products" className="btn btn-link text-decoration-none">
-            <i className="bi bi-arrow-left me-1"></i>
+          <Link
+            to="/products"
+            className="btn btn-outline-secondary d-flex align-items-center justify-content-center py-2"
+          >
+            <i className="bi bi-arrow-left-circle me-2"></i>
             Continue Shopping
           </Link>
         </div>
+      </div>
+
+      {/* Colorful footer with shipping note */}
+      <div className="card-footer bg-light py-3 text-center border-0">
+        <small className="text-muted d-flex align-items-center justify-content-center">
+          <i className="bi bi-truck me-2 text-primary"></i>
+          Free shipping for orders above ₫500,000
+        </small>
       </div>
     </div>
   );

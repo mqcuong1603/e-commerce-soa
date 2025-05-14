@@ -5,19 +5,21 @@ import CartItem from "../components/cart/CartItem";
 import CartSummary from "../components/cart/CartSummary";
 import Button from "../components/ui/Button";
 import Loader from "../components/ui/Loader";
+import Card from "../components/ui/Card";
+import { toast } from "react-toastify";
 
 /**
- * Cart page component
- * Displays items in the user's cart and provides a summary with checkout option
+ * Cart page component with enhanced functionality for discount codes and loyalty points
+ * This page displays items in the user's cart and provides a summary with checkout option
  */
 const CartPage = () => {
-  const { cart, clearCart, loading, error, refreshCart } = useCart();
+  const { cart, clearCart, loading, error, refreshCart, applyDiscount } =
+    useCart();
   const [discountCode, setDiscountCode] = useState("");
   const [discountAmount, setDiscountAmount] = useState(0);
   const [loyaltyPoints, setLoyaltyPoints] = useState(0);
   const [applyingDiscount, setApplyingDiscount] = useState(false);
-  const [discountError, setDiscountError] = useState("");
-  const [discountSuccess, setDiscountSuccess] = useState("");
+  const [cartUpdating, setCartUpdating] = useState(false);
   const navigate = useNavigate();
 
   // Refresh cart on component mount
@@ -31,50 +33,62 @@ const CartPage = () => {
       return { success: false, message: "Please enter a discount code" };
 
     setApplyingDiscount(true);
-    setDiscountError("");
-    setDiscountSuccess("");
 
     try {
-      const { success, data, error, message } = await cart.applyDiscount(code);
+      const result = await applyDiscount(code);
 
-      if (success && data) {
+      if (result.success && result.data) {
         setDiscountCode(code);
-        setDiscountAmount(data.discountAmount || 0);
-        setDiscountSuccess(message || "Discount code applied successfully!");
+        setDiscountAmount(result.data.discountAmount || 0);
         return { success: true };
       } else {
-        setDiscountError(error || message || "Invalid discount code");
         return {
           success: false,
-          message: error || message || "Invalid discount code",
+          message: result.error || "Invalid discount code",
         };
       }
     } catch (err) {
-      const errorMsg = "Error applying discount code";
-      setDiscountError(errorMsg);
-      return { success: false, message: errorMsg };
+      return { success: false, message: "Error applying discount code" };
     } finally {
       setApplyingDiscount(false);
     }
   };
 
-  // Handle clearing the cart
-  const handleClearCart = async () => {
-    if (window.confirm("Are you sure you want to clear your cart?")) {
-      await clearCart();
-    }
+  // Handle user setting loyalty points
+  const handleSetLoyaltyPoints = (points) => {
+    setLoyaltyPoints(points);
   };
 
-  // Format price with comma for thousands
-  const formatPrice = (price) => {
-    return price?.toLocaleString("en-US") || "0";
+  // Handle clearing the cart with confirmation
+  const handleClearCart = async () => {
+    if (window.confirm("Are you sure you want to clear your cart?")) {
+      setCartUpdating(true);
+      try {
+        const result = await clearCart();
+        if (result.success) {
+          // Reset discount and loyalty points if cart is cleared
+          setDiscountCode("");
+          setDiscountAmount(0);
+          setLoyaltyPoints(0);
+          toast.success("Cart cleared successfully");
+        } else {
+          toast.error(result.error || "Error clearing cart");
+        }
+      } catch (error) {
+        toast.error("Failed to clear cart");
+      } finally {
+        setCartUpdating(false);
+      }
+    }
   };
 
   // Loading state
   if (loading && !cart.items) {
     return (
-      <div className="container mx-auto px-4 py-12">
-        <Loader text="Loading your cart..." />
+      <div className="container py-5">
+        <div className="text-center">
+          <Loader text="Loading your cart..." centered />
+        </div>
       </div>
     );
   }
@@ -82,32 +96,26 @@ const CartPage = () => {
   // Empty cart state
   if (!cart.items || cart.items.length === 0) {
     return (
-      <div className="container mx-auto px-4 py-12">
-        <div className="max-w-4xl mx-auto bg-white p-8 rounded-lg shadow-md">
-          <h1 className="text-2xl font-bold text-center mb-8">Your Cart</h1>
+      <div className="container py-5">
+        <div className="row justify-content-center">
+          <div className="col-lg-8">
+            <Card className="p-5 text-center">
+              <h1 className="h3 fw-bold mb-4">Your Cart</h1>
 
-          <div className="text-center py-16">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              className="h-16 w-16 mx-auto text-gray-400 mb-4"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"
-              />
-            </svg>
-            <h2 className="text-xl font-semibold mb-4">Your cart is empty</h2>
-            <p className="text-gray-600 mb-8">
-              Looks like you haven't added any items to your cart yet.
-            </p>
-            <Link to="/products">
-              <Button variant="primary">Start Shopping</Button>
-            </Link>
+              <div className="py-5">
+                <i className="bi bi-cart3 text-muted display-1 mb-3"></i>
+                <h2 className="h4 fw-bold mb-3">Your cart is empty</h2>
+                <p className="text-muted mb-4">
+                  Looks like you haven't added any items to your cart yet.
+                </p>
+                <Link to="/products">
+                  <Button variant="primary" size="large">
+                    <i className="bi bi-bag-fill me-2"></i>
+                    Start Shopping
+                  </Button>
+                </Link>
+              </div>
+            </Card>
           </div>
         </div>
       </div>
@@ -115,74 +123,119 @@ const CartPage = () => {
   }
 
   return (
-    <div className="container mx-auto px-4 py-12">
-      <h1 className="text-2xl font-bold mb-8">Your Cart</h1>
+    <div className="container py-5">
+      <h1 className="h3 fw-bold mb-4">Your Cart</h1>
 
       {/* Error message */}
       {error && (
-        <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-6">
+        <div className="alert alert-danger mb-4" role="alert">
+          <i className="bi bi-exclamation-triangle-fill me-2"></i>
           {error}
         </div>
       )}
 
-      <div className="flex flex-col lg:flex-row gap-8">
+      <div className="row g-4">
         {/* Cart items */}
-        <div className="w-full lg:w-2/3">
-          <div className="bg-white rounded-lg shadow-md p-6 mb-4">
-            <div className="flex justify-between items-center mb-6">
-              <h2 className="text-xl font-semibold">
-                Cart Items ({cart.itemCount})
-              </h2>
+        <div className="col-lg-8">
+          <Card className="mb-4">
+            <div className="d-flex justify-content-between align-items-center mb-3">
+              <h2 className="h5 fw-bold m-0">Cart Items ({cart.itemCount})</h2>
               {cart.items && cart.items.length > 0 && (
                 <Button
                   variant="outlined"
                   size="small"
                   onClick={handleClearCart}
+                  disabled={cartUpdating}
                 >
-                  Clear Cart
+                  {cartUpdating ? (
+                    <>
+                      <span
+                        className="spinner-border spinner-border-sm me-2"
+                        role="status"
+                        aria-hidden="true"
+                      ></span>
+                      Clearing...
+                    </>
+                  ) : (
+                    <>
+                      <i className="bi bi-trash me-1"></i>
+                      Clear Cart
+                    </>
+                  )}
                 </Button>
               )}
             </div>
 
-            <div className="divide-y">
+            {loading && (
+              <div className="text-center py-3">
+                <span
+                  className="spinner-border spinner-border-sm me-2"
+                  role="status"
+                  aria-hidden="true"
+                ></span>
+                Updating cart...
+              </div>
+            )}
+
+            <div>
               {cart.items &&
                 cart.items.map((item) => (
                   <CartItem key={item.productVariantId._id} item={item} />
                 ))}
             </div>
 
-            <div className="mt-6">
-              <Link to="/products">
+            <div className="mt-4 d-flex flex-wrap justify-content-between align-items-center">
+              <Link to="/products" className="mb-3 mb-md-0">
                 <Button variant="outlined">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    className="h-5 w-5 mr-2"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M10 19l-7-7m0 0l7-7m-7 7h18"
-                    />
-                  </svg>
+                  <i className="bi bi-arrow-left me-2"></i>
                   Continue Shopping
                 </Button>
               </Link>
+
+              {/* Quick checkout button for mobile view */}
+              <div className="d-md-none w-100 mt-3">
+                <Button
+                  variant="danger"
+                  fullWidth
+                  onClick={() =>
+                    navigate("/checkout", {
+                      state: {
+                        discountCode,
+                        discountAmount,
+                        loyaltyPoints,
+                      },
+                    })
+                  }
+                >
+                  <i className="bi bi-credit-card me-2"></i>
+                  Checkout - ₫
+                  {(cart.subtotal + 35000 - discountAmount).toLocaleString()}
+                </Button>
+              </div>
             </div>
-          </div>
+          </Card>
         </div>
 
         {/* Cart summary */}
-        <div className="w-full lg:w-1/3">
+        <div className="col-lg-4">
           <CartSummary
             onApplyDiscount={handleApplyDiscount}
             discountCode={discountCode}
             discountAmount={discountAmount}
             loyaltyPoints={loyaltyPoints}
+            onSetLoyaltyPoints={handleSetLoyaltyPoints}
           />
+        </div>
+      </div>
+
+      {/* Related products slider */}
+      <div className="mt-5">
+        <h3 className="h5 fw-bold mb-4">You might also like</h3>
+        <div className="alert alert-light py-5 text-center">
+          <p className="mb-0">
+            <i className="bi bi-info-circle me-2"></i>
+            Related products based on your cart items will appear here
+          </p>
         </div>
       </div>
     </div>

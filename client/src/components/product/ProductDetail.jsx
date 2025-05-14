@@ -2,6 +2,12 @@ import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import PropTypes from "prop-types";
 import { useCart } from "../../contexts/CartContext";
+
+// Import UI components
+import Button from "../ui/Button";
+import Rating from "../ui/Rating";
+
+// Import product components
 import ProductGallery from "./ProductGallery";
 import ProductVariantSelector from "./ProductVariantSelector";
 
@@ -126,7 +132,6 @@ const ProductDetail = ({ product }) => {
         </ol>
       </nav>
 
-      {/* Product details */}
       <div className="row g-4 mb-5">
         {/* Product images */}
         <div className="col-lg-6">
@@ -148,23 +153,14 @@ const ProductDetail = ({ product }) => {
           </div>
 
           {/* Ratings */}
-          <div className="d-flex align-items-center mb-3">
-            <div className="me-2">
-              {[...Array(5)].map((_, i) => (
-                <i
-                  key={i}
-                  className={`bi ${
-                    i < Math.round(product.averageRating || 0)
-                      ? "bi-star-fill text-warning"
-                      : "bi-star text-secondary"
-                  }`}
-                ></i>
-              ))}
-            </div>
-            <span className="text-muted">
-              ({product.reviewCount || 0}{" "}
-              {product.reviewCount === 1 ? "review" : "reviews"})
-            </span>
+          <div className="mb-3">
+            <Rating
+              value={product.averageRating || 0}
+              count={product.reviewCount}
+              showLabel={true}
+              size="medium"
+              readOnly={true}
+            />
           </div>
 
           {/* Price */}
@@ -209,14 +205,14 @@ const ProductDetail = ({ product }) => {
             <h6 className="mb-2">Quantity</h6>
             <div className="d-flex align-items-center">
               <div className="input-group" style={{ maxWidth: "150px" }}>
-                <button
-                  className="btn btn-outline-secondary"
-                  type="button"
+                <Button
+                  variant="outlined"
+                  color="secondary"
                   onClick={decrementQuantity}
                   disabled={quantity <= 1 || isOutOfStock}
                 >
                   <i className="bi bi-dash"></i>
-                </button>
+                </Button>
                 <input
                   type="number"
                   className="form-control text-center"
@@ -226,9 +222,9 @@ const ProductDetail = ({ product }) => {
                   max={selectedVariant?.inventory || 1}
                   disabled={isOutOfStock}
                 />
-                <button
-                  className="btn btn-outline-secondary"
-                  type="button"
+                <Button
+                  variant="outlined"
+                  color="secondary"
                   onClick={incrementQuantity}
                   disabled={
                     !selectedVariant ||
@@ -237,7 +233,7 @@ const ProductDetail = ({ product }) => {
                   }
                 >
                   <i className="bi bi-plus"></i>
-                </button>
+                </Button>
               </div>
               {selectedVariant && (
                 <span className="ms-3 text-muted small">
@@ -249,8 +245,10 @@ const ProductDetail = ({ product }) => {
 
           {/* Add to cart and buy now buttons */}
           <div className="d-flex gap-3 mb-4">
-            <button
-              className="btn btn-outline-danger flex-grow-1"
+            <Button
+              variant="outlined"
+              color="danger"
+              fullWidth
               onClick={handleAddToCart}
               disabled={isOutOfStock || addingToCart}
             >
@@ -270,59 +268,31 @@ const ProductDetail = ({ product }) => {
                   <i className="bi bi-cart-plus me-2"></i>Add to Cart
                 </span>
               )}
-            </button>
-            <button
-              className="btn btn-danger flex-grow-1"
+            </Button>
+            <Button
+              variant="contained"
+              color="danger"
+              fullWidth
               onClick={handleAddToCart}
               disabled={isOutOfStock || addingToCart}
             >
               Buy Now
-            </button>
+            </Button>
           </div>
 
-          {/* Add to cart success/error messages */}
+          {/* Success/Error messages */}
           {addToCartSuccess && (
-            <div className="alert alert-success" role="alert">
+            <div className="alert alert-success mb-4">
               <i className="bi bi-check-circle-fill me-2"></i>
               Item added to cart successfully!
             </div>
           )}
           {addToCartError && (
-            <div className="alert alert-danger" role="alert">
+            <div className="alert alert-danger mb-4">
               <i className="bi bi-exclamation-triangle-fill me-2"></i>
               {addToCartError}
             </div>
           )}
-
-          {/* Product specs */}
-          {selectedVariant &&
-            selectedVariant.attributes &&
-            Object.keys(selectedVariant.attributes).length > 0 && (
-              <div className="card mb-4">
-                <div className="card-header bg-light fw-medium">
-                  Specifications
-                </div>
-                <div className="card-body p-0">
-                  <table className="table table-bordered m-0">
-                    <tbody>
-                      {Object.entries(selectedVariant.attributes).map(
-                        ([key, value]) => (
-                          <tr key={key}>
-                            <td
-                              className="text-muted text-capitalize"
-                              style={{ width: "40%" }}
-                            >
-                              {key.replace(/([A-Z])/g, " $1").trim()}
-                            </td>
-                            <td>{value}</td>
-                          </tr>
-                        )
-                      )}
-                    </tbody>
-                  </table>
-                </div>
-              </div>
-            )}
         </div>
       </div>
 
@@ -336,7 +306,7 @@ const ProductDetail = ({ product }) => {
         </div>
       </div>
 
-      {/* Reviews */}
+      {/* Reviews section */}
       <div className="mb-5">
         <h3 className="fw-bold mb-3">Customer Reviews</h3>
         <div className="card">
@@ -345,19 +315,12 @@ const ProductDetail = ({ product }) => {
               product.reviews.map((review) => (
                 <div key={review._id} className="border-bottom pb-3 mb-3">
                   <div className="d-flex align-items-center mb-2">
-                    <div className="me-2">
-                      {[...Array(5)].map((_, i) => (
-                        <i
-                          key={i}
-                          className={`bi ${
-                            i < review.rating
-                              ? "bi-star-fill text-warning"
-                              : "bi-star text-secondary"
-                          }`}
-                        ></i>
-                      ))}
-                    </div>
-                    <span className="fw-medium">{review.userName}</span>
+                    <Rating
+                      value={review.rating}
+                      size="small"
+                      readOnly={true}
+                    />
+                    <span className="fw-medium ms-2">{review.userName}</span>
                     <span className="mx-2 text-muted">•</span>
                     <span className="text-muted small">
                       {new Date(review.createdAt).toLocaleDateString()}
@@ -376,12 +339,15 @@ const ProductDetail = ({ product }) => {
                 <p className="text-muted">
                   No reviews yet. Be the first to review this product!
                 </p>
-                <Link
+                <Button
+                  variant="outlined"
+                  color="primary"
+                  as={Link}
                   to={`/products/${product.slug}/review`}
-                  className="btn btn-outline-primary mt-2"
+                  className="mt-2"
                 >
                   Write a Review
-                </Link>
+                </Button>
               </div>
             )}
           </div>

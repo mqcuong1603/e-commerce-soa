@@ -59,6 +59,8 @@ export const AuthProvider = ({ children }) => {
         setUser(response.data);
         setIsAuthenticated(true);
 
+        // No need to manually merge carts - the server handles this via cartMiddleware
+
         return { success: true };
       } else {
         throw new Error(response.message || "Login failed");
