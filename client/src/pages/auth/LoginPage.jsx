@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import LoginForm from "../components/auth/LoginForm";
-import { useAuth } from "../contexts/AuthContext";
+import LoginForm from "../../components/auth/LoginForm";
+import { useAuth } from "../../contexts/AuthContext";
 
 /**
  * Login Page component

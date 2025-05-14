@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { useAuth } from "../contexts/AuthContext";
-import userService from "../services/user.service";
-import AddressList from "../components/user/AddressList";
-import OrderHistory from "../components/user/OrderHistory";
-import UserProfile from "../components/user/UserProfile";
-import Button from "../components/ui/Button";
-import Loader from "../components/ui/Loader";
+import { useAuth } from "../../contexts/AuthContext";
+import userService from "../../services/user.service";
+import AddressList from "../../components/user/AddressList";
+import OrderHistory from "../../components/user/OrderHistory";
+import UserProfile from "../../components/user/UserProfile";
+import Button from "../../components/ui/Button";
+import Loader from "../../components/ui/Loader";
 
 /**
  * Profile Page component

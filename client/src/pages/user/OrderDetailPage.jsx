@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate, useLocation, Link } from "react-router-dom";
-import { useAuth } from "../contexts/AuthContext";
-import orderService from "../services/order.service";
-import Button from "../components/ui/Button";
-import Loader from "../components/ui/Loader";
+import { useAuth } from "../../contexts/AuthContext";
+import orderService from "../../services/order.service";
+import Button from "../../components/ui/Button";
+import Loader from "../../components/ui/Loader";
 
 /**
  * Order Detail Page component

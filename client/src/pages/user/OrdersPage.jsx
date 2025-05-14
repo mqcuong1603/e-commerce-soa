@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { useAuth } from "../contexts/AuthContext";
-import orderService from "../services/order.service";
-import Button from "../components/ui/Button";
-import Loader from "../components/ui/Loader";
-import Card from "../components/ui/Card";
+import { useAuth } from "../../contexts/AuthContext";
+import orderService from "../../services/order.service";
+import Button from "../../components/ui/Button";
+import Loader from "../../components/ui/Loader";
+import Card from "../../components/ui/Card";
 
 /**
  * Orders Page component
