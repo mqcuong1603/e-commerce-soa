@@ -1,48 +1,415 @@
-import React, { useState, useEffect } from "react";
-import { useParams } from "react-router-dom";
-import ProductDetail from "../components/product/ProductDetail";
-import productService from "../services/product.service";
+import React, { useState } from "react";
+import { Link } from "react-router-dom";
+import PropTypes from "prop-types";
+import { useCart } from "../../contexts/CartContext";
+import ProductGallery from "./ProductGallery";
+import ProductVariantSelector from "./ProductVariantSelector";
 
-const ProductDetailPage = () => {
-  const { slug } = useParams();
-  const [product, setProduct] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+/**
+ * Product Detail component to display single product information
+ */
+const ProductDetail = ({ product }) => {
+  const { addToCart } = useCart();
+  const [selectedVariant, setSelectedVariant] = useState(
+    product.variants && product.variants.length > 0 ? product.variants[0] : null
+  );
+  const [quantity, setQuantity] = useState(1);
+  const [mainImage, setMainImage] = useState(
+    product.images && product.images.length > 0
+      ? product.images.find((img) => img.isMain) || product.images[0]
+      : null
+  );
+  const [addingToCart, setAddingToCart] = useState(false);
+  const [addToCartSuccess, setAddToCartSuccess] = useState(false);
+  const [addToCartError, setAddToCartError] = useState(null);
 
-  useEffect(() => {
-    const fetchProduct = async () => {
-      try {
-        setLoading(true);
-        const response = await productService.getProductBySlug(slug);
+  // Handle variant selection
+  const handleVariantChange = (variant) => {
+    setSelectedVariant(variant);
+    setQuantity(1);
+  };
 
-        if (response.success) {
-          setProduct(response.data);
-        } else {
-          setError("Failed to load product");
-        }
-      } catch (err) {
-        setError("Error loading product");
-      } finally {
-        setLoading(false);
+  // Handle quantity changes
+  const handleQuantityChange = (e) => {
+    const value = parseInt(e.target.value);
+    if (isNaN(value) || value < 1) {
+      setQuantity(1);
+    } else if (selectedVariant && value > selectedVariant.inventory) {
+      setQuantity(selectedVariant.inventory);
+    } else {
+      setQuantity(value);
+    }
+  };
+
+  // Handle quantity increment/decrement
+  const decrementQuantity = () => {
+    if (quantity > 1) {
+      setQuantity(quantity - 1);
+    }
+  };
+
+  const incrementQuantity = () => {
+    if (selectedVariant && quantity < selectedVariant.inventory) {
+      setQuantity(quantity + 1);
+    }
+  };
+
+  // Set main image when thumbnail is clicked
+  const handleImageChange = (image) => {
+    setMainImage(image);
+  };
+
+  // Handle add to cart
+  const handleAddToCart = async () => {
+    if (!selectedVariant) return;
+
+    try {
+      setAddingToCart(true);
+      setAddToCartError(null);
+
+      const result = await addToCart(selectedVariant._id, quantity);
+
+      if (result.success) {
+        setAddToCartSuccess(true);
+
+        // Reset success message after 3 seconds
+        setTimeout(() => {
+          setAddToCartSuccess(false);
+        }, 3000);
+      } else {
+        setAddToCartError(result.error || "Failed to add item to cart");
       }
-    };
+    } catch (err) {
+      setAddToCartError("An error occurred while adding to cart");
+    } finally {
+      setAddingToCart(false);
+    }
+  };
 
-    fetchProduct();
-  }, [slug]);
+  // Format price with comma for thousands
+  const formatPrice = (price) => {
+    return price?.toLocaleString("en-US") || "";
+  };
 
-  if (loading) {
-    return <div className="container mx-auto px-4 py-8">Loading...</div>;
-  }
+  // Calculate discount percentage if sale price exists
+  const calculateDiscount = (price, salePrice) => {
+    if (salePrice && price && salePrice < price) {
+      const discount = ((price - salePrice) / price) * 100;
+      return Math.round(discount);
+    }
+    return null;
+  };
 
-  if (error) {
-    return <div className="container mx-auto px-4 py-8">Error: {error}</div>;
-  }
+  const displayPrice = selectedVariant?.price || product.basePrice;
+  const displaySalePrice = selectedVariant?.salePrice || product.salePrice;
+  const discount = calculateDiscount(displayPrice, displaySalePrice);
+  const isOutOfStock = selectedVariant && selectedVariant.inventory <= 0;
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      <ProductDetail product={product} />
+    <div>
+      {/* Breadcrumbs */}
+      <nav aria-label="breadcrumb" className="mb-4">
+        <ol className="breadcrumb">
+          <li className="breadcrumb-item">
+            <Link to="/">Home</Link>
+          </li>
+          {product.categories && product.categories.length > 0 && (
+            <li className="breadcrumb-item">
+              <Link to={`/category/${product.categories[0].slug}`}>
+                {product.categories[0].name}
+              </Link>
+            </li>
+          )}
+          <li className="breadcrumb-item active" aria-current="page">
+            {product.name}
+          </li>
+        </ol>
+      </nav>
+
+      {/* Product details */}
+      <div className="row g-4 mb-5">
+        {/* Product images */}
+        <div className="col-lg-6">
+          <ProductGallery
+            images={product.images}
+            mainImage={mainImage}
+            onImageChange={handleImageChange}
+          />
+        </div>
+
+        {/* Product info */}
+        <div className="col-lg-6">
+          <h1 className="fs-2 fw-bold mb-2">{product.name}</h1>
+
+          {/* Brand */}
+          <div className="mb-3">
+            <span className="text-muted">Brand: </span>
+            <span className="fw-medium">{product.brand}</span>
+          </div>
+
+          {/* Ratings */}
+          <div className="d-flex align-items-center mb-3">
+            <div className="me-2">
+              {[...Array(5)].map((_, i) => (
+                <i
+                  key={i}
+                  className={`bi ${
+                    i < Math.round(product.averageRating || 0)
+                      ? "bi-star-fill text-warning"
+                      : "bi-star text-secondary"
+                  }`}
+                ></i>
+              ))}
+            </div>
+            <span className="text-muted">
+              ({product.reviewCount || 0}{" "}
+              {product.reviewCount === 1 ? "review" : "reviews"})
+            </span>
+          </div>
+
+          {/* Price */}
+          <div className="mb-4">
+            {displaySalePrice ? (
+              <div className="d-flex align-items-center">
+                <span className="fs-3 fw-bold text-danger me-2">
+                  ₫{formatPrice(displaySalePrice)}
+                </span>
+                <span className="fs-5 text-muted text-decoration-line-through">
+                  ₫{formatPrice(displayPrice)}
+                </span>
+                {discount && (
+                  <span className="ms-2 badge bg-danger">-{discount}%</span>
+                )}
+              </div>
+            ) : (
+              <span className="fs-3 fw-bold">₫{formatPrice(displayPrice)}</span>
+            )}
+          </div>
+
+          {/* Short description */}
+          <div className="mb-4">
+            <p className="text-muted">{product.shortDescription}</p>
+          </div>
+
+          {/* Variants */}
+          {product.variants && product.variants.length > 0 && (
+            <div className="mb-4">
+              <ProductVariantSelector
+                variants={product.variants}
+                selectedVariant={selectedVariant}
+                onVariantChange={handleVariantChange}
+                showPrice={true}
+                layout="buttons"
+              />
+            </div>
+          )}
+
+          {/* Quantity selector */}
+          <div className="mb-4">
+            <h6 className="mb-2">Quantity</h6>
+            <div className="d-flex align-items-center">
+              <div className="input-group" style={{ maxWidth: "150px" }}>
+                <button
+                  className="btn btn-outline-secondary"
+                  type="button"
+                  onClick={decrementQuantity}
+                  disabled={quantity <= 1 || isOutOfStock}
+                >
+                  <i className="bi bi-dash"></i>
+                </button>
+                <input
+                  type="number"
+                  className="form-control text-center"
+                  value={quantity}
+                  onChange={handleQuantityChange}
+                  min="1"
+                  max={selectedVariant?.inventory || 1}
+                  disabled={isOutOfStock}
+                />
+                <button
+                  className="btn btn-outline-secondary"
+                  type="button"
+                  onClick={incrementQuantity}
+                  disabled={
+                    !selectedVariant ||
+                    quantity >= selectedVariant.inventory ||
+                    isOutOfStock
+                  }
+                >
+                  <i className="bi bi-plus"></i>
+                </button>
+              </div>
+              {selectedVariant && (
+                <span className="ms-3 text-muted small">
+                  {selectedVariant.inventory} available
+                </span>
+              )}
+            </div>
+          </div>
+
+          {/* Add to cart and buy now buttons */}
+          <div className="d-flex gap-3 mb-4">
+            <button
+              className="btn btn-outline-danger flex-grow-1"
+              onClick={handleAddToCart}
+              disabled={isOutOfStock || addingToCart}
+            >
+              {addingToCart ? (
+                <span>
+                  <span
+                    className="spinner-border spinner-border-sm me-2"
+                    role="status"
+                    aria-hidden="true"
+                  ></span>
+                  Adding...
+                </span>
+              ) : isOutOfStock ? (
+                "Out of Stock"
+              ) : (
+                <span>
+                  <i className="bi bi-cart-plus me-2"></i>Add to Cart
+                </span>
+              )}
+            </button>
+            <button
+              className="btn btn-danger flex-grow-1"
+              onClick={handleAddToCart}
+              disabled={isOutOfStock || addingToCart}
+            >
+              Buy Now
+            </button>
+          </div>
+
+          {/* Add to cart success/error messages */}
+          {addToCartSuccess && (
+            <div className="alert alert-success" role="alert">
+              <i className="bi bi-check-circle-fill me-2"></i>
+              Item added to cart successfully!
+            </div>
+          )}
+          {addToCartError && (
+            <div className="alert alert-danger" role="alert">
+              <i className="bi bi-exclamation-triangle-fill me-2"></i>
+              {addToCartError}
+            </div>
+          )}
+
+          {/* Product specs */}
+          {selectedVariant &&
+            selectedVariant.attributes &&
+            Object.keys(selectedVariant.attributes).length > 0 && (
+              <div className="card mb-4">
+                <div className="card-header bg-light fw-medium">
+                  Specifications
+                </div>
+                <div className="card-body p-0">
+                  <table className="table table-bordered m-0">
+                    <tbody>
+                      {Object.entries(selectedVariant.attributes).map(
+                        ([key, value]) => (
+                          <tr key={key}>
+                            <td
+                              className="text-muted text-capitalize"
+                              style={{ width: "40%" }}
+                            >
+                              {key.replace(/([A-Z])/g, " $1").trim()}
+                            </td>
+                            <td>{value}</td>
+                          </tr>
+                        )
+                      )}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            )}
+        </div>
+      </div>
+
+      {/* Product description */}
+      <div className="mb-5">
+        <h3 className="fw-bold mb-3">Product Description</h3>
+        <div className="card">
+          <div className="card-body">
+            <p style={{ whiteSpace: "pre-line" }}>{product.description}</p>
+          </div>
+        </div>
+      </div>
+
+      {/* Reviews */}
+      <div className="mb-5">
+        <h3 className="fw-bold mb-3">Customer Reviews</h3>
+        <div className="card">
+          <div className="card-body">
+            {product.reviews && product.reviews.length > 0 ? (
+              product.reviews.map((review) => (
+                <div key={review._id} className="border-bottom pb-3 mb-3">
+                  <div className="d-flex align-items-center mb-2">
+                    <div className="me-2">
+                      {[...Array(5)].map((_, i) => (
+                        <i
+                          key={i}
+                          className={`bi ${
+                            i < review.rating
+                              ? "bi-star-fill text-warning"
+                              : "bi-star text-secondary"
+                          }`}
+                        ></i>
+                      ))}
+                    </div>
+                    <span className="fw-medium">{review.userName}</span>
+                    <span className="mx-2 text-muted">•</span>
+                    <span className="text-muted small">
+                      {new Date(review.createdAt).toLocaleDateString()}
+                    </span>
+                    {review.isVerifiedPurchase && (
+                      <span className="ms-2 badge bg-success">
+                        Verified Purchase
+                      </span>
+                    )}
+                  </div>
+                  <p className="text-muted">{review.comment}</p>
+                </div>
+              ))
+            ) : (
+              <div className="text-center py-4">
+                <p className="text-muted">
+                  No reviews yet. Be the first to review this product!
+                </p>
+                <Link
+                  to={`/products/${product.slug}/review`}
+                  className="btn btn-outline-primary mt-2"
+                >
+                  Write a Review
+                </Link>
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
     </div>
   );
 };
 
-export default ProductDetailPage;
+ProductDetail.propTypes = {
+  product: PropTypes.shape({
+    _id: PropTypes.string.isRequired,
+    name: PropTypes.string.isRequired,
+    slug: PropTypes.string.isRequired,
+    brand: PropTypes.string.isRequired,
+    description: PropTypes.string,
+    shortDescription: PropTypes.string,
+    basePrice: PropTypes.number,
+    salePrice: PropTypes.number,
+    averageRating: PropTypes.number,
+    reviewCount: PropTypes.number,
+    isNewProduct: PropTypes.bool,
+    isBestSeller: PropTypes.bool,
+    images: PropTypes.array,
+    variants: PropTypes.array,
+    categories: PropTypes.array,
+    reviews: PropTypes.array,
+  }).isRequired,
+};
+
+export default ProductDetail;

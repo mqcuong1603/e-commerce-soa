@@ -4,7 +4,6 @@ import { useCart } from "../../contexts/CartContext";
 import { useAuth } from "../../contexts/AuthContext";
 import AddressForm from "./AddressForm";
 import PaymentForm from "./PaymentForm";
-import Button from "../ui/Button";
 import orderService from "../../services/order.service";
 import userService from "../../services/user.service";
 
@@ -315,512 +314,514 @@ const CheckoutForm = () => {
   // Render success page
   if (orderSuccess && orderData) {
     return (
-      <div className="bg-white p-8 rounded-lg shadow-md">
-        <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-green-100 mb-4">
-            <svg
-              className="w-8 h-8 text-green-600"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-              xmlns="http://www.w3.org/2000/svg"
+      <div className="card">
+        <div className="card-body p-4">
+          <div className="text-center mb-4">
+            <div
+              className="bg-success text-white p-3 rounded-circle mx-auto mb-3"
+              style={{ width: "60px", height: "60px" }}
             >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth="2"
-                d="M5 13l4 4L19 7"
-              ></path>
-            </svg>
+              <i className="bi bi-check-lg fs-1"></i>
+            </div>
+            <h3>Order Placed Successfully!</h3>
+            <p className="text-muted">
+              Thank you for your purchase. Your order has been received.
+            </p>
           </div>
-          <h2 className="text-2xl font-bold text-gray-800">
-            Order Placed Successfully!
-          </h2>
-          <p className="text-gray-600 mt-2">
-            Thank you for your purchase. Your order has been received.
-          </p>
-        </div>
 
-        <div className="border rounded-lg p-4 mb-6">
-          <div className="grid grid-cols-2 gap-4 text-sm">
-            <div>
-              <p className="text-gray-600">Order Number:</p>
-              <p className="font-semibold">{orderData.orderNumber}</p>
-            </div>
-            <div>
-              <p className="text-gray-600">Order Date:</p>
-              <p className="font-semibold">
-                {new Date(orderData.createdAt).toLocaleDateString()}
-              </p>
-            </div>
-            <div>
-              <p className="text-gray-600">Payment Method:</p>
-              <p className="font-semibold">
-                {paymentMethod === "cod"
-                  ? "Cash on Delivery"
-                  : paymentMethod === "bank"
-                  ? "Bank Transfer"
-                  : paymentMethod === "credit"
-                  ? "Credit Card"
-                  : "Unknown"}
-              </p>
-            </div>
-            <div>
-              <p className="text-gray-600">Total Amount:</p>
-              <p className="font-semibold">₫{formatPrice(orderData.total)}</p>
+          <div className="card mb-4">
+            <div className="card-body">
+              <div className="row g-3">
+                <div className="col-md-6">
+                  <p className="text-muted mb-1">Order Number:</p>
+                  <p className="fw-bold">{orderData.orderNumber}</p>
+                </div>
+                <div className="col-md-6">
+                  <p className="text-muted mb-1">Order Date:</p>
+                  <p className="fw-bold">
+                    {new Date(orderData.createdAt).toLocaleDateString()}
+                  </p>
+                </div>
+                <div className="col-md-6">
+                  <p className="text-muted mb-1">Payment Method:</p>
+                  <p className="fw-bold">
+                    {paymentMethod === "cod"
+                      ? "Cash on Delivery"
+                      : paymentMethod === "bank"
+                      ? "Bank Transfer"
+                      : paymentMethod === "credit"
+                      ? "Credit Card"
+                      : "Unknown"}
+                  </p>
+                </div>
+                <div className="col-md-6">
+                  <p className="text-muted mb-1">Total Amount:</p>
+                  <p className="fw-bold">₫{formatPrice(orderData.total)}</p>
+                </div>
+              </div>
             </div>
           </div>
-        </div>
 
-        <div className="flex flex-col space-y-4">
-          <Button
-            variant="primary"
-            onClick={() => navigate(`/orders/${orderData._id}`)}
-          >
-            View Order Details
-          </Button>
+          <div className="d-grid gap-3">
+            <button
+              className="btn btn-danger"
+              onClick={() => navigate(`/orders/${orderData._id}`)}
+            >
+              View Order Details
+            </button>
 
-          <Button variant="outlined" onClick={() => navigate("/")}>
-            Continue Shopping
-          </Button>
+            <button
+              className="btn btn-outline-secondary"
+              onClick={() => navigate("/")}
+            >
+              Continue Shopping
+            </button>
+          </div>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="bg-white p-6 rounded-lg shadow-md">
-      {/* Progress steps */}
-      <div className="flex mb-8">
-        {[...Array(totalSteps)].map((_, index) => (
-          <div key={index} className="flex-1 flex items-center">
+    <div className="card shadow-sm">
+      <div className="card-body p-4">
+        {/* Progress steps */}
+        <div className="mb-4">
+          <div className="position-relative mb-4">
+            <div className="progress" style={{ height: "2px" }}>
+              <div
+                className="progress-bar bg-danger"
+                role="progressbar"
+                style={{
+                  width: `${((currentStep - 1) / (totalSteps - 1)) * 100}%`,
+                }}
+                aria-valuenow={((currentStep - 1) / (totalSteps - 1)) * 100}
+                aria-valuemin="0"
+                aria-valuemax="100"
+              ></div>
+            </div>
+
             <div
-              className={`w-8 h-8 rounded-full flex items-center justify-center ${
-                index + 1 === currentStep
-                  ? "bg-primary-600 text-white"
-                  : index + 1 < currentStep
-                  ? "bg-green-500 text-white"
-                  : "bg-gray-200 text-gray-700"
+              className="position-absolute top-0 start-0 translate-middle d-flex align-items-center justify-content-center rounded-circle bg-danger text-white"
+              style={{ width: "30px", height: "30px" }}
+            >
+              {currentStep > 1 ? <i className="bi bi-check"></i> : 1}
+            </div>
+
+            <div
+              style={{ width: "30px", height: "30px" }}
+              className={`position-absolute top-0 start-50 translate-middle d-flex align-items-center justify-content-center rounded-circle ${
+                currentStep > 1 ? "bg-danger text-white" : "bg-light text-dark"
               }`}
             >
-              {index + 1 < currentStep ? (
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="h-5 w-5"
-                  viewBox="0 0 20 20"
-                  fill="currentColor"
-                >
-                  <path
-                    fillRule="evenodd"
-                    d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-                    clipRule="evenodd"
-                  />
-                </svg>
-              ) : (
-                index + 1
+              {currentStep > 2 ? <i className="bi bi-check"></i> : 2}
+            </div>
+
+            <div
+              style={{ width: "30px", height: "30px" }}
+              className={`position-absolute top-0 end-0 translate-middle d-flex align-items-center justify-content-center rounded-circle ${
+                currentStep > 2 ? "bg-danger text-white" : "bg-light text-dark"
+              }`}
+            >
+              3
+            </div>
+          </div>
+
+          <div className="d-flex justify-content-between">
+            <div
+              className={`text-center ${
+                currentStep === 1 ? "fw-bold text-danger" : ""
+              }`}
+            >
+              Shipping
+            </div>
+            <div
+              className={`text-center ${
+                currentStep === 2 ? "fw-bold text-danger" : ""
+              }`}
+            >
+              Payment
+            </div>
+            <div
+              className={`text-center ${
+                currentStep === 3 ? "fw-bold text-danger" : ""
+              }`}
+            >
+              Review
+            </div>
+          </div>
+        </div>
+
+        {/* Error message */}
+        {error && (
+          <div className="alert alert-danger" role="alert">
+            {error}
+          </div>
+        )}
+
+        {/* Main content based on current step */}
+        <div className="mb-4">
+          {/* Step 1: Shipping Address */}
+          {currentStep === 1 && (
+            <div>
+              <h4 className="mb-3">Shipping Address</h4>
+
+              {/* Address selection for logged in users */}
+              {isAuthenticated && addresses.length > 0 && (
+                <div className="mb-4">
+                  <div className="d-flex justify-content-between align-items-center mb-3">
+                    <h5 className="mb-0">Saved Addresses</h5>
+                    <button
+                      type="button"
+                      onClick={() => setShowAddressForm(!showAddressForm)}
+                      className="btn btn-link text-danger p-0"
+                    >
+                      {showAddressForm
+                        ? "Use Saved Address"
+                        : "Add New Address"}
+                    </button>
+                  </div>
+
+                  {!showAddressForm && (
+                    <div className="d-flex flex-column gap-3">
+                      {addresses.map((address) => (
+                        <div
+                          key={address._id}
+                          className={`card border ${
+                            selectedAddressId === address._id
+                              ? "border-danger"
+                              : ""
+                          }`}
+                          onClick={() => setSelectedAddressId(address._id)}
+                          style={{ cursor: "pointer" }}
+                        >
+                          <div className="card-body">
+                            <div className="d-flex justify-content-between">
+                              <div className="fw-medium">
+                                {address.fullName}
+                              </div>
+                              {address.isDefault && (
+                                <span className="badge bg-success">
+                                  Default
+                                </span>
+                              )}
+                            </div>
+                            <div className="text-muted small">
+                              {address.phoneNumber}
+                            </div>
+                            <div className="mt-2 small">
+                              {address.addressLine1}
+                              {address.addressLine2 && (
+                                <span>, {address.addressLine2}</span>
+                              )}
+                              <br />
+                              {address.city}, {address.state}{" "}
+                              {address.postalCode}
+                              <br />
+                              {address.country}
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {/* Address form (for new addresses or guest checkout) */}
+              {(showAddressForm || !isAuthenticated) && (
+                <AddressForm
+                  onSubmit={() => nextStep()}
+                  initialData={addressFormData}
+                  savedAddresses={addresses}
+                />
               )}
             </div>
+          )}
 
-            {index < totalSteps - 1 && (
-              <div
-                className={`flex-1 h-1 ${
-                  index + 1 < currentStep ? "bg-green-500" : "bg-gray-200"
-                }`}
+          {/* Step 2: Payment Method */}
+          {currentStep === 2 && (
+            <div>
+              <h4 className="mb-3">Payment Method</h4>
+
+              <PaymentForm
+                selectedMethod={paymentMethod}
+                onSelectMethod={handlePaymentMethodChange}
               />
-            )}
-          </div>
-        ))}
-      </div>
 
-      {/* Step labels */}
-      <div className="flex mb-8 text-sm">
-        <div
-          className={`flex-1 text-center ${
-            currentStep === 1 ? "font-semibold text-primary-600" : ""
-          }`}
-        >
-          Shipping
-        </div>
-        <div
-          className={`flex-1 text-center ${
-            currentStep === 2 ? "font-semibold text-primary-600" : ""
-          }`}
-        >
-          Payment
-        </div>
-        <div
-          className={`flex-1 text-center ${
-            currentStep === 3 ? "font-semibold text-primary-600" : ""
-          }`}
-        >
-          Review
-        </div>
-      </div>
+              {/* Order notes */}
+              <div className="mt-4">
+                <label htmlFor="orderNotes" className="form-label">
+                  Order Notes (Optional)
+                </label>
+                <textarea
+                  id="orderNotes"
+                  name="orderNotes"
+                  rows="3"
+                  value={orderNotes}
+                  onChange={handleNotesChange}
+                  className="form-control"
+                  placeholder="Special instructions for delivery"
+                ></textarea>
+              </div>
+            </div>
+          )}
 
-      {/* Error message */}
-      {error && (
-        <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-6">
-          {error}
-        </div>
-      )}
+          {/* Step 3: Review Order */}
+          {currentStep === 3 && (
+            <div>
+              <h4 className="mb-3">Review Your Order</h4>
 
-      {/* Main content based on current step */}
-      <div className="mb-8">
-        {/* Step 1: Shipping Address */}
-        {currentStep === 1 && (
-          <div>
-            <h2 className="text-xl font-bold mb-4">Shipping Address</h2>
-
-            {/* Address selection for logged in users */}
-            {isAuthenticated && addresses.length > 0 && (
-              <div className="mb-6">
-                <div className="flex justify-between items-center mb-4">
-                  <h3 className="font-medium">Saved Addresses</h3>
-                  <button
-                    type="button"
-                    onClick={() => setShowAddressForm(!showAddressForm)}
-                    className="text-primary-600 hover:text-primary-700 text-sm font-medium"
-                  >
-                    {showAddressForm ? "Use Saved Address" : "Add New Address"}
-                  </button>
+              {/* Order items */}
+              <div className="card mb-4">
+                <div className="card-header">
+                  <h5 className="mb-0">Order Items ({cart.itemCount || 0})</h5>
                 </div>
 
-                {!showAddressForm && (
-                  <div className="space-y-3">
-                    {addresses.map((address) => (
-                      <div
-                        key={address._id}
-                        className={`border p-4 rounded-md cursor-pointer ${
-                          selectedAddressId === address._id
-                            ? "border-primary-600 bg-primary-50"
-                            : "border-gray-300 hover:border-primary-300"
-                        }`}
-                        onClick={() => setSelectedAddressId(address._id)}
-                      >
-                        <div className="flex justify-between">
-                          <div className="font-medium">{address.fullName}</div>
-                          {address.isDefault && (
-                            <span className="bg-green-100 text-green-800 text-xs px-2 py-1 rounded">
-                              Default
-                            </span>
-                          )}
-                        </div>
-                        <div className="text-gray-600 text-sm mt-1">
-                          {address.phoneNumber}
-                        </div>
-                        <div className="text-gray-800 text-sm mt-2">
-                          {address.addressLine1}
-                          {address.addressLine2 && (
-                            <span>, {address.addressLine2}</span>
-                          )}
-                          <br />
-                          {address.city}, {address.state} {address.postalCode}
-                          <br />
-                          {address.country}
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </div>
-            )}
+                <div className="card-body p-0">
+                  <ul className="list-group list-group-flush">
+                    {cart.items &&
+                      cart.items.map((item) => {
+                        const product = item.productVariantId.productId;
+                        const variant = item.productVariantId;
 
-            {/* Address form (for new addresses or guest checkout) */}
-            {(showAddressForm || !isAuthenticated) && (
-              <AddressForm
-                formData={addressFormData}
-                onChange={handleAddressChange}
-              />
-            )}
-          </div>
-        )}
-
-        {/* Step 2: Payment Method */}
-        {currentStep === 2 && (
-          <div>
-            <h2 className="text-xl font-bold mb-4">Payment Method</h2>
-
-            <PaymentForm
-              selectedMethod={paymentMethod}
-              onSelectMethod={handlePaymentMethodChange}
-            />
-
-            {/* Order notes */}
-            <div className="mt-6">
-              <label
-                htmlFor="orderNotes"
-                className="block text-sm font-medium text-gray-700 mb-1"
-              >
-                Order Notes (Optional)
-              </label>
-              <textarea
-                id="orderNotes"
-                name="orderNotes"
-                rows="3"
-                value={orderNotes}
-                onChange={handleNotesChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-primary-500 focus:border-primary-500"
-                placeholder="Special instructions for delivery"
-              ></textarea>
-            </div>
-          </div>
-        )}
-
-        {/* Step 3: Review Order */}
-        {currentStep === 3 && (
-          <div>
-            <h2 className="text-xl font-bold mb-4">Review Your Order</h2>
-
-            {/* Order items */}
-            <div className="border rounded-md mb-6">
-              <div className="border-b p-4">
-                <h3 className="font-medium">
-                  Order Items ({cart.itemCount || 0})
-                </h3>
-              </div>
-
-              <div className="p-4 divide-y">
-                {cart.items &&
-                  cart.items.map((item) => {
-                    const product = item.productVariantId.productId;
-                    const variant = item.productVariantId;
-
-                    return (
-                      <div
-                        key={item.productVariantId._id}
-                        className="py-3 flex items-center"
-                      >
-                        <div className="flex-shrink-0 w-16 h-16 border rounded-md overflow-hidden">
-                          {variant.images && variant.images.length > 0 ? (
-                            <img
-                              src={variant.images[0].imageUrl}
-                              alt={product?.name || "Product"}
-                              className="w-full h-full object-contain"
-                            />
-                          ) : (
-                            <div className="w-full h-full bg-gray-200 flex items-center justify-center">
-                              <span className="text-gray-500 text-xs">
-                                No image
-                              </span>
+                        return (
+                          <li
+                            key={item.productVariantId._id}
+                            className="list-group-item py-3"
+                          >
+                            <div className="d-flex align-items-center">
+                              <div
+                                className="border rounded me-3"
+                                style={{ width: "60px", height: "60px" }}
+                              >
+                                {variant.images && variant.images.length > 0 ? (
+                                  <img
+                                    src={variant.images[0].imageUrl}
+                                    alt={product?.name || "Product"}
+                                    className="w-100 h-100 object-fit-contain"
+                                  />
+                                ) : (
+                                  <div className="w-100 h-100 bg-light d-flex align-items-center justify-content-center">
+                                    <span className="text-muted small">
+                                      No image
+                                    </span>
+                                  </div>
+                                )}
+                              </div>
+                              <div className="flex-grow-1">
+                                <div className="fw-medium">
+                                  {product?.name || "Product"}
+                                </div>
+                                <div className="small text-muted">
+                                  {variant?.name || "Variant"}
+                                </div>
+                              </div>
+                              <div className="text-end">
+                                <div className="fw-medium">
+                                  ₫{formatPrice(item.price)}
+                                </div>
+                                <div className="small text-muted">
+                                  x{item.quantity}
+                                </div>
+                              </div>
                             </div>
-                          )}
+                          </li>
+                        );
+                      })}
+                  </ul>
+                </div>
+              </div>
+
+              {/* Shipping address */}
+              <div className="card mb-4">
+                <div className="card-header d-flex justify-content-between align-items-center">
+                  <h5 className="mb-0">Shipping Address</h5>
+                  {currentStep === totalSteps && (
+                    <button
+                      type="button"
+                      onClick={() => setCurrentStep(1)}
+                      className="btn btn-link text-danger p-0"
+                    >
+                      Change
+                    </button>
+                  )}
+                </div>
+                <div className="card-body">
+                  {selectedAddressId ? (
+                    // Show selected address
+                    (() => {
+                      const address = addresses.find(
+                        (addr) => addr._id === selectedAddressId
+                      );
+                      if (!address) return null;
+
+                      return (
+                        <div>
+                          <div className="fw-medium">{address.fullName}</div>
+                          <div className="text-muted small">
+                            {address.phoneNumber}
+                          </div>
+                          <div className="mt-2">
+                            {address.addressLine1}
+                            {address.addressLine2 && (
+                              <span>, {address.addressLine2}</span>
+                            )}
+                            <br />
+                            {address.city}, {address.state} {address.postalCode}
+                            <br />
+                            {address.country}
+                          </div>
                         </div>
-                        <div className="ml-4 flex-grow">
-                          <div className="font-medium">
-                            {product?.name || "Product"}
-                          </div>
-                          <div className="text-sm text-gray-600">
-                            {variant?.name || "Variant"}
-                          </div>
-                        </div>
-                        <div className="text-right">
-                          <div className="font-medium">
-                            ₫{formatPrice(item.price)}
-                          </div>
-                          <div className="text-sm text-gray-600">
-                            x{item.quantity}
-                          </div>
-                        </div>
+                      );
+                    })()
+                  ) : (
+                    // Show address form data
+                    <div>
+                      <div className="fw-medium">
+                        {addressFormData.fullName}
                       </div>
-                    );
-                  })}
-              </div>
-            </div>
-
-            {/* Shipping address */}
-            <div className="border rounded-md mb-6">
-              <div className="border-b p-4 flex justify-between items-center">
-                <h3 className="font-medium">Shipping Address</h3>
-                {currentStep === totalSteps && (
-                  <button
-                    type="button"
-                    onClick={() => setCurrentStep(1)}
-                    className="text-primary-600 hover:text-primary-700 text-sm font-medium"
-                  >
-                    Change
-                  </button>
-                )}
-              </div>
-              <div className="p-4">
-                {selectedAddressId ? (
-                  // Show selected address
-                  (() => {
-                    const address = addresses.find(
-                      (addr) => addr._id === selectedAddressId
-                    );
-                    if (!address) return null;
-
-                    return (
-                      <div>
-                        <div className="font-medium">{address.fullName}</div>
-                        <div className="text-gray-600 text-sm">
-                          {address.phoneNumber}
-                        </div>
-                        <div className="text-gray-800 text-sm mt-2">
-                          {address.addressLine1}
-                          {address.addressLine2 && (
-                            <span>, {address.addressLine2}</span>
-                          )}
-                          <br />
-                          {address.city}, {address.state} {address.postalCode}
-                          <br />
-                          {address.country}
-                        </div>
+                      <div className="text-muted small">
+                        {addressFormData.phoneNumber}
                       </div>
-                    );
-                  })()
-                ) : (
-                  // Show address form data
-                  <div>
-                    <div className="font-medium">
-                      {addressFormData.fullName}
+                      <div className="mt-2">
+                        {addressFormData.addressLine1}
+                        {addressFormData.addressLine2 && (
+                          <span>, {addressFormData.addressLine2}</span>
+                        )}
+                        <br />
+                        {addressFormData.city}, {addressFormData.state}{" "}
+                        {addressFormData.postalCode}
+                        <br />
+                        {addressFormData.country}
+                      </div>
                     </div>
-                    <div className="text-gray-600 text-sm">
-                      {addressFormData.phoneNumber}
-                    </div>
-                    <div className="text-gray-800 text-sm mt-2">
-                      {addressFormData.addressLine1}
-                      {addressFormData.addressLine2 && (
-                        <span>, {addressFormData.addressLine2}</span>
-                      )}
-                      <br />
-                      {addressFormData.city}, {addressFormData.state}{" "}
-                      {addressFormData.postalCode}
-                      <br />
-                      {addressFormData.country}
-                    </div>
+                  )}
+                </div>
+              </div>
+
+              {/* Payment method */}
+              <div className="card mb-4">
+                <div className="card-header d-flex justify-content-between align-items-center">
+                  <h5 className="mb-0">Payment Method</h5>
+                  {currentStep === totalSteps && (
+                    <button
+                      type="button"
+                      onClick={() => setCurrentStep(2)}
+                      className="btn btn-link text-danger p-0"
+                    >
+                      Change
+                    </button>
+                  )}
+                </div>
+                <div className="card-body">
+                  <div className="fw-medium">
+                    {paymentMethod === "cod" && "Cash on Delivery"}
+                    {paymentMethod === "bank" && "Bank Transfer"}
+                    {paymentMethod === "credit" && "Credit Card"}
                   </div>
-                )}
-              </div>
-            </div>
-
-            {/* Payment method */}
-            <div className="border rounded-md mb-6">
-              <div className="border-b p-4 flex justify-between items-center">
-                <h3 className="font-medium">Payment Method</h3>
-                {currentStep === totalSteps && (
-                  <button
-                    type="button"
-                    onClick={() => setCurrentStep(2)}
-                    className="text-primary-600 hover:text-primary-700 text-sm font-medium"
-                  >
-                    Change
-                  </button>
-                )}
-              </div>
-              <div className="p-4">
-                <div className="font-medium">
-                  {paymentMethod === "cod" && "Cash on Delivery"}
-                  {paymentMethod === "bank" && "Bank Transfer"}
-                  {paymentMethod === "credit" && "Credit Card"}
+                  {paymentMethod === "bank" && (
+                    <div className="text-muted small mt-2">
+                      Please transfer the amount to our bank account within 24
+                      hours to process your order.
+                    </div>
+                  )}
                 </div>
-                {paymentMethod === "bank" && (
-                  <div className="text-gray-600 text-sm mt-2">
-                    Please transfer the amount to our bank account within 24
-                    hours to process your order.
+              </div>
+
+              {/* Order notes */}
+              {orderNotes && (
+                <div className="card mb-4">
+                  <div className="card-header">
+                    <h5 className="mb-0">Order Notes</h5>
                   </div>
-                )}
-              </div>
-            </div>
-
-            {/* Order notes */}
-            {orderNotes && (
-              <div className="border rounded-md mb-6">
-                <div className="border-b p-4">
-                  <h3 className="font-medium">Order Notes</h3>
+                  <div className="card-body">
+                    <p className="mb-0">{orderNotes}</p>
+                  </div>
                 </div>
-                <div className="p-4">
-                  <p className="text-gray-700">{orderNotes}</p>
-                </div>
-              </div>
-            )}
+              )}
 
-            {/* Order summary */}
-            <div className="border rounded-md mb-6">
-              <div className="border-b p-4">
-                <h3 className="font-medium">Order Summary</h3>
-              </div>
-              <div className="p-4">
-                <div className="space-y-2">
-                  <div className="flex justify-between">
-                    <span className="text-gray-600">Subtotal</span>
+              {/* Order summary */}
+              <div className="card mb-4">
+                <div className="card-header">
+                  <h5 className="mb-0">Order Summary</h5>
+                </div>
+                <div className="card-body">
+                  <div className="d-flex justify-content-between mb-2">
+                    <span className="text-muted">Subtotal</span>
                     <span>₫{formatPrice(subtotal)}</span>
                   </div>
-                  <div className="flex justify-between">
-                    <span className="text-gray-600">Shipping</span>
+                  <div className="d-flex justify-content-between mb-2">
+                    <span className="text-muted">Shipping</span>
                     <span>₫{formatPrice(shipping)}</span>
                   </div>
 
                   {discount > 0 && (
-                    <div className="flex justify-between text-green-600">
+                    <div className="d-flex justify-content-between mb-2 text-success">
                       <span>Discount ({discountData.code})</span>
                       <span>-₫{formatPrice(discount)}</span>
                     </div>
                   )}
 
                   {pointsDiscount > 0 && (
-                    <div className="flex justify-between text-green-600">
+                    <div className="d-flex justify-content-between mb-2 text-success">
                       <span>Loyalty Points ({loyaltyPoints.used} points)</span>
                       <span>-₫{formatPrice(pointsDiscount)}</span>
                     </div>
                   )}
 
-                  <div className="border-t pt-2 mt-2 flex justify-between font-bold">
+                  <hr />
+                  <div className="d-flex justify-content-between fw-bold">
                     <span>Total</span>
-                    <span>₫{formatPrice(total)}</span>
+                    <span className="fs-5">₫{formatPrice(total)}</span>
                   </div>
                 </div>
               </div>
             </div>
-          </div>
-        )}
-      </div>
+          )}
+        </div>
 
-      {/* Navigation buttons */}
-      <div className="flex justify-between">
-        {currentStep > 1 ? (
-          <Button variant="outlined" onClick={prevStep} disabled={loading}>
-            Back
-          </Button>
-        ) : (
-          <div></div> // Empty div for spacing
-        )}
+        {/* Navigation buttons */}
+        <div className="d-flex justify-content-between">
+          {currentStep > 1 ? (
+            <button
+              className="btn btn-outline-secondary"
+              onClick={prevStep}
+              disabled={loading}
+            >
+              <i className="bi bi-arrow-left me-2"></i>Back
+            </button>
+          ) : (
+            <div></div> // Empty div for spacing
+          )}
 
-        {currentStep < totalSteps ? (
-          <Button variant="primary" onClick={nextStep}>
-            Continue
-          </Button>
-        ) : (
-          <Button variant="primary" onClick={placeOrder} disabled={loading}>
-            {loading ? (
-              <span className="flex items-center justify-center">
-                <svg
-                  className="animate-spin -ml-1 mr-2 h-4 w-4 text-white"
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                >
-                  <circle
-                    className="opacity-25"
-                    cx="12"
-                    cy="12"
-                    r="10"
-                    stroke="currentColor"
-                    strokeWidth="4"
-                  ></circle>
-                  <path
-                    className="opacity-75"
-                    fill="currentColor"
-                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                  ></path>
-                </svg>
-                Processing...
-              </span>
-            ) : (
-              "Place Order"
-            )}
-          </Button>
-        )}
+          {currentStep < totalSteps ? (
+            <button className="btn btn-danger" onClick={nextStep}>
+              Continue<i className="bi bi-arrow-right ms-2"></i>
+            </button>
+          ) : (
+            <button
+              className="btn btn-danger"
+              onClick={placeOrder}
+              disabled={loading}
+            >
+              {loading ? (
+                <span>
+                  <span
+                    className="spinner-border spinner-border-sm me-2"
+                    role="status"
+                    aria-hidden="true"
+                  ></span>
+                  Processing...
+                </span>
+              ) : (
+                <span>
+                  Place Order<i className="bi bi-check2-circle ms-2"></i>
+                </span>
+              )}
+            </button>
+          )}
+        </div>
       </div>
     </div>
   );

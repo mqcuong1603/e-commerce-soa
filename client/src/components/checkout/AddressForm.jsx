@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import PropTypes from "prop-types";
 import { useAuth } from "../../contexts/AuthContext";
-import Button from "../ui/Button";
 
 /**
  * Form for collecting shipping address information
@@ -143,261 +142,226 @@ const AddressForm = ({ onSubmit, initialData, savedAddresses }) => {
       <form onSubmit={handleSubmit}>
         {/* Saved Addresses (for authenticated users) */}
         {isAuthenticated && savedAddresses && savedAddresses.length > 0 && (
-          <div className="mb-6">
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+          <div className="mb-4">
+            <label className="form-label fw-medium">
               Select a shipping address
             </label>
-            <div className="space-y-3">
+            <div className="d-flex flex-column gap-3">
               {savedAddresses.map((address) => (
-                <label
-                  key={address._id}
-                  className={`block border rounded-md p-3 cursor-pointer hover:border-primary-500 ${
-                    selectedSavedAddress === address._id
-                      ? "border-primary-500 bg-primary-50"
-                      : "border-gray-300"
-                  }`}
-                >
-                  <div className="flex items-center">
-                    <input
-                      type="radio"
-                      name="savedAddress"
-                      value={address._id}
-                      checked={selectedSavedAddress === address._id}
-                      onChange={handleSavedAddressChange}
-                      className="h-4 w-4 text-primary-600 focus:ring-primary-500 border-gray-300"
-                    />
-                    <div className="ml-3">
-                      <p className="font-medium">{address.fullName}</p>
-                      <p className="text-sm text-gray-500">
-                        {address.addressLine1},
-                        {address.addressLine2
-                          ? `${address.addressLine2}, `
-                          : " "}
-                        {address.city}, {address.state} {address.postalCode},{" "}
-                        {address.country}
-                      </p>
-                      <p className="text-sm text-gray-500">
-                        {address.phoneNumber}
-                      </p>
+                <div key={address._id} className="form-check card border">
+                  <div className="card-body p-3">
+                    <div className="d-flex align-items-start">
+                      <input
+                        type="radio"
+                        className="form-check-input mt-2 me-2"
+                        name="savedAddress"
+                        id={`address-${address._id}`}
+                        value={address._id}
+                        checked={selectedSavedAddress === address._id}
+                        onChange={handleSavedAddressChange}
+                      />
+                      <label
+                        className="form-check-label w-100"
+                        htmlFor={`address-${address._id}`}
+                      >
+                        <div className="fw-medium">{address.fullName}</div>
+                        <div className="text-muted small">
+                          {address.addressLine1},
+                          {address.addressLine2
+                            ? `${address.addressLine2}, `
+                            : " "}
+                          {address.city}, {address.state} {address.postalCode},{" "}
+                          {address.country}
+                        </div>
+                        <div className="text-muted small">
+                          {address.phoneNumber}
+                        </div>
+                      </label>
                     </div>
                   </div>
-                </label>
+                </div>
               ))}
 
-              <label
-                className={`block border rounded-md p-3 cursor-pointer hover:border-primary-500 ${
-                  useNewAddress
-                    ? "border-primary-500 bg-primary-50"
-                    : "border-gray-300"
-                }`}
-              >
-                <div className="flex items-center">
-                  <input
-                    type="radio"
-                    name="savedAddress"
-                    value="new"
-                    checked={useNewAddress}
-                    onChange={handleSavedAddressChange}
-                    className="h-4 w-4 text-primary-600 focus:ring-primary-500 border-gray-300"
-                  />
-                  <div className="ml-3">
-                    <p className="font-medium">Use a new address</p>
+              <div className="form-check card border">
+                <div className="card-body p-3">
+                  <div className="d-flex align-items-start">
+                    <input
+                      type="radio"
+                      className="form-check-input mt-2 me-2"
+                      name="savedAddress"
+                      id="address-new"
+                      value="new"
+                      checked={useNewAddress}
+                      onChange={handleSavedAddressChange}
+                    />
+                    <label
+                      className="form-check-label w-100"
+                      htmlFor="address-new"
+                    >
+                      <div className="fw-medium">Use a new address</div>
+                    </label>
                   </div>
                 </div>
-              </label>
+              </div>
             </div>
           </div>
         )}
 
         {/* New Address Form */}
         {(!savedAddresses || savedAddresses.length === 0 || useNewAddress) && (
-          <div className="space-y-4">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="mt-4">
+            <div className="row g-3">
               {/* Full Name */}
-              <div className="md:col-span-2">
-                <label
-                  htmlFor="fullName"
-                  className="block text-sm font-medium text-gray-700 mb-1"
-                >
-                  Full Name <span className="text-red-500">*</span>
+              <div className="col-12">
+                <label htmlFor="fullName" className="form-label">
+                  Full Name <span className="text-danger">*</span>
                 </label>
                 <input
                   type="text"
+                  className={`form-control ${
+                    errors.fullName ? "is-invalid" : ""
+                  }`}
                   id="fullName"
                   name="fullName"
                   value={formData.fullName}
                   onChange={handleChange}
-                  className={`w-full px-3 py-2 border rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500 ${
-                    errors.fullName ? "border-red-500" : "border-gray-300"
-                  }`}
                   placeholder="John Doe"
                 />
                 {errors.fullName && (
-                  <p className="mt-1 text-sm text-red-600">{errors.fullName}</p>
+                  <div className="invalid-feedback">{errors.fullName}</div>
                 )}
               </div>
 
               {/* Phone Number */}
-              <div className="md:col-span-2">
-                <label
-                  htmlFor="phoneNumber"
-                  className="block text-sm font-medium text-gray-700 mb-1"
-                >
-                  Phone Number <span className="text-red-500">*</span>
+              <div className="col-12">
+                <label htmlFor="phoneNumber" className="form-label">
+                  Phone Number <span className="text-danger">*</span>
                 </label>
                 <input
                   type="tel"
+                  className={`form-control ${
+                    errors.phoneNumber ? "is-invalid" : ""
+                  }`}
                   id="phoneNumber"
                   name="phoneNumber"
                   value={formData.phoneNumber}
                   onChange={handleChange}
-                  className={`w-full px-3 py-2 border rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500 ${
-                    errors.phoneNumber ? "border-red-500" : "border-gray-300"
-                  }`}
                   placeholder="+84 123 456 789"
                 />
                 {errors.phoneNumber && (
-                  <p className="mt-1 text-sm text-red-600">
-                    {errors.phoneNumber}
-                  </p>
+                  <div className="invalid-feedback">{errors.phoneNumber}</div>
                 )}
               </div>
 
               {/* Address Line 1 */}
-              <div className="md:col-span-2">
-                <label
-                  htmlFor="addressLine1"
-                  className="block text-sm font-medium text-gray-700 mb-1"
-                >
-                  Address Line 1 <span className="text-red-500">*</span>
+              <div className="col-12">
+                <label htmlFor="addressLine1" className="form-label">
+                  Address Line 1 <span className="text-danger">*</span>
                 </label>
                 <input
                   type="text"
+                  className={`form-control ${
+                    errors.addressLine1 ? "is-invalid" : ""
+                  }`}
                   id="addressLine1"
                   name="addressLine1"
                   value={formData.addressLine1}
                   onChange={handleChange}
-                  className={`w-full px-3 py-2 border rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500 ${
-                    errors.addressLine1 ? "border-red-500" : "border-gray-300"
-                  }`}
                   placeholder="123 Main St"
                 />
                 {errors.addressLine1 && (
-                  <p className="mt-1 text-sm text-red-600">
-                    {errors.addressLine1}
-                  </p>
+                  <div className="invalid-feedback">{errors.addressLine1}</div>
                 )}
               </div>
 
               {/* Address Line 2 */}
-              <div className="md:col-span-2">
-                <label
-                  htmlFor="addressLine2"
-                  className="block text-sm font-medium text-gray-700 mb-1"
-                >
+              <div className="col-12">
+                <label htmlFor="addressLine2" className="form-label">
                   Address Line 2
                 </label>
                 <input
                   type="text"
+                  className="form-control"
                   id="addressLine2"
                   name="addressLine2"
                   value={formData.addressLine2}
                   onChange={handleChange}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500"
                   placeholder="Apartment, suite, unit, building, floor, etc."
                 />
               </div>
 
               {/* City */}
-              <div>
-                <label
-                  htmlFor="city"
-                  className="block text-sm font-medium text-gray-700 mb-1"
-                >
-                  City <span className="text-red-500">*</span>
+              <div className="col-md-6">
+                <label htmlFor="city" className="form-label">
+                  City <span className="text-danger">*</span>
                 </label>
                 <input
                   type="text"
+                  className={`form-control ${errors.city ? "is-invalid" : ""}`}
                   id="city"
                   name="city"
                   value={formData.city}
                   onChange={handleChange}
-                  className={`w-full px-3 py-2 border rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500 ${
-                    errors.city ? "border-red-500" : "border-gray-300"
-                  }`}
                   placeholder="Ho Chi Minh City"
                 />
                 {errors.city && (
-                  <p className="mt-1 text-sm text-red-600">{errors.city}</p>
+                  <div className="invalid-feedback">{errors.city}</div>
                 )}
               </div>
 
               {/* State/Province */}
-              <div>
-                <label
-                  htmlFor="state"
-                  className="block text-sm font-medium text-gray-700 mb-1"
-                >
-                  State/Province <span className="text-red-500">*</span>
+              <div className="col-md-6">
+                <label htmlFor="state" className="form-label">
+                  State/Province <span className="text-danger">*</span>
                 </label>
                 <input
                   type="text"
+                  className={`form-control ${errors.state ? "is-invalid" : ""}`}
                   id="state"
                   name="state"
                   value={formData.state}
                   onChange={handleChange}
-                  className={`w-full px-3 py-2 border rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500 ${
-                    errors.state ? "border-red-500" : "border-gray-300"
-                  }`}
                   placeholder="Ho Chi Minh"
                 />
                 {errors.state && (
-                  <p className="mt-1 text-sm text-red-600">{errors.state}</p>
+                  <div className="invalid-feedback">{errors.state}</div>
                 )}
               </div>
 
               {/* Postal Code */}
-              <div>
-                <label
-                  htmlFor="postalCode"
-                  className="block text-sm font-medium text-gray-700 mb-1"
-                >
-                  Postal Code <span className="text-red-500">*</span>
+              <div className="col-md-6">
+                <label htmlFor="postalCode" className="form-label">
+                  Postal Code <span className="text-danger">*</span>
                 </label>
                 <input
                   type="text"
+                  className={`form-control ${
+                    errors.postalCode ? "is-invalid" : ""
+                  }`}
                   id="postalCode"
                   name="postalCode"
                   value={formData.postalCode}
                   onChange={handleChange}
-                  className={`w-full px-3 py-2 border rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500 ${
-                    errors.postalCode ? "border-red-500" : "border-gray-300"
-                  }`}
                   placeholder="70000"
                 />
                 {errors.postalCode && (
-                  <p className="mt-1 text-sm text-red-600">
-                    {errors.postalCode}
-                  </p>
+                  <div className="invalid-feedback">{errors.postalCode}</div>
                 )}
               </div>
 
               {/* Country */}
-              <div>
-                <label
-                  htmlFor="country"
-                  className="block text-sm font-medium text-gray-700 mb-1"
-                >
-                  Country <span className="text-red-500">*</span>
+              <div className="col-md-6">
+                <label htmlFor="country" className="form-label">
+                  Country <span className="text-danger">*</span>
                 </label>
                 <select
+                  className={`form-select ${
+                    errors.country ? "is-invalid" : ""
+                  }`}
                   id="country"
                   name="country"
                   value={formData.country}
                   onChange={handleChange}
-                  className={`w-full px-3 py-2 border rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500 ${
-                    errors.country ? "border-red-500" : "border-gray-300"
-                  }`}
                 >
                   <option value="Vietnam">Vietnam</option>
                   <option value="Singapore">Singapore</option>
@@ -409,24 +373,21 @@ const AddressForm = ({ onSubmit, initialData, savedAddresses }) => {
                   <option value="Other">Other</option>
                 </select>
                 {errors.country && (
-                  <p className="mt-1 text-sm text-red-600">{errors.country}</p>
+                  <div className="invalid-feedback">{errors.country}</div>
                 )}
               </div>
 
               {/* Save Address Checkbox (Only for authenticated users) */}
               {isAuthenticated && (
-                <div className="md:col-span-2">
-                  <div className="flex items-center">
+                <div className="col-12">
+                  <div className="form-check mt-2">
                     <input
+                      className="form-check-input"
+                      type="checkbox"
                       id="saveAddress"
                       name="saveAddress"
-                      type="checkbox"
-                      className="h-4 w-4 text-primary-600 focus:ring-primary-500 border-gray-300 rounded"
                     />
-                    <label
-                      htmlFor="saveAddress"
-                      className="ml-2 block text-sm text-gray-700"
-                    >
+                    <label className="form-check-label" htmlFor="saveAddress">
                       Save this address for future orders
                     </label>
                   </div>
@@ -436,10 +397,10 @@ const AddressForm = ({ onSubmit, initialData, savedAddresses }) => {
           </div>
         )}
 
-        <div className="mt-8">
-          <Button type="submit" variant="primary" fullWidth>
+        <div className="mt-4">
+          <button type="submit" className="btn btn-danger w-100">
             Continue to Payment
-          </Button>
+          </button>
         </div>
       </form>
     </div>
