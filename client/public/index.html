@@ -3,9 +3,64 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>E-commerce App</title>
+
+    <!-- Updated Content Security Policy to allow API connections -->
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdnjs.cloudflare.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https:; connect-src 'self' http://localhost:3000 http://server:3000 ws://localhost:3000 ws://server:3000; object-src 'none';"
+    />
+
+    <!-- Favicon -->
+    <link rel="icon" href="%PUBLIC_URL%/favicon.ico" />
+
+    <!-- SEO Meta Tags -->
+    <meta
+      name="description"
+      content="E-commerce computer hardware store offering quality components and tech products."
+    />
+    <meta
+      name="keywords"
+      content="computer, hardware, e-commerce, tech, components"
+    />
+    <meta name="author" content="Your Name" />
+
+    <!-- Open Graph / Social Media Meta Tags -->
+    <meta
+      property="og:title"
+      content="TechShop - Computer Hardware E-commerce"
+    />
+    <meta
+      property="og:description"
+      content="Quality computer parts and components at competitive prices."
+    />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="http://localhost:8080" />
+    <meta property="og:image" content="%PUBLIC_URL%/og-image.png" />
+
+    <!-- Theme Color for Browser -->
+    <meta name="theme-color" content="#dc2626" />
+
+    <!-- Apple Touch Icon -->
+    <link rel="apple-touch-icon" href="%PUBLIC_URL%/logo192.png" />
+
+    <!-- Web Manifest -->
+    <link rel="manifest" href="%PUBLIC_URL%/manifest.json" />
+
+    <!-- Preconnect to External Domains -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="preconnect" href="https://cdnjs.cloudflare.com" />
+
+    <!-- Google Fonts -->
+    <link
+      href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap"
+      rel="stylesheet"
+    />
+
+    <title>TechShop - Computer Hardware E-commerce</title>
   </head>
   <body>
+    <noscript>You need to enable JavaScript to run this app.</noscript>
     <div id="root"></div>
   </body>
 </html>
