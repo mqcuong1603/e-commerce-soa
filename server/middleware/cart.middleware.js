@@ -1,61 +1,46 @@
 import Cart from "../models/cart.model.js";
 
-/**
- * Middleware to get or create a cart
- * This handles both logged in users (using userId) and guests (using sessionId)
- */
 export const cartMiddleware = async (req, res, next) => {
   try {
-    const userId = req.user ? req.user._id : null;
-    const sessionId = req.session.id;
+    // Use Express session ID consistently
+    const sessionId = req.sessionID || req.session.id;
+    console.log(`Using Express session ID: ${sessionId}`);
 
     let cart;
 
-    // If user is logged in, find cart by userId
-    if (userId) {
-      cart = await Cart.findOne({ userId });
+    // For logged-in users
+    if (req.user && req.user._id) {
+      cart = await Cart.findOne({ userId: req.user._id });
 
-      // If user has a cart but was previously shopping as guest,
-      // check for a session cart and merge them
       if (!cart) {
+        // Look for a session cart and transfer ownership
         const sessionCart = await Cart.findOne({ sessionId });
 
         if (sessionCart) {
-          // Transfer ownership of the session cart to the user
-          await sessionCart.transferCart(userId);
-          cart = sessionCart;
+          sessionCart.userId = req.user._id;
+          cart = await sessionCart.save();
+          console.log("Transferred session cart to user");
         } else {
-          // Create new cart for user
-          cart = new Cart({ userId });
+          cart = new Cart({ userId: req.user._id, sessionId });
           await cart.save();
+          console.log("Created new user cart");
         }
       }
     } else {
-      // Guest user - find cart by sessionId or create a new one
+      // Handle guest users with session
       cart = await Cart.findOne({ sessionId });
 
       if (!cart) {
+        // Create a new cart for this session
         cart = new Cart({ sessionId });
         await cart.save();
+        console.log(`Created new cart for session ${sessionId}`);
+      } else {
+        console.log(`Found existing cart for session ${sessionId}`);
       }
     }
 
-    // Populate the cart with product details
-    await cart.populate({
-      path: "items.productVariantId",
-      populate: [
-        {
-          path: "productId",
-          select: "name slug brand",
-        },
-        {
-          path: "images",
-          match: { isMain: true },
-          options: { limit: 1 },
-        },
-      ],
-    });
-
+    // Store cart in the request for controllers to use
     req.cart = cart;
     next();
   } catch (error) {

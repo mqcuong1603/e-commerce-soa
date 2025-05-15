@@ -128,7 +128,7 @@ const seedCategories = async () => {
   const createdCategories = {};
 
   // Create main categories first
-  const mainCategories = categoriesData.filter((cat) => !cat.parentId);
+  const mainCategories = categoriesData.filter((cat) => !cat.parentName);
   for (const category of mainCategories) {
     const newCategory = new Category(category);
     await newCategory.save();
@@ -136,12 +136,16 @@ const seedCategories = async () => {
   }
 
   // Then create subcategories (which need parent IDs)
-  const subCategories = categoriesData.filter((cat) => cat.parentId);
+  const subCategories = categoriesData.filter((cat) => cat.parentName);
   for (const category of subCategories) {
     // Replace parent name with parent ID
     const parentName = category.parentName;
     if (parentName && createdCategories[parentName]) {
       category.parentId = createdCategories[parentName]._id;
+    } else {
+      console.log(
+        `Parent category "${parentName}" not found for "${category.name}"`
+      );
     }
     delete category.parentName; // Remove the helper field
 

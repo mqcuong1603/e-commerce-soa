@@ -1,13 +1,12 @@
 import express from "express";
 import mongoose from "mongoose";
-import cors from "cors";
 import path from "path";
 import { fileURLToPath } from "url";
 import passport from "passport";
-import session from "express-session";
 import { createServer } from "http";
 import { Server } from "socket.io";
 import dotenv from "dotenv";
+import cookieParser from "cookie-parser";
 
 // Import route files
 import authRoutes from "./routes/auth.routes.js";
@@ -20,11 +19,16 @@ import orderRoutes from "./routes/order.routes.js";
 import discountRoutes from "./routes/discount.routes.js";
 import adminOrderRoutes from "./routes/admin/order.routes.js";
 
-// Import middleware
+// Import middleware configuration
 import {
-  responseMiddleware,
-  errorHandler,
-} from "./middleware/response.middleware.js";
+  configureMiddleware,
+  configureErrorHandlers,
+} from "./middleware/config.middleware.js";
+
+// Import error handler
+import { errorHandler } from "./middleware/response.middleware.js";
+
+// Import auth middleware
 import {
   authMiddleware,
   adminMiddleware,
@@ -43,42 +47,30 @@ dotenv.config();
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
+const CLIENT_URL = process.env.CLIENT_URL || "http://localhost:8080";
+
 // Create Express app
 const app = express();
 const httpServer = createServer(app);
 const io = new Server(httpServer, {
   cors: {
-    origin: process.env.CLIENT_URL || "http://localhost:3000",
+    origin: CLIENT_URL,
     methods: ["GET", "POST"],
     credentials: true,
   },
 });
 
-// Configure middleware
-app.use(
-  cors({
-    origin: process.env.CLIENT_URL || "http://localhost:3000",
-    credentials: true,
-  })
-);
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
-app.use(express.static(path.join(__dirname, "public")));
-app.use(responseMiddleware);
-
-// Session configuration
-app.use(
-  session({
-    secret: process.env.SESSION_SECRET || "your-secret-key",
-    resave: false,
-    saveUninitialized: false, // Changed to false for better security
-    cookie: {
-      secure: process.env.NODE_ENV === "production",
-      maxAge: 24 * 60 * 60 * 1000, // 24 hours
-      sameSite: process.env.NODE_ENV === "production" ? "none" : "lax", // Important for cross-site cookies in production
-    },
-  })
-);
+// Configure middleware using the centralized configuration
+configureMiddleware(
+  app,
+  {
+    sessionSecret: process.env.SESSION_SECRET || "your-secret-key",
+    nodeEnv: process.env.NODE_ENV || "development",
+    clientUrl: CLIENT_URL || "http://localhost:8080",
+    staticPath: path.join(__dirname, "public"),
+  },
+  console
+); // Using console as logger
 
 // Initialize passport
 app.use(passport.initialize());
@@ -150,13 +142,8 @@ io.on("connection", (socket) => {
   });
 });
 
-// Error handling middleware (should be last)
-app.use(errorHandler);
-
-// Handle 404
-app.use((req, res) => {
-  res.status(404).json({ message: "Route not found" });
-});
+// Configure error handlers
+configureErrorHandlers(app, errorHandler);
 
 // Graceful shutdown handling
 process.on("SIGTERM", () => {

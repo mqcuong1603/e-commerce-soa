@@ -8,7 +8,17 @@ import { ApiError } from "../middleware/response.middleware.js";
  */
 export const getCart = async (req, res, next) => {
   try {
-    return res.success(req.cart);
+    console.log(`Session ID in getCart: ${req.session.id}`);
+    console.log(`User: ${req.user ? req.user._id : "Guest"}`);
+
+    // Ensure session is properly saved before responding
+    req.session.save((err) => {
+      if (err) {
+        return next(err);
+      }
+
+      return res.success(req.cart);
+    });
   } catch (error) {
     next(error);
   }
@@ -20,6 +30,7 @@ export const getCart = async (req, res, next) => {
 export const addItemToCart = async (req, res, next) => {
   try {
     const { productVariantId, quantity } = req.body;
+    console.log(`Session ID in addItemToCart: ${req.session.id}`);
 
     if (!productVariantId || !quantity || quantity < 1) {
       throw new ApiError("Invalid product or quantity", 400);
@@ -37,13 +48,20 @@ export const addItemToCart = async (req, res, next) => {
       throw new ApiError(`Only ${variant.inventory} items available`, 400);
     }
 
-    // Get the current price (sale price or regular price)
+    // Get the current price
     const price = variant.currentPrice;
 
     // Add item to cart
     await req.cart.addItem(productVariantId, quantity, price);
 
-    return res.success(req.cart, "Item added to cart");
+    // Ensure session is saved before sending response
+    req.session.save((err) => {
+      if (err) {
+        return next(err);
+      }
+
+      return res.success(req.cart, "Item added to cart");
+    });
   } catch (error) {
     next(error);
   }
@@ -56,6 +74,7 @@ export const updateCartItem = async (req, res, next) => {
   try {
     const { productVariantId } = req.params;
     const { quantity } = req.body;
+    console.log(`Session ID in updateCartItem: ${req.session.id}`);
 
     if (!quantity || quantity < 1) {
       throw new ApiError("Invalid quantity", 400);
@@ -76,7 +95,14 @@ export const updateCartItem = async (req, res, next) => {
     // Update the cart item
     await req.cart.updateItem(productVariantId, quantity);
 
-    return res.success(req.cart, "Cart updated");
+    // Ensure session is saved before sending response
+    req.session.save((err) => {
+      if (err) {
+        return next(err);
+      }
+
+      return res.success(req.cart, "Cart updated");
+    });
   } catch (error) {
     next(error);
   }
@@ -88,11 +114,19 @@ export const updateCartItem = async (req, res, next) => {
 export const removeCartItem = async (req, res, next) => {
   try {
     const { productVariantId } = req.params;
+    console.log(`Session ID in removeCartItem: ${req.session.id}`);
 
     // Remove item from cart
     await req.cart.removeItem(productVariantId);
 
-    return res.success(req.cart, "Item removed from cart");
+    // Ensure session is saved before sending response
+    req.session.save((err) => {
+      if (err) {
+        return next(err);
+      }
+
+      return res.success(req.cart, "Item removed from cart");
+    });
   } catch (error) {
     next(error);
   }
@@ -103,8 +137,17 @@ export const removeCartItem = async (req, res, next) => {
  */
 export const clearCart = async (req, res, next) => {
   try {
+    console.log(`Session ID in clearCart: ${req.session.id}`);
     await req.cart.clearCart();
-    return res.success(req.cart, "Cart cleared");
+
+    // Ensure session is saved before sending response
+    req.session.save((err) => {
+      if (err) {
+        return next(err);
+      }
+
+      return res.success(req.cart, "Cart cleared");
+    });
   } catch (error) {
     next(error);
   }

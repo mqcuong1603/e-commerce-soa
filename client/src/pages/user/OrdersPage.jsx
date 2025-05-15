@@ -92,22 +92,22 @@ const OrdersPage = () => {
   };
 
   // Get status badge color based on status
-  const getStatusColor = (status) => {
+  const getStatusBadgeClass = (status) => {
     switch (status) {
       case "pending":
-        return "bg-yellow-100 text-yellow-800";
+        return "bg-warning text-dark";
       case "confirmed":
-        return "bg-blue-100 text-blue-800";
+        return "bg-primary text-white";
       case "processing":
-        return "bg-indigo-100 text-indigo-800";
+        return "bg-info text-dark";
       case "shipping":
-        return "bg-purple-100 text-purple-800";
+        return "bg-secondary text-white";
       case "delivered":
-        return "bg-green-100 text-green-800";
+        return "bg-success text-white";
       case "cancelled":
-        return "bg-red-100 text-red-800";
+        return "bg-danger text-white";
       default:
-        return "bg-gray-100 text-gray-800";
+        return "bg-light text-dark";
     }
   };
 
@@ -121,86 +121,96 @@ const OrdersPage = () => {
   // Loading state
   if (loading && orders.length === 0) {
     return (
-      <div className="container mx-auto px-4 py-12">
-        <Loader text="Loading your orders..." />
+      <div className="container py-5">
+        <div className="d-flex justify-content-center">
+          <Loader text="Loading your orders..." />
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="container mx-auto px-4 py-12">
-      <h1 className="text-2xl font-bold mb-8">My Orders</h1>
+    <div className="container py-5">
+      <h1 className="display-5 fw-bold mb-4 text-primary">My Orders</h1>
 
       {/* Error message */}
       {error && (
-        <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-6">
-          {error}
+        <div
+          className="alert alert-danger d-flex align-items-center mb-4"
+          role="alert"
+        >
+          <i className="bi bi-exclamation-triangle-fill me-2"></i>
+          <div>{error}</div>
         </div>
       )}
 
       {/* Orders list */}
       {orders.length > 0 ? (
-        <div className="space-y-6">
+        <div className="mb-4">
           {orders.map((order) => (
-            <Card
+            <div
               key={order._id}
-              className="p-0 overflow-hidden"
-              hoverable
+              className="card shadow-sm mb-4 border-0 hover-shadow"
+              style={{ cursor: "pointer", transition: "all 0.2s ease" }}
               onClick={() => navigate(`/orders/${order._id}`)}
             >
-              <div className="p-6">
-                <div className="flex flex-col md:flex-row md:justify-between md:items-center">
-                  <div>
-                    <h2 className="text-lg font-semibold">
+              <div className="card-body p-4">
+                <div className="row align-items-center">
+                  <div className="col-md-6">
+                    <h5 className="card-title fw-bold mb-1">
                       Order #{order.orderNumber}
-                    </h2>
-                    <p className="text-sm text-gray-500">
+                    </h5>
+                    <p className="card-text text-muted small">
+                      <i className="bi bi-calendar3 me-1"></i>
                       Placed on {formatDate(order.createdAt)}
                     </p>
                   </div>
 
-                  <div className="mt-4 md:mt-0 flex items-center">
+                  <div className="col-md-6 text-md-end mt-3 mt-md-0">
                     <span
-                      className={`inline-block rounded-full px-3 py-1 text-xs font-semibold ${getStatusColor(
+                      className={`badge ${getStatusBadgeClass(
                         order.status[0]?.status
-                      )}`}
+                      )} py-2 px-3 me-3`}
                     >
+                      <i className="bi bi-circle-fill me-1 small"></i>
                       {formatStatus(order.status[0]?.status)}
                     </span>
-                    <span className="ml-4 font-bold">
+                    <span className="fw-bold fs-5 text-danger">
                       ₫{formatPrice(order.total)}
                     </span>
                   </div>
                 </div>
 
                 {/* Order items preview */}
-                <div className="mt-6 border-t pt-4">
-                  <div className="flex flex-wrap gap-2">
+                <div className="mt-4 pt-3 border-top">
+                  <div className="d-flex flex-wrap gap-2">
                     {order.items.slice(0, 4).map((item) => (
                       <div
                         key={item._id}
-                        className="flex-shrink-0 w-16 h-16 border rounded-md overflow-hidden bg-white"
+                        className="border rounded p-1 bg-white"
+                        style={{ width: "60px", height: "60px" }}
                       >
                         {item.productImageUrl ? (
                           <img
                             src={item.productImageUrl}
                             alt={item.productName}
-                            className="w-full h-full object-contain"
+                            className="img-fluid object-fit-contain h-100 w-100"
                           />
                         ) : (
-                          <div className="w-full h-full bg-gray-200 flex items-center justify-center">
-                            <span className="text-gray-500 text-xs">
-                              No image
-                            </span>
+                          <div className="d-flex align-items-center justify-content-center h-100 bg-light">
+                            <span className="text-muted small">No image</span>
                           </div>
                         )}
                       </div>
                     ))}
 
                     {order.items.length > 4 && (
-                      <div className="flex-shrink-0 w-16 h-16 border rounded-md bg-gray-100 flex items-center justify-center">
-                        <span className="text-gray-600 text-sm font-medium">
-                          +{order.items.length - 4} more
+                      <div
+                        className="border rounded d-flex align-items-center justify-content-center bg-light"
+                        style={{ width: "60px", height: "60px" }}
+                      >
+                        <span className="text-muted small fw-medium">
+                          +{order.items.length - 4}
                         </span>
                       </div>
                     )}
@@ -209,55 +219,43 @@ const OrdersPage = () => {
               </div>
 
               {/* Order actions */}
-              <div className="bg-gray-50 px-6 py-3 flex justify-between items-center border-t">
-                <div className="text-sm text-gray-500">
+              <div className="card-footer bg-light border-top px-4 py-3 d-flex justify-content-between align-items-center">
+                <div className="text-muted small">
+                  <i className="bi bi-box me-1"></i>
                   {order.items.length}{" "}
                   {order.items.length === 1 ? "item" : "items"}
                 </div>
-                <Button
-                  variant="primary"
-                  size="small"
+                <button
+                  className="btn btn-sm btn-outline-primary"
                   onClick={(e) => {
                     e.stopPropagation();
                     navigate(`/orders/${order._id}`);
                   }}
                 >
-                  View Details
-                </Button>
+                  <i className="bi bi-eye me-1"></i> View Details
+                </button>
               </div>
-            </Card>
+            </div>
           ))}
 
           {/* Pagination */}
           {pagination.totalPages > 1 && (
-            <div className="flex justify-center mt-8">
-              <nav aria-label="Pagination">
-                <ul className="flex items-center">
+            <div className="d-flex justify-content-center mt-5">
+              <nav aria-label="Order pagination">
+                <ul className="pagination">
                   {/* Previous page button */}
-                  <li>
+                  <li
+                    className={`page-item ${
+                      pagination.page === 1 ? "disabled" : ""
+                    }`}
+                  >
                     <button
+                      className="page-link"
                       onClick={() => handlePageChange(pagination.page - 1)}
-                      disabled={pagination.page === 1}
-                      className={`relative inline-flex items-center px-2 py-2 rounded-l-md border ${
-                        pagination.page === 1
-                          ? "border-gray-300 bg-white text-gray-300 cursor-not-allowed"
-                          : "border-gray-300 bg-white text-gray-500 hover:bg-gray-50"
-                      }`}
                       aria-label="Previous"
+                      disabled={pagination.page === 1}
                     >
-                      <svg
-                        className="h-5 w-5"
-                        xmlns="http://www.w3.org/2000/svg"
-                        viewBox="0 0 20 20"
-                        fill="currentColor"
-                        aria-hidden="true"
-                      >
-                        <path
-                          fillRule="evenodd"
-                          d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z"
-                          clipRule="evenodd"
-                        />
-                      </svg>
+                      <span aria-hidden="true">&laquo;</span>
                     </button>
                   </li>
 
@@ -272,14 +270,15 @@ const OrdersPage = () => {
                         pageNumber <= pagination.page + 1)
                     ) {
                       return (
-                        <li key={pageNumber}>
+                        <li
+                          key={pageNumber}
+                          className={`page-item ${
+                            pageNumber === pagination.page ? "active" : ""
+                          }`}
+                        >
                           <button
+                            className="page-link"
                             onClick={() => handlePageChange(pageNumber)}
-                            className={`relative inline-flex items-center px-4 py-2 border ${
-                              pageNumber === pagination.page
-                                ? "z-10 bg-primary-50 border-primary-500 text-primary-600"
-                                : "bg-white border-gray-300 text-gray-500 hover:bg-gray-50"
-                            }`}
                           >
                             {pageNumber}
                           </button>
@@ -292,10 +291,8 @@ const OrdersPage = () => {
                     ) {
                       // Show ellipsis
                       return (
-                        <li key={pageNumber}>
-                          <span className="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-gray-700">
-                            ...
-                          </span>
+                        <li key={pageNumber} className="page-item disabled">
+                          <span className="page-link">...</span>
                         </li>
                       );
                     }
@@ -303,30 +300,20 @@ const OrdersPage = () => {
                   })}
 
                   {/* Next page button */}
-                  <li>
+                  <li
+                    className={`page-item ${
+                      pagination.page === pagination.totalPages
+                        ? "disabled"
+                        : ""
+                    }`}
+                  >
                     <button
+                      className="page-link"
                       onClick={() => handlePageChange(pagination.page + 1)}
-                      disabled={pagination.page === pagination.totalPages}
-                      className={`relative inline-flex items-center px-2 py-2 rounded-r-md border ${
-                        pagination.page === pagination.totalPages
-                          ? "border-gray-300 bg-white text-gray-300 cursor-not-allowed"
-                          : "border-gray-300 bg-white text-gray-500 hover:bg-gray-50"
-                      }`}
                       aria-label="Next"
+                      disabled={pagination.page === pagination.totalPages}
                     >
-                      <svg
-                        className="h-5 w-5"
-                        xmlns="http://www.w3.org/2000/svg"
-                        viewBox="0 0 20 20"
-                        fill="currentColor"
-                        aria-hidden="true"
-                      >
-                        <path
-                          fillRule="evenodd"
-                          d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
-                          clipRule="evenodd"
-                        />
-                      </svg>
+                      <span aria-hidden="true">&raquo;</span>
                     </button>
                   </li>
                 </ul>
@@ -335,29 +322,32 @@ const OrdersPage = () => {
           )}
         </div>
       ) : (
-        <div className="bg-white rounded-lg shadow-md p-8 text-center">
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            className="h-16 w-16 mx-auto text-gray-400 mb-4"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
-            />
-          </svg>
-          <h2 className="text-xl font-semibold mb-4">No orders yet</h2>
-          <p className="text-gray-600 mb-8">
-            You haven't placed any orders yet. Start shopping to place your
-            first order!
-          </p>
-          <Button variant="primary" onClick={() => navigate("/products")}>
-            Browse Products
-          </Button>
+        <div className="card border-0 shadow-sm py-5">
+          <div className="card-body text-center p-5">
+            <div className="mb-4">
+              <div
+                className="bg-light rounded-circle d-inline-flex align-items-center justify-content-center mb-3"
+                style={{ width: "80px", height: "80px" }}
+              >
+                <i
+                  className="bi bi-receipt text-secondary"
+                  style={{ fontSize: "2rem" }}
+                ></i>
+              </div>
+              <h2 className="fw-bold text-primary mb-3">No Orders Yet</h2>
+              <p className="text-muted mb-4 px-md-5 mx-md-5">
+                You haven't placed any orders yet. Start shopping to place your
+                first order!
+              </p>
+              <button
+                className="btn btn-primary btn-lg"
+                onClick={() => navigate("/products")}
+              >
+                <i className="bi bi-cart-plus me-2"></i>
+                Browse Products
+              </button>
+            </div>
+          </div>
         </div>
       )}
     </div>

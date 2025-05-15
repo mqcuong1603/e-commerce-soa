@@ -1,4 +1,10 @@
-import { useState, useEffect, useContext, createContext } from "react";
+import {
+  useState,
+  useEffect,
+  useContext,
+  createContext,
+  useCallback,
+} from "react";
 import cartService from "../services/cart.service";
 
 // Create a cart context
@@ -9,19 +15,15 @@ const CartContext = createContext(null);
  */
 export const CartProvider = ({ children }) => {
   const [cart, setCart] = useState(null);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [cartUpdating, setCartUpdating] = useState(false);
-
-  // Initialize cart on component mount
-  useEffect(() => {
-    fetchCart();
-  }, []);
+  const [sessionInitialized, setSessionInitialized] = useState(false);
 
   /**
    * Fetch current cart from API
    */
-  const fetchCart = async () => {
+  const fetchCart = useCallback(async () => {
     try {
       setLoading(true);
       setError(null);
@@ -30,6 +32,8 @@ export const CartProvider = ({ children }) => {
 
       if (response.success) {
         setCart(response.data);
+        setSessionInitialized(true);
+        console.log("Cart fetched successfully:", response.data.sessionId);
       } else {
         throw new Error(response.message || "Failed to fetch cart");
       }
@@ -39,7 +43,12 @@ export const CartProvider = ({ children }) => {
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
+
+  // Initialize cart on component mount
+  useEffect(() => {
+    fetchCart();
+  }, [fetchCart]);
 
   /**
    * Add item to cart

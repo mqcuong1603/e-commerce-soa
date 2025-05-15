@@ -80,7 +80,7 @@ export const CartProvider = ({ children }) => {
 
       const response = await cartService.getCart();
 
-      // If another request has been started since this one, discard this result
+      // If another request has started since this one, discard this result
       if (currentRequestId !== requestIdRef.current) {
         console.log("Discarding outdated fetch cart response");
         return { success: false, error: "Superseded by newer request" };

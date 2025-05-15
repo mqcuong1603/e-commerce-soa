@@ -1,62 +1,69 @@
+import axios from "axios";
+
 /**
  * Base API service for making HTTP requests
  */
 const API_URL = process.env.REACT_APP_API_URL || "http://localhost:3000/api";
 
-/**
- * Helper to build headers with auth token if available
- */
-const getHeaders = () => {
-  const headers = {
+// Create axios instance with default config
+const axiosInstance = axios.create({
+  baseURL: API_URL,
+  withCredentials: true, // Critical for session cookies
+  headers: {
     "Content-Type": "application/json",
-  };
+  },
+});
 
-  const token = localStorage.getItem("token");
-  if (token) {
-    headers["Authorization"] = `Bearer ${token}`;
-  }
+// Add request interceptor for auth tokens
+axiosInstance.interceptors.request.use(
+  (config) => {
+    const token = localStorage.getItem("token");
+    if (token) {
+      config.headers["Authorization"] = `Bearer ${token}`;
+    }
+    return config;
+  },
+  (error) => Promise.reject(error)
+);
 
-  return headers;
-};
-
-/**
- * Helper function to handle API responses
- */
-const handleResponse = async (response) => {
-  const data = await response.json();
-
-  if (!response.ok) {
-    // If Unauthorized, clear token
-    if (response.status === 401) {
+// Add response interceptor for error handling
+axiosInstance.interceptors.response.use(
+  (response) => {
+    return {
+      success: true,
+      data: response.data.data,
+      message: response.data.message,
+    };
+  },
+  (error) => {
+    // Handle unauthorized
+    if (error.response?.status === 401) {
       localStorage.removeItem("token");
     }
 
-    // Additional cart-specific error handling
-    if (response.status === 400 && data.message.includes("inventory")) {
-      // Handle inventory errors specially
-      return {
+    // Handle inventory errors
+    if (
+      error.response?.status === 400 &&
+      error.response?.data?.message?.includes("inventory")
+    ) {
+      return Promise.resolve({
         success: false,
-        message: data.message || "Not enough inventory available",
-        errors: data.errors,
-        status: response.status,
+        message:
+          error.response.data.message || "Not enough inventory available",
+        errors: error.response.data.errors,
+        status: error.response.status,
         isInventoryError: true,
-      };
+      });
     }
 
-    return {
+    return Promise.resolve({
       success: false,
-      message: data.message || "An error occurred",
-      errors: data.errors,
-      status: response.status,
-    };
+      message: error.response?.data?.message || "An error occurred",
+      errors: error.response?.data?.errors,
+      status: error.response?.status,
+    });
   }
-
-  return {
-    success: true,
-    data: data.data,
-    message: data.message,
-  };
-};
+);
 
 /**
  * Base API methods
@@ -68,21 +75,7 @@ const api = {
    * @returns {Promise<Object>} Response data
    */
   get: async (endpoint, options = {}) => {
-    try {
-      const response = await fetch(`${API_URL}${endpoint}`, {
-        method: "GET",
-        headers: { ...getHeaders(), ...options.headers },
-        credentials: "include", // Important for session cookies
-      });
-
-      return handleResponse(response);
-    } catch (error) {
-      console.error("API GET Error:", error);
-      return {
-        success: false,
-        message: error.message || "Network error",
-      };
-    }
+    return axiosInstance.get(endpoint, options);
   },
 
   /**
@@ -92,24 +85,7 @@ const api = {
    * @returns {Promise<Object>} Response data
    */
   post: async (endpoint, data, options = {}) => {
-    try {
-      const headers = { ...getHeaders(), ...(options.headers || {}) };
-
-      const response = await fetch(`${API_URL}${endpoint}`, {
-        method: "POST",
-        headers,
-        body: JSON.stringify(data),
-        credentials: "include", // Important for session cookies
-      });
-
-      return handleResponse(response);
-    } catch (error) {
-      console.error("API POST Error:", error);
-      return {
-        success: false,
-        message: error.message || "Network error",
-      };
-    }
+    return axiosInstance.post(endpoint, data, options);
   },
 
   /**
@@ -118,23 +94,7 @@ const api = {
    * @returns {Promise<Object>} Response data
    */
   delete: async (endpoint, options = {}) => {
-    try {
-      const headers = { ...getHeaders(), ...(options.headers || {}) };
-
-      const response = await fetch(`${API_URL}${endpoint}`, {
-        method: "DELETE",
-        headers,
-        credentials: "include", // Important for session cookies
-      });
-
-      return handleResponse(response);
-    } catch (error) {
-      console.error("API DELETE Error:", error);
-      return {
-        success: false,
-        message: error.message || "Network error",
-      };
-    }
+    return axiosInstance.delete(endpoint, options);
   },
 
   /**
@@ -144,24 +104,7 @@ const api = {
    * @returns {Promise<Object>} Response data
    */
   put: async (endpoint, data, options = {}) => {
-    try {
-      const headers = { ...getHeaders(), ...(options.headers || {}) };
-
-      const response = await fetch(`${API_URL}${endpoint}`, {
-        method: "PUT",
-        headers,
-        body: JSON.stringify(data),
-        credentials: "include", // Important for session cookies
-      });
-
-      return handleResponse(response);
-    } catch (error) {
-      console.error("API PUT Error:", error);
-      return {
-        success: false,
-        message: error.message || "Network error",
-      };
-    }
+    return axiosInstance.put(endpoint, data, options);
   },
 
   /**
@@ -171,24 +114,7 @@ const api = {
    * @returns {Promise<Object>} Response data
    */
   patch: async (endpoint, data, options = {}) => {
-    try {
-      const headers = { ...getHeaders(), ...(options.headers || {}) };
-
-      const response = await fetch(`${API_URL}${endpoint}`, {
-        method: "PATCH",
-        headers,
-        body: JSON.stringify(data),
-        credentials: "include", // Important for session cookies
-      });
-
-      return handleResponse(response);
-    } catch (error) {
-      console.error("API PATCH Error:", error);
-      return {
-        success: false,
-        message: error.message || "Network error",
-      };
-    }
+    return axiosInstance.patch(endpoint, data, options);
   },
 };
 

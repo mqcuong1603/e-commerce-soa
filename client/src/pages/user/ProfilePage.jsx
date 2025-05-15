@@ -60,7 +60,7 @@ const ProfilePage = () => {
   // Loading state
   if (loading) {
     return (
-      <div className="container mx-auto px-4 py-12">
+      <div className="container py-5">
         <Loader text="Loading profile..." />
       </div>
     );
@@ -69,13 +69,10 @@ const ProfilePage = () => {
   // Error state
   if (error) {
     return (
-      <div className="container mx-auto px-4 py-12">
-        <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-6">
+      <div className="container py-5">
+        <div className="alert alert-danger" role="alert">
           <p>{error}</p>
-          <button
-            onClick={fetchUserData}
-            className="mt-2 bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700"
-          >
+          <button onClick={fetchUserData} className="btn btn-danger mt-2">
             Try Again
           </button>
         </div>
@@ -84,242 +81,259 @@ const ProfilePage = () => {
   }
 
   return (
-    <div className="container mx-auto px-4 py-12">
-      <div className="flex flex-col md:flex-row gap-8">
+    <div className="container py-5">
+      <div className="row g-4">
         {/* Left sidebar - Profile sections */}
-        <div className="w-full md:w-1/4">
-          <div className="bg-white rounded-lg shadow-md p-6 mb-6">
-            {/* User info */}
-            <div className="flex items-center mb-6">
-              <div className="bg-primary-100 rounded-full p-6 flex items-center justify-center">
-                <span className="text-primary-600 text-2xl font-bold">
-                  {user?.fullName?.charAt(0) || "U"}
-                </span>
+        <div className="col-md-4 col-lg-3">
+          <div className="card shadow mb-4">
+            <div className="card-body">
+              {/* User info */}
+              <div className="d-flex align-items-center mb-4">
+                <div
+                  className="bg-primary bg-opacity-10 rounded-circle p-3 d-flex align-items-center justify-content-center"
+                  style={{ width: "60px", height: "60px" }}
+                >
+                  <span className="text-primary fs-4 fw-bold">
+                    {user?.fullName?.charAt(0) || "U"}
+                  </span>
+                </div>
+                <div className="ms-3">
+                  <h2 className="fs-5 fw-bold mb-0">
+                    {user?.fullName || "User"}
+                  </h2>
+                  <p className="text-muted small mb-0">{user?.email || ""}</p>
+                </div>
               </div>
-              <div className="ml-4">
-                <h2 className="text-xl font-bold">
-                  {user?.fullName || "User"}
-                </h2>
-                <p className="text-gray-600 text-sm">{user?.email || ""}</p>
-              </div>
-            </div>
 
-            {/* Loyalty points card (if available) */}
-            {loyaltyPoints && (
-              <div className="bg-green-50 border border-green-200 rounded-lg p-4 mb-6">
-                <h3 className="text-lg font-semibold text-green-800 mb-2">
-                  Your Loyalty Points
-                </h3>
-                <div className="flex items-center">
-                  <div className="bg-green-100 rounded-full p-3 mr-4">
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      className="h-6 w-6 text-green-600"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke="currentColor"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-                      />
-                    </svg>
-                  </div>
-                  <div>
-                    <div className="text-2xl font-bold text-green-800">
-                      {loyaltyPoints.loyaltyPoints} Points
-                    </div>
-                    <div className="text-sm text-green-700">
-                      Worth ₫{formatPrice(loyaltyPoints.equivalentValue)} on
-                      your next purchase
+              {/* Loyalty points card (if available) */}
+              {loyaltyPoints && (
+                <div className="card bg-success bg-opacity-10 border-success border-opacity-25 mb-4">
+                  <div className="card-body">
+                    <h3 className="fs-5 fw-semibold text-success mb-2">
+                      Your Loyalty Points
+                    </h3>
+                    <div className="d-flex align-items-center">
+                      <div className="bg-success bg-opacity-25 rounded-circle p-2 me-3">
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          width="24"
+                          height="24"
+                          className="text-success"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          stroke="currentColor"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                          />
+                        </svg>
+                      </div>
+                      <div>
+                        <div className="fs-4 fw-bold text-success">
+                          {loyaltyPoints.loyaltyPoints} Points
+                        </div>
+                        <div className="small text-success">
+                          Worth ₫{formatPrice(loyaltyPoints.equivalentValue)} on
+                          your next purchase
+                        </div>
+                      </div>
                     </div>
                   </div>
                 </div>
+              )}
+
+              {/* Navigation menu */}
+              <div className="list-group list-group-flush border-0 mb-4">
+                <button
+                  onClick={() => setActiveTab("profile")}
+                  className={`list-group-item list-group-item-action d-flex align-items-center border-0 ${
+                    activeTab === "profile"
+                      ? "bg-primary bg-opacity-10 text-primary"
+                      : ""
+                  }`}
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="18"
+                    height="18"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                    className="me-2"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
+                    />
+                  </svg>
+                  Profile Information
+                </button>
+
+                <button
+                  onClick={() => setActiveTab("orders")}
+                  className={`list-group-item list-group-item-action d-flex align-items-center border-0 ${
+                    activeTab === "orders"
+                      ? "bg-primary bg-opacity-10 text-primary"
+                      : ""
+                  }`}
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="18"
+                    height="18"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                    className="me-2"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"
+                    />
+                  </svg>
+                  My Orders
+                </button>
+
+                <button
+                  onClick={() => setActiveTab("addresses")}
+                  className={`list-group-item list-group-item-action d-flex align-items-center border-0 ${
+                    activeTab === "addresses"
+                      ? "bg-primary bg-opacity-10 text-primary"
+                      : ""
+                  }`}
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="18"
+                    height="18"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                    className="me-2"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
+                    />
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
+                    />
+                  </svg>
+                  My Addresses
+                </button>
+
+                <button
+                  onClick={() => setActiveTab("password")}
+                  className={`list-group-item list-group-item-action d-flex align-items-center border-0 ${
+                    activeTab === "password"
+                      ? "bg-primary bg-opacity-10 text-primary"
+                      : ""
+                  }`}
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="18"
+                    height="18"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                    className="me-2"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z"
+                    />
+                  </svg>
+                  Change Password
+                </button>
               </div>
-            )}
 
-            {/* Navigation menu */}
-            <nav className="space-y-1">
-              <button
-                onClick={() => setActiveTab("profile")}
-                className={`w-full flex items-center px-4 py-2 text-left rounded-md ${
-                  activeTab === "profile"
-                    ? "bg-primary-100 text-primary-700"
-                    : "text-gray-700 hover:bg-gray-100"
-                }`}
-              >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="h-5 w-5 mr-3"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
+              {/* Logout button */}
+              <div className="pt-3 border-top">
+                <button
+                  className="btn btn-outline-danger d-flex align-items-center justify-content-center w-100"
+                  onClick={() => {
+                    logout();
+                    navigate("/");
+                  }}
                 >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
-                  />
-                </svg>
-                Profile Information
-              </button>
-
-              <button
-                onClick={() => setActiveTab("orders")}
-                className={`w-full flex items-center px-4 py-2 text-left rounded-md ${
-                  activeTab === "orders"
-                    ? "bg-primary-100 text-primary-700"
-                    : "text-gray-700 hover:bg-gray-100"
-                }`}
-              >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="h-5 w-5 mr-3"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"
-                  />
-                </svg>
-                My Orders
-              </button>
-
-              <button
-                onClick={() => setActiveTab("addresses")}
-                className={`w-full flex items-center px-4 py-2 text-left rounded-md ${
-                  activeTab === "addresses"
-                    ? "bg-primary-100 text-primary-700"
-                    : "text-gray-700 hover:bg-gray-100"
-                }`}
-              >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="h-5 w-5 mr-3"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
-                  />
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
-                  />
-                </svg>
-                My Addresses
-              </button>
-
-              <button
-                onClick={() => setActiveTab("password")}
-                className={`w-full flex items-center px-4 py-2 text-left rounded-md ${
-                  activeTab === "password"
-                    ? "bg-primary-100 text-primary-700"
-                    : "text-gray-700 hover:bg-gray-100"
-                }`}
-              >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="h-5 w-5 mr-3"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z"
-                  />
-                </svg>
-                Change Password
-              </button>
-            </nav>
-
-            {/* Logout button */}
-            <div className="mt-6 pt-6 border-t">
-              <Button
-                variant="outlined"
-                fullWidth
-                onClick={() => {
-                  logout();
-                  navigate("/");
-                }}
-              >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="h-5 w-5 mr-2"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"
-                  />
-                </svg>
-                Logout
-              </Button>
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="18"
+                    height="18"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                    className="me-2"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"
+                    />
+                  </svg>
+                  Logout
+                </button>
+              </div>
             </div>
           </div>
 
           {/* Help and support */}
-          <div className="bg-white rounded-lg shadow-md p-6">
-            <h3 className="text-lg font-semibold mb-4">Need Help?</h3>
-            <ul className="space-y-2 text-sm">
-              <li>
-                <Link
-                  to="/contact"
-                  className="text-primary-600 hover:text-primary-800"
-                >
-                  Contact Support
-                </Link>
-              </li>
-              <li>
-                <Link
-                  to="/faq"
-                  className="text-primary-600 hover:text-primary-800"
-                >
-                  FAQs
-                </Link>
-              </li>
-              <li>
-                <Link
-                  to="/shipping-policy"
-                  className="text-primary-600 hover:text-primary-800"
-                >
-                  Shipping Policy
-                </Link>
-              </li>
-              <li>
-                <Link
-                  to="/returns"
-                  className="text-primary-600 hover:text-primary-800"
-                >
-                  Returns & Refunds
-                </Link>
-              </li>
-            </ul>
+          <div className="card shadow">
+            <div className="card-body">
+              <h3 className="fs-5 fw-semibold mb-3">Need Help?</h3>
+              <ul className="nav flex-column">
+                <li className="nav-item">
+                  <Link
+                    to="/contact"
+                    className="nav-link text-primary px-0 py-1"
+                  >
+                    Contact Support
+                  </Link>
+                </li>
+                <li className="nav-item">
+                  <Link to="/faq" className="nav-link text-primary px-0 py-1">
+                    FAQs
+                  </Link>
+                </li>
+                <li className="nav-item">
+                  <Link
+                    to="/shipping-policy"
+                    className="nav-link text-primary px-0 py-1"
+                  >
+                    Shipping Policy
+                  </Link>
+                </li>
+                <li className="nav-item">
+                  <Link
+                    to="/returns"
+                    className="nav-link text-primary px-0 py-1"
+                  >
+                    Returns & Refunds
+                  </Link>
+                </li>
+              </ul>
+            </div>
           </div>
         </div>
 
         {/* Main content area */}
-        <div className="w-full md:w-3/4">
+        <div className="col-md-8 col-lg-9">
           {/* Profile tab */}
           {activeTab === "profile" && <UserProfile />}
 
@@ -331,82 +345,71 @@ const ProfilePage = () => {
 
           {/* Password tab */}
           {activeTab === "password" && (
-            <div className="bg-white rounded-lg shadow-md p-6">
-              <h2 className="text-xl font-bold mb-6">Change Password</h2>
-              <form className="space-y-6">
-                {/* Current Password */}
-                <div>
-                  <label
-                    htmlFor="currentPassword"
-                    className="block text-sm font-medium text-gray-700 mb-1"
-                  >
-                    Current Password
-                  </label>
-                  <input
-                    type="password"
-                    id="currentPassword"
-                    name="currentPassword"
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500"
-                  />
-                </div>
+            <div className="card shadow">
+              <div className="card-body">
+                <h2 className="fs-4 fw-bold mb-4">Change Password</h2>
+                <form className="mb-4">
+                  {/* Current Password */}
+                  <div className="mb-3">
+                    <label htmlFor="currentPassword" className="form-label">
+                      Current Password
+                    </label>
+                    <input
+                      type="password"
+                      className="form-control"
+                      id="currentPassword"
+                      name="currentPassword"
+                    />
+                  </div>
 
-                {/* New Password */}
-                <div>
-                  <label
-                    htmlFor="newPassword"
-                    className="block text-sm font-medium text-gray-700 mb-1"
-                  >
-                    New Password
-                  </label>
-                  <input
-                    type="password"
-                    id="newPassword"
-                    name="newPassword"
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500"
-                  />
-                  <p className="mt-1 text-xs text-gray-500">
-                    Password must be at least 6 characters
-                  </p>
-                </div>
+                  {/* New Password */}
+                  <div className="mb-3">
+                    <label htmlFor="newPassword" className="form-label">
+                      New Password
+                    </label>
+                    <input
+                      type="password"
+                      className="form-control"
+                      id="newPassword"
+                      name="newPassword"
+                    />
+                    <div className="form-text text-muted">
+                      Password must be at least 6 characters
+                    </div>
+                  </div>
 
-                {/* Confirm Password */}
-                <div>
-                  <label
-                    htmlFor="confirmPassword"
-                    className="block text-sm font-medium text-gray-700 mb-1"
-                  >
-                    Confirm New Password
-                  </label>
-                  <input
-                    type="password"
-                    id="confirmPassword"
-                    name="confirmPassword"
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500"
-                  />
-                </div>
+                  {/* Confirm Password */}
+                  <div className="mb-4">
+                    <label htmlFor="confirmPassword" className="form-label">
+                      Confirm New Password
+                    </label>
+                    <input
+                      type="password"
+                      className="form-control"
+                      id="confirmPassword"
+                      name="confirmPassword"
+                    />
+                  </div>
 
-                <div className="pt-2">
-                  <Button type="submit" variant="primary">
+                  <button type="submit" className="btn btn-primary">
                     Update Password
-                  </Button>
-                </div>
-              </form>
+                  </button>
+                </form>
 
-              {/* Password Recovery */}
-              <div className="mt-8 pt-6 border-t">
-                <h3 className="text-lg font-semibold text-gray-900 mb-4">
-                  Forgot Password?
-                </h3>
-                <p className="text-gray-600 mb-4">
-                  If you've forgotten your current password, you can use the
-                  password recovery option.
-                </p>
-                <Link
-                  to="/forgot-password"
-                  className="text-primary-600 hover:text-primary-800 font-medium"
-                >
-                  Reset your password
-                </Link>
+                {/* Password Recovery */}
+                <div className="border-top pt-4 mt-4">
+                  <h3 className="fs-5 fw-semibold mb-3">Forgot Password?</h3>
+                  <p className="text-muted mb-3">
+                    If you've forgotten your current password, you can use the
+                    password recovery option.
+                  </p>
+                  <Link
+                    to="/forgot-password"
+                    className="btn btn-outline-primary"
+                  >
+                    Reset your password
+                  </Link>
+                </div>
               </div>
             </div>
           )}

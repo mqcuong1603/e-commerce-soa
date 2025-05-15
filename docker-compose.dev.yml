@@ -1,25 +1,35 @@
 services:
-  # Frontend service
+  # Frontend service with hot reloading
   client:
     build:
       context: .
-      dockerfile: docker/Dockerfile.client
-    container_name: ecommerce-client
+      dockerfile: docker/Dockerfile.client.dev
+    container_name: ecommerce-client-dev
     restart: always
+    volumes:
+      - ./client:/app
+      - /app/node_modules
+    environment:
+      - CHOKIDAR_USEPOLLING=true
+      - WDS_SOCKET_PORT=0
     ports:
-      - "8080:80"
+      - "8080:3000"
     depends_on:
       - server
     networks:
       - app-network
+    command: npm start
 
-  # Backend service
+  # Backend service with hot reloading
   server:
     build:
       context: .
-      dockerfile: docker/Dockerfile.server
-    container_name: ecommerce-server
+      dockerfile: docker/Dockerfile.server.dev
+    container_name: ecommerce-server-dev
     restart: always
+    volumes:
+      - ./server:/app
+      - /app/node_modules
     ports:
       - "3000:3000"
     env_file:
@@ -29,11 +39,12 @@ services:
         condition: service_healthy
     networks:
       - app-network
+    command: npm run dev
 
   # MongoDB service
   mongo:
     image: mongo:latest
-    container_name: ecommerce-mongo
+    container_name: ecommerce-mongo-dev
     restart: always
     environment:
       - MONGO_INITDB_ROOT_USERNAME=admin

@@ -6,20 +6,20 @@ WORKDIR /app
 COPY server/package*.json ./
 
 # Install dependencies
-RUN npm install
+RUN npm ci --only=production
 
-# Install nodemon globally for development
-RUN npm install -g nodemon
+# Copy the rest of the server code
+COPY server ./
 
-# Create directories for placeholder images and static files if needed
+# Create directories for placeholder images and static files
 RUN mkdir -p public/images/products public/images/categories
 
 # Create placeholder images
 RUN echo "Placeholder" > public/images/products/placeholder.jpg && \
     echo "Placeholder" > public/images/categories/placeholder.jpg
 
-# Expose the API port and debug port
-EXPOSE 3000 9229
+# Expose the API port
+EXPOSE 3000
 
-# Start the server with nodemon - app.js is the entry point
-CMD ["nodemon", "--inspect=0.0.0.0:9229", "app.js"]
+# Command to run the server
+CMD ["node", "app.js"]

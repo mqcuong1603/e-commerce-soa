@@ -159,7 +159,6 @@ CartSchema.virtual("total").get(function () {
     0
   );
 });
-88;
 
 // Virtual for total items count
 CartSchema.virtual("itemCount").get(function () {
