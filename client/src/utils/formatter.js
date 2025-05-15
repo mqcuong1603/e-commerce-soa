@@ -2,20 +2,51 @@
  * Utility functions for formatting different data types
  */
 
+// USD to VND conversion rate (example: 1 USD = 23,500 VND)
+const USD_TO_VND_RATE = 23500;
+
+/**
+ * Convert price from USD to VND or other specified currency
+ * @param {number} priceInUsd - Price in USD
+ * @param {string} targetCurrency - Target currency code
+ * @returns {number} Converted price
+ */
+export const convertPrice = (priceInUsd, targetCurrency = "VND") => {
+  if (priceInUsd === undefined || priceInUsd === null || isNaN(priceInUsd)) {
+    return 0;
+  }
+
+  // Add more currencies here as needed
+  switch (targetCurrency) {
+    case "VND":
+      return priceInUsd * USD_TO_VND_RATE;
+    case "USD":
+      return priceInUsd;
+    default:
+      return priceInUsd;
+  }
+};
+
 /**
  * Format a price with comma separators and currency symbol
- * @param {number} price - Price to format
+ * @param {number} price - Price to format (in USD from database)
  * @param {string} currency - Currency code (default: 'VND')
  * @param {string} locale - Locale for formatting (default: 'vi-VN')
+ * @param {boolean} convert - Whether to convert from USD (default: true)
  * @returns {string} Formatted price
  */
-export const formatPrice = (price, currency = "VND", locale = "vi-VN") => {
+export const formatPrice = (
+  price,
+  currency = "VND",
+  locale = "vi-VN",
+  convert = true
+) => {
   // Handle undefined, null, or NaN
   if (price === undefined || price === null || isNaN(price)) {
     return "₫0";
   }
 
-  // Different currency formats
+  // Different currency symbols
   const currencySymbols = {
     VND: "₫",
     USD: "$",
@@ -24,18 +55,21 @@ export const formatPrice = (price, currency = "VND", locale = "vi-VN") => {
     JPY: "¥",
   };
 
+  // Convert price if needed
+  const finalPrice = convert ? convertPrice(price, currency) : price;
+
   // Format based on currency
   if (currency === "VND") {
     // For VND, we don't use decimal points and use the symbol after the number
-    return `${new Intl.NumberFormat(locale).format(Math.round(price))}${
-      currencySymbols[currency] || currency
-    }`;
+    return `${currencySymbols[currency]}${new Intl.NumberFormat(locale).format(
+      Math.round(finalPrice)
+    )}`;
   } else {
     // For other currencies, use the standard formatter with symbol before the number
     return new Intl.NumberFormat(locale, {
       style: "currency",
       currency: currency,
-    }).format(price);
+    }).format(finalPrice);
   }
 };
 

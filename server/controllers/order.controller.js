@@ -8,6 +8,17 @@ import { ApiError } from "../middleware/response.middleware.js";
 import emailService from "../services/emailService.js";
 
 /**
+ * Generate a unique order number
+ * Format: ORD-YYYYMMDD-XXXX (where XXXX is a random alphanumeric string)
+ */
+function generateOrderNumber() {
+  const date = new Date();
+  const dateStr = date.toISOString().slice(0, 10).replace(/-/g, "");
+  const randomStr = Math.random().toString(36).substring(2, 6).toUpperCase();
+  return `ORD-${dateStr}-${randomStr}`;
+}
+
+/**
  * Create a new order
  */
 export const createOrder = async (req, res, next) => {
@@ -44,6 +55,7 @@ export const createOrder = async (req, res, next) => {
 
     // Start building order
     const orderData = {
+      orderNumber: generateOrderNumber(), // Add this line
       // If user is authenticated, use their ID and email
       userId: req.user ? req.user._id : null,
       email: req.user ? req.user.email : req.body.email,

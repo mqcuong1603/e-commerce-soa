@@ -61,7 +61,7 @@ export const configureMiddleware = (app, config, logger) => {
   // Rate limiting middleware
   const apiLimiter = rateLimit({
     windowMs: 15 * 60 * 1000,
-    max: 100,
+    max: 2000,
     standardHeaders: true,
     legacyHeaders: false,
     message:

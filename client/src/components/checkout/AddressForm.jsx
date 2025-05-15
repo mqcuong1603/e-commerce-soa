@@ -129,12 +129,35 @@ const AddressForm = ({ onSubmit, initialData, savedAddresses }) => {
     return Object.keys(newErrors).length === 0;
   };
 
+  // Find how form data is submitted - likely through onSubmit or similar prop
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    if (validate()) {
-      onSubmit(formData, selectedSavedAddress);
+    if (!validate()) {
+      return;
     }
+
+    // Create address data object
+    const addressData = {
+      fullName: formData.fullName,
+      phoneNumber: formData.phoneNumber,
+      addressLine1: formData.addressLine1,
+      addressLine2: formData.addressLine2 || "",
+      city: formData.city,
+      state: formData.state,
+      postalCode: formData.postalCode,
+      country: formData.country,
+    };
+
+    // Safely handle the saveAddress checkbox
+    if (isAuthenticated && e.target.elements.saveAddress) {
+      addressData.saveAddress = e.target.elements.saveAddress.checked;
+    } else {
+      addressData.saveAddress = false; // Default for guest users
+    }
+
+    // Submit the form data
+    onSubmit(addressData);
   };
 
   return (
@@ -218,14 +241,13 @@ const AddressForm = ({ onSubmit, initialData, savedAddresses }) => {
                 </label>
                 <input
                   type="text"
-                  className={`form-control ${
-                    errors.fullName ? "is-invalid" : ""
-                  }`}
+                  className="form-control"
                   id="fullName"
-                  name="fullName"
-                  value={formData.fullName}
+                  name="fullName" // Make sure this is exactly "fullName"
+                  value={formData.fullName || ""}
                   onChange={handleChange}
                   placeholder="John Doe"
+                  required
                 />
                 {errors.fullName && (
                   <div className="invalid-feedback">{errors.fullName}</div>

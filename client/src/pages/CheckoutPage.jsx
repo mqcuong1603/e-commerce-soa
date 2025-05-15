@@ -23,21 +23,12 @@ const CheckoutPage = () => {
   const location = useLocation();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [isGuestCheckout, setIsGuestCheckout] = useState(!isAuthenticated); // State variable for guest checkout
 
   // Get discount and loyalty points info from location state (from CartPage)
   const locationState = location.state || {};
   const discountCode = locationState.discountCode || "";
   const usingLoyaltyPoints = locationState.usingLoyaltyPoints || false;
-
-  // Redirect non-authenticated users to login
-  useEffect(() => {
-    if (!isAuthenticated && !loading) {
-      navigate("/login", {
-        state: { from: { pathname: "/checkout" } },
-        replace: true,
-      });
-    }
-  }, [isAuthenticated, loading, navigate]);
 
   // Fetch latest cart data
   useEffect(() => {
@@ -121,6 +112,7 @@ const CheckoutPage = () => {
             discountCode={discountCode}
             usingLoyaltyPoints={usingLoyaltyPoints}
             onOrderSuccess={handleOrderSuccess}
+            isGuestCheckout={isGuestCheckout}
           />
         </div>
 

@@ -5,7 +5,6 @@ const cartService = {
    * Fetch the current user's cart
    */
   getCart: async () => {
-    // Remove custom header, just use credentials
     return api.get("/cart", { credentials: "include" });
   },
 

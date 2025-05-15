@@ -4,7 +4,7 @@
     "brand": "Dell",
     "description": "The Dell XPS 13 is a premium ultrabook with an InfinityEdge display that maximizes screen space. Featuring a 13.4-inch 4K display with minimal bezels, it delivers stunning visuals for both work and entertainment. Powered by Intel's latest Core processors and up to 32GB of RAM, this ultrabook handles multitasking with ease. The precision-engineered CNC aluminum chassis and carbon fiber palm rest provide durability while maintaining a lightweight profile under 2.8 pounds. With up to 12 hours of battery life and Thunderbolt 4 connectivity, it's perfect for professionals on the go. The backlit keyboard and large precision touchpad ensure comfortable use in any environment.",
     "shortDescription": "Premium ultrabook with InfinityEdge display and all-day battery life",
-    "basePrice": 1199.99,
+    "basePrice": 27599770,
     "isActive": true,
     "isNewProduct": true,
     "isBestSeller": true,
@@ -22,8 +22,8 @@
           "display": "13.4\" FHD+ (1920 x 1200)",
           "color": "Platinum Silver"
         },
-        "price": 1199.99,
-        "salePrice": 1099.99,
+        "price": 27599770,
+        "salePrice": 25299770,
         "inventory": 25,
         "isActive": true
       },
@@ -37,7 +37,7 @@
           "display": "13.4\" UHD+ (3840 x 2400)",
           "color": "Frost White"
         },
-        "price": 1699.99,
+        "price": 39099770,
         "salePrice": null,
         "inventory": 20,
         "isActive": true
@@ -66,7 +66,7 @@
     "brand": "HP",
     "description": "The HP Spectre x360 redefines versatility with its 360-degree hinge design, allowing you to use it as a laptop, tablet, or in tent mode. The gem-cut design and dual-chamfered edges showcase exceptional craftsmanship, while the 13.3-inch OLED touchscreen display delivers vibrant colors and true blacks for an immersive viewing experience. Powered by Intel Evo platform with 11th Gen processors, it offers remarkable performance and responsiveness. The Spectre features HP's True Vision HD IR camera with integrated privacy switch, fingerprint reader, and Bang & Olufsen quad speakers for premium security and audio. With up to 16 hours of battery life and fast charging capabilities, it's the perfect companion for creative professionals who need power and flexibility.",
     "shortDescription": "Versatile 2-in-1 ultrabook with gem-cut design and OLED display",
-    "basePrice": 1349.99,
+    "basePrice": 31049770,
     "isActive": true,
     "isNewProduct": true,
     "isBestSeller": false,
@@ -84,8 +84,8 @@
           "display": "13.3\" FHD IPS Touch",
           "color": "Nightfall Black"
         },
-        "price": 1349.99,
-        "salePrice": 1249.99,
+        "price": 31049770,
+        "salePrice": 28749770,
         "inventory": 20,
         "isActive": true
       },
@@ -99,7 +99,7 @@
           "display": "13.3\" 4K OLED Touch",
           "color": "Poseidon Blue"
         },
-        "price": 1849.99,
+        "price": 42549770,
         "salePrice": null,
         "inventory": 15,
         "isActive": true
@@ -128,7 +128,7 @@
     "brand": "Samsung",
     "description": "The Samsung 980 PRO represents the pinnacle of NVMe SSD technology, leveraging PCIe 4.0 to deliver sequential read speeds up to 7,000 MB/s and write speeds up to 5,000 MB/s - nearly twice as fast as PCIe 3.0 SSDs. As Samsung's fastest consumer SSD, it features V-NAND technology and a proprietary Elpis controller optimized for speed and efficiency. The drive maintains lower operating temperatures thanks to its nickel-coated controller and effective heat dissipation layer, ensuring consistent performance during intensive tasks like 4K video editing, 3D rendering, and high-end gaming. Samsung's Dynamic Thermal Guard technology automatically minimizes performance fluctuations during extended use, while the streamlined, compact M.2 form factor makes it ideal for next-gen desktops and laptop upgrades. Samsung Magician software provides robust SSD management tools for monitoring drive health, performing firmware updates, and optimizing performance over time.",
     "shortDescription": "High-performance PCIe 4.0 NVMe SSD with speeds up to 7,000 MB/s",
-    "basePrice": 229.99,
+    "basePrice": 5289770,
     "isActive": true,
     "isNewProduct": true,
     "isBestSeller": true,
@@ -147,8 +147,8 @@
           "formFactor": "M.2 2280",
           "tbw": "300 TB"
         },
-        "price": 229.99,
-        "salePrice": 199.99,
+        "price": 5289770,
+        "salePrice": 4599770,
         "inventory": 35,
         "isActive": true
       },
@@ -163,8 +163,8 @@
           "formFactor": "M.2 2280",
           "tbw": "600 TB"
         },
-        "price": 399.99,
-        "salePrice": 349.99,
+        "price": 9199770,
+        "salePrice": 8049770,
         "inventory": 30,
         "isActive": true
       },
@@ -179,8 +179,8 @@
           "formFactor": "M.2 2280",
           "tbw": "1,200 TB"
         },
-        "price": 729.99,
-        "salePrice": 649.99,
+        "price": 16789770,
+        "salePrice": 14949770,
         "inventory": 20,
         "isActive": true
       }
@@ -208,7 +208,7 @@
     "brand": "Seagate",
     "description": "The Seagate BarraCuda is the industry standard for reliable, cost-effective storage, offering exceptional value for everyday computing and mass storage needs. Available in capacities up to 8TB in the 3.5-inch form factor, it provides ample space for operating systems, applications, documents, and media files. With 7200 RPM spindle speed and 256MB cache on higher-capacity models, it delivers better performance than typical 5400 RPM drives for faster system responsiveness. Seagate's Multi-Tier Caching Technology (MTC) combines several cache types including DRAM and NAND flash to optimize data flow, resulting in improved overall performance for frequently accessed files. With 30+ years of innovation and reliability testing, BarraCuda drives are built to last, backed by Seagate's 2-year limited warranty. The standard SATA 6Gb/s interface ensures broad compatibility with virtually all desktop systems, making it an ideal choice for system builders, storage upgrades, and secondary storage needs where capacity and value take priority over the speed of SSDs.",
     "shortDescription": "Reliable, high-capacity hard drive for everyday computing and storage",
-    "basePrice": 59.99,
+    "basePrice": 1379770,
     "isActive": true,
     "isNewProduct": false,
     "isBestSeller": true,
@@ -227,8 +227,8 @@
           "cache": "256MB",
           "recordingTechnology": "CMR"
         },
-        "price": 59.99,
-        "salePrice": 54.99,
+        "price": 1379770,
+        "salePrice": 1264770,
         "inventory": 50,
         "isActive": true
       },
@@ -243,8 +243,8 @@
           "cache": "256MB",
           "recordingTechnology": "CMR"
         },
-        "price": 99.99,
-        "salePrice": 89.99,
+        "price": 2299770,
+        "salePrice": 2069770,
         "inventory": 40,
         "isActive": true
       },
@@ -259,8 +259,8 @@
           "cache": "256MB",
           "recordingTechnology": "CMR"
         },
-        "price": 179.99,
-        "salePrice": 159.99,
+        "price": 4139770,
+        "salePrice": 3679770,
         "inventory": 25,
         "isActive": true
       }
@@ -288,7 +288,7 @@
     "brand": "Lenovo",
     "description": "The ThinkPad X1 Carbon is Lenovo's flagship ultrabook built for business professionals who demand uncompromising performance and reliability. Featuring a premium carbon fiber chassis that's both lightweight and durable, it offers military-grade durability testing and enterprise-grade security features. The legendary ThinkPad keyboard provides exceptional typing comfort, while the 14-inch display options range from FHD to 4K UHD with Dolby Vision. Powered by Intel vPro processors and featuring up to 32GB of LPDDR4X memory, it delivers exceptional performance for demanding business applications. With Thunderbolt 4 connectivity, optional 5G WWAN, and up to 19 hours of battery life, it's the perfect companion for mobile professionals.",
     "shortDescription": "Business-class ultrabook with carbon fiber chassis and legendary ThinkPad keyboard",
-    "basePrice": 1499.99,
+    "basePrice": 34499770,
     "isActive": true,
     "isNewProduct": false,
     "isBestSeller": true,
@@ -306,8 +306,8 @@
           "display": "14\" FHD IPS Anti-Glare",
           "color": "Black"
         },
-        "price": 1499.99,
-        "salePrice": 1399.99,
+        "price": 34499770,
+        "salePrice": 32199770,
         "inventory": 30,
         "isActive": true
       },
@@ -321,7 +321,7 @@
           "display": "14\" 4K UHD IPS Dolby Vision",
           "color": "Black"
         },
-        "price": 2199.99,
+        "price": 50599770,
         "salePrice": null,
         "inventory": 15,
         "isActive": true
@@ -350,7 +350,7 @@
     "brand": "LG",
     "description": "The LG Gram 16 redefines what's possible in an ultralight laptop, combining a spacious 16-inch display with an incredibly lightweight magnesium alloy chassis that weighs just 2.6 pounds. Despite its featherweight design, it meets MIL-STD-810G military standards for durability, ensuring it can withstand the rigors of daily use. The WQXGA (2560x1600) IPS display delivers stunning visuals with excellent color accuracy, while the 80Wh battery provides up to 22 hours of battery life. Powered by Intel's latest processors and featuring Thunderbolt 4 connectivity, it offers desktop-class performance in a remarkably portable package. The backlit keyboard and precision touchpad ensure comfortable use, while the comprehensive port selection includes USB-C, USB-A, HDMI, and a microSD card reader.",
     "shortDescription": "Ultra-lightweight 16-inch laptop with long battery life and military-grade durability",
-    "basePrice": 1399.99,
+    "basePrice": 32199770,
     "isActive": true,
     "isNewProduct": true,
     "isBestSeller": false,
@@ -368,8 +368,8 @@
           "display": "16\" WQXGA (2560x1600) IPS",
           "color": "White"
         },
-        "price": 1399.99,
-        "salePrice": 1299.99,
+        "price": 32199770,
+        "salePrice": 29899770,
         "inventory": 25,
         "isActive": true
       },
@@ -383,8 +383,8 @@
           "display": "16\" WQXGA (2560x1600) IPS",
           "color": "Black"
         },
-        "price": 1799.99,
-        "salePrice": 1699.99,
+        "price": 41399770,
+        "salePrice": 39099770,
         "inventory": 15,
         "isActive": true
       }
@@ -412,7 +412,7 @@
     "brand": "ASUS",
     "description": "The ASUS ROG Zephyrus G15 represents the pinnacle of gaming laptop engineering, combining desktop-class performance with unprecedented portability. Powered by AMD's Ryzen 9 processor and NVIDIA's RTX 30 series graphics, it delivers exceptional gaming performance while maintaining a slim profile. The 15.6-inch QHD display with 165Hz refresh rate and 3ms response time ensures smooth, tear-free gaming, while the 100% DCI-P3 color gamut provides stunning visual fidelity. The innovative ErgoLift hinge design improves airflow and typing comfort, while the ROG Intelligent Cooling system keeps temperatures in check during intense gaming sessions. With up to 10 hours of battery life and a comprehensive selection of ports including USB-C with Power Delivery, it's equally capable as a gaming powerhouse and a productivity machine.",
     "shortDescription": "Premium gaming laptop with Ryzen 9 processor and RTX graphics in a portable form factor",
-    "basePrice": 1799.99,
+    "basePrice": 41399770,
     "isActive": true,
     "isNewProduct": true,
     "isBestSeller": true,
@@ -430,8 +430,8 @@
           "display": "15.6\" QHD 165Hz",
           "graphics": "NVIDIA GeForce RTX 3070 8GB"
         },
-        "price": 1799.99,
-        "salePrice": 1699.99,
+        "price": 41399770,
+        "salePrice": 39099770,
         "inventory": 20,
         "isActive": true
       },
@@ -445,7 +445,7 @@
           "display": "15.6\" QHD 165Hz",
           "graphics": "NVIDIA GeForce RTX 3080 8GB"
         },
-        "price": 2199.99,
+        "price": 50599770,
         "salePrice": null,
         "inventory": 15,
         "isActive": true
@@ -474,7 +474,7 @@
     "brand": "Dell",
     "description": "The Alienware m17 R4 is a performance powerhouse designed for serious gamers who demand uncompromising performance. Featuring the latest Intel Core i9 processor and NVIDIA RTX 3080 graphics, it delivers desktop-class gaming performance in a portable form factor. The 17.3-inch display options include a 360Hz FHD panel for competitive gaming and a 4K UHD panel for immersive visuals, both with NVIDIA G-SYNC technology. The Alienware Cryo-Tech cooling system, featuring a vapor chamber and advanced thermal management, ensures sustained performance during extended gaming sessions. The per-key RGB AlienFX lighting, customizable macro keys, and premium audio with Nahimic 3D sound create an immersive gaming experience. With Thunderbolt 3, Killer Wi-Fi 6, and a comprehensive selection of ports, it's ready for any gaming setup.",
     "shortDescription": "High-performance 17-inch gaming laptop with 360Hz display and RTX graphics",
-    "basePrice": 2499.99,
+    "basePrice": 57499770,
     "isActive": true,
     "isNewProduct": true,
     "isBestSeller": false,
@@ -492,8 +492,8 @@
           "display": "17.3\" FHD 360Hz",
           "graphics": "NVIDIA GeForce RTX 3070 8GB"
         },
-        "price": 2499.99,
-        "salePrice": 2299.99,
+        "price": 57499770,
+        "salePrice": 52899770,
         "inventory": 15,
         "isActive": true
       },
@@ -507,7 +507,7 @@
           "display": "17.3\" UHD 60Hz",
           "graphics": "NVIDIA GeForce RTX 3080 16GB"
         },
-        "price": 3299.99,
+        "price": 75899770,
         "salePrice": null,
         "inventory": 10,
         "isActive": true
@@ -536,7 +536,7 @@
     "brand": "MSI",
     "description": "The MSI GE76 Raider is a desktop-class gaming laptop featuring an aggressive design and uncompromising performance. Powered by the latest Intel Core i9 processor and NVIDIA RTX 3080 graphics, it delivers exceptional gaming performance with advanced cooling technology. The 17.3-inch display options include a 360Hz FHD panel for competitive gaming and a 4K UHD panel with 120Hz refresh rate for immersive visuals. The SteelSeries per-key RGB keyboard with anti-ghosting technology ensures precise control during intense gaming sessions. The MSI Center software provides comprehensive system control, including performance profiles, RGB lighting customization, and system monitoring. With Thunderbolt 4, Wi-Fi 6E, and a comprehensive selection of ports, it's ready for any gaming or content creation task.",
     "shortDescription": "High-end 17-inch gaming laptop with panoramic aurora lighting and desktop-class performance",
-    "basePrice": 2299.99,
+    "basePrice": 52899770,
     "isActive": true,
     "isNewProduct": true,
     "isBestSeller": true,
@@ -554,8 +554,8 @@
           "display": "17.3\" FHD 360Hz",
           "graphics": "NVIDIA GeForce RTX 3070 8GB"
         },
-        "price": 2299.99,
-        "salePrice": 2199.99,
+        "price": 52899770,
+        "salePrice": 50599770,
         "inventory": 20,
         "isActive": true
       },
@@ -569,8 +569,8 @@
           "display": "17.3\" UHD 120Hz",
           "graphics": "NVIDIA GeForce RTX 3080 16GB"
         },
-        "price": 3199.99,
-        "salePrice": 2999.99,
+        "price": 73599770,
+        "salePrice": 68999770,
         "inventory": 10,
         "isActive": true
       }
@@ -598,7 +598,7 @@
     "brand": "Lenovo",
     "description": "The Lenovo ThinkPad T14 is the cornerstone of business computing, offering enterprise-grade reliability and security features in a versatile 14-inch form factor. Built to meet military-grade durability standards, it features a robust magnesium alloy chassis and spill-resistant keyboard. Powered by Intel vPro or AMD Ryzen Pro processors, it delivers exceptional performance for business applications while maintaining enterprise-grade security features. The 14-inch display options include FHD and 4K UHD panels with optional privacy filters, while the comprehensive port selection includes Thunderbolt 4 and optional smart card reader. With up to 20 hours of battery life, optional 4G LTE connectivity, and a range of security features including fingerprint reader and IR camera, it's the perfect choice for business professionals.",
     "shortDescription": "Enterprise-grade business laptop with legendary ThinkPad durability and security features",
-    "basePrice": 1249.99,
+    "basePrice": 28749770,
     "isActive": true,
     "isNewProduct": false,
     "isBestSeller": true,
@@ -616,8 +616,8 @@
           "display": "14\" FHD IPS Anti-Glare",
           "color": "Black"
         },
-        "price": 1249.99,
-        "salePrice": 1149.99,
+        "price": 28749770,
+        "salePrice": 26449770,
         "inventory": 30,
         "isActive": true
       },
@@ -631,8 +631,8 @@
           "display": "14\" FHD IPS Anti-Glare",
           "color": "Black"
         },
-        "price": 1549.99,
-        "salePrice": 1449.99,
+        "price": 35649770,
+        "salePrice": 33349770,
         "inventory": 25,
         "isActive": true
       }
@@ -660,7 +660,7 @@
     "brand": "Dell",
     "description": "The Dell Latitude 7420 is the ultimate business laptop designed for professionals who demand premium performance and security. Featuring a premium aluminum or carbon fiber chassis, it combines durability with a sleek, professional appearance. Powered by Intel vPro processors and featuring up to 32GB of memory, it delivers exceptional performance for demanding business applications. The 14-inch display options range from FHD to 4K UHD, with optional touch and privacy features. The ExpressSign-in technology with proximity sensor and optional smart card reader provides enterprise-grade security, while the comprehensive port selection includes Thunderbolt 4 and optional smart card reader. With up to 21 hours of battery life and optional 5G connectivity, it's ready for any business challenge.",
     "shortDescription": "Premium business laptop with AI-optimized performance and advanced security features",
-    "basePrice": 1399.99,
+    "basePrice": 32199770,
     "isActive": true,
     "isNewProduct": true,
     "isBestSeller": false,
@@ -678,8 +678,8 @@
           "display": "14\" FHD (1920 x 1080)",
           "chassis": "Aluminum"
         },
-        "price": 1399.99,
-        "salePrice": 1299.99,
+        "price": 32199770,
+        "salePrice": 29899770,
         "inventory": 25,
         "isActive": true
       },
@@ -693,7 +693,7 @@
           "display": "14\" 4K UHD (3840 x 2160)",
           "chassis": "Carbon Fiber"
         },
-        "price": 1899.99,
+        "price": 43699770,
         "salePrice": null,
         "inventory": 20,
         "isActive": true
@@ -722,7 +722,7 @@
     "brand": "HP",
     "description": "The HP EliteBook 840 G8 is a premium business laptop crafted for today's hybrid work environments, combining enterprise-grade security with modern connectivity. Featuring a sleek aluminum chassis and HP's Sure View Reflect privacy screen, it ensures both style and data protection. Powered by Intel vPro processors and featuring up to 64GB of memory, it delivers exceptional performance for demanding business applications. The 14-inch display options include FHD and 4K UHD panels with optional touch and privacy features. The HP Sure Click and HP Sure Sense technologies provide advanced security against malware and phishing attacks, while the comprehensive port selection includes Thunderbolt 4 and optional smart card reader. With up to 20 hours of battery life and optional 5G connectivity, it's designed for the modern workplace.",
     "shortDescription": "Premium business laptop with integrated privacy features and enhanced security",
-    "basePrice": 1449.99,
+    "basePrice": 33349770,
     "isActive": true,
     "isNewProduct": false,
     "isBestSeller": true,
@@ -740,8 +740,8 @@
           "display": "14\" FHD IPS Anti-Glare",
           "security": "HP Sure View Reflect"
         },
-        "price": 1449.99,
-        "salePrice": 1349.99,
+        "price": 33349770,
+        "salePrice": 31049770,
         "inventory": 20,
         "isActive": true
       },
@@ -755,8 +755,8 @@
           "display": "14\" 4K UHD IPS Anti-Glare",
           "security": "HP Sure View Reflect"
         },
-        "price": 1949.99,
-        "salePrice": 1849.99,
+        "price": 44849770,
+        "salePrice": 42549770,
         "inventory": 15,
         "isActive": true
       }
@@ -784,7 +784,7 @@
     "brand": "Microsoft",
     "description": "The Microsoft Surface Pro 8 redefines the versatility of a professional 2-in-1 device, combining the power of a laptop with the flexibility of a tablet. Featuring a stunning 13-inch PixelSense Flow display with 120Hz refresh rate and Dolby Vision, it delivers exceptional visual clarity and smooth interactions. Powered by 11th Gen Intel Core processors and featuring up to 32GB of memory, it handles demanding applications with ease. The redesigned Surface Pro Signature Keyboard with Slim Pen 2 storage and haptic feedback provides a premium typing experience, while the Thunderbolt 4 ports enable high-speed data transfer and external display connectivity. With up to 16 hours of battery life and optional LTE connectivity, it's the perfect device for professionals who need both power and portability.",
     "shortDescription": "Premium 2-in-1 detachable with 120Hz display and Thunderbolt 4 connectivity",
-    "basePrice": 1099.99,
+    "basePrice": 25299770,
     "isActive": true,
     "isNewProduct": true,
     "isBestSeller": true,
@@ -809,8 +809,8 @@
           "display": "13\" PixelSense Flow 120Hz",
           "color": "Platinum"
         },
-        "price": 1099.99,
-        "salePrice": 999.99,
+        "price": 25299770,
+        "salePrice": 22999770,
         "inventory": 30,
         "isActive": true
       },
@@ -824,7 +824,7 @@
           "display": "13\" PixelSense Flow 120Hz",
           "color": "Graphite"
         },
-        "price": 1599.99,
+        "price": 36799770,
         "salePrice": null,
         "inventory": 25,
         "isActive": true
@@ -853,7 +853,7 @@
     "brand": "Lenovo",
     "description": "The Lenovo Yoga 9i is a premium 2-in-1 convertible that blends stunning design with powerful performance. Featuring a unique rotating soundbar hinge that delivers immersive audio in any mode, it offers a truly innovative user experience. The 14-inch display options include FHD and 4K UHD panels with Dolby Vision, while the optional leather cover adds a touch of luxury. Powered by Intel's latest processors and featuring up to 16GB of memory, it delivers exceptional performance for both work and entertainment. The included Lenovo Digital Pen with 4,096 levels of pressure sensitivity provides a natural writing and drawing experience, while the comprehensive port selection includes Thunderbolt 4. With up to 18 hours of battery life and fast charging capabilities, it's ready for any task.",
     "shortDescription": "Premium 2-in-1 convertible with rotating soundbar and optional leather cover",
-    "basePrice": 1249.99,
+    "basePrice": 28749770,
     "isActive": true,
     "isNewProduct": true,
     "isBestSeller": false,
@@ -871,8 +871,8 @@
           "display": "14\" FHD IPS Touch",
           "color": "Shadow Black"
         },
-        "price": 1249.99,
-        "salePrice": 1149.99,
+        "price": 28749770,
+        "salePrice": 26449770,
         "inventory": 25,
         "isActive": true
       },
@@ -886,7 +886,7 @@
           "display": "14\" UHD IPS Touch",
           "color": "Shadow Black with Leather Cover"
         },
-        "price": 1649.99,
+        "price": 37949770,
         "salePrice": null,
         "inventory": 20,
         "isActive": true
@@ -915,7 +915,7 @@
     "brand": "HP",
     "description": "The HP Spectre x360 14 represents the pinnacle of convertible laptop design, combining premium materials with innovative features. The gem-cut design and dual-chamfered edges showcase exceptional craftsmanship, while the 3:2 aspect ratio display provides more vertical space for productivity. The 14-inch display options include FHD+ and 3K2K OLED panels with optional touch and privacy features, delivering stunning visuals with excellent color accuracy. Powered by Intel's latest processors and featuring up to 16GB of memory, it delivers exceptional performance for both work and entertainment. The HP True Vision HD IR camera with integrated privacy switch and fingerprint reader provides premium security, while the Bang & Olufsen quad speakers deliver immersive audio. With up to 17 hours of battery life and fast charging capabilities, it's the perfect companion for creative professionals.",
     "shortDescription": "Premium convertible laptop with 3:2 OLED display and gem-cut design",
-    "basePrice": 1299.99,
+    "basePrice": 29899770,
     "isActive": true,
     "isNewProduct": true,
     "isBestSeller": true,
@@ -933,8 +933,8 @@
           "display": "14\" 3:2 FHD+ IPS Touch",
           "color": "Nightfall Black"
         },
-        "price": 1299.99,
-        "salePrice": 1199.99,
+        "price": 29899770,
+        "salePrice": 27599770,
         "inventory": 20,
         "isActive": true
       },
@@ -948,8 +948,8 @@
           "display": "14\" 3:2 3K2K OLED Touch",
           "color": "Poseidon Blue"
         },
-        "price": 1799.99,
-        "salePrice": 1699.99,
+        "price": 41399770,
+        "salePrice": 39099770,
         "inventory": 15,
         "isActive": true
       }
@@ -977,7 +977,7 @@
     "brand": "LG",
     "description": "The LG UltraGear 27GN950 is a premium gaming monitor that delivers exceptional performance and stunning visuals. Featuring a 27-inch Nano IPS display with 4K UHD resolution (3840x2160) and a 144Hz refresh rate with 1ms response time, it provides incredibly smooth and responsive gameplay. The monitor supports NVIDIA G-SYNC and AMD FreeSync Premium Pro, ensuring tear-free gaming across a wide range of frame rates. With DisplayHDR 600 certification and 98% DCI-P3 color gamut coverage, it delivers vibrant colors and excellent contrast for both gaming and content creation. The sleek design includes customizable RGB lighting, height and tilt adjustment, and a comprehensive selection of ports including DisplayPort 1.4, HDMI 2.1, and USB hub functionality.",
     "shortDescription": "27-inch 4K gaming monitor with 144Hz refresh rate and HDR",
-    "basePrice": 849.99,
+    "basePrice": 19549770,
     "isActive": true,
     "isNewProduct": true,
     "isBestSeller": false,
@@ -988,8 +988,6 @@
       {
         "name": "Standard",
         "sku": "LG-27GN950-STD",
-        "price": 849.99,
-        "stock": 15,
         "attributes": {
           "panel": "Nano IPS",
           "resolution": "4K UHD (3840x2160)",
@@ -998,24 +996,28 @@
           "hdr": "DisplayHDR 600",
           "colorGamut": "98% DCI-P3",
           "ports": "DisplayPort 1.4, HDMI 2.1, USB Hub"
-        }
+        },
+        "price": 19549770,
+        "salePrice": null,
+        "inventory": 15,
+        "isActive": true
       }
     ],
     "images": [
       {
         "imageUrl": "/images/products/lg-ultragear-27gn950-1.jpg",
-        "alt": "LG UltraGear 27GN950 front view",
-        "isPrimary": true
+        "isMain": true,
+        "alt": "LG UltraGear 27GN950 front view"
       },
       {
         "imageUrl": "/images/products/lg-ultragear-27gn950-2.jpg",
-        "alt": "LG UltraGear 27GN950 side view",
-        "isPrimary": false
+        "isMain": false,
+        "alt": "LG UltraGear 27GN950 side view"
       },
       {
         "imageUrl": "/images/products/lg-ultragear-27gn950-3.jpg",
-        "alt": "LG UltraGear 27GN950 back view with RGB lighting",
-        "isPrimary": false
+        "isMain": false,
+        "alt": "LG UltraGear 27GN950 back view with RGB lighting"
       }
     ]
   },
@@ -1024,7 +1026,7 @@
     "brand": "Intel",
     "description": "The Intel Core i9-12900K is a high-performance desktop processor featuring Intel's hybrid architecture with 16 cores (8 Performance cores and 8 Efficient cores) and 24 threads. With a maximum turbo frequency of 5.2 GHz on the Performance cores and 3.9 GHz on the Efficient cores, it delivers exceptional single-threaded and multi-threaded performance. The processor includes 30MB of Intel Smart Cache and supports PCIe 5.0 and DDR5 memory, making it ideal for gaming, content creation, and demanding workloads. Built on Intel's 10nm process node, it features Intel's latest technologies including Intel Thread Director for optimal thread scheduling and Intel UHD Graphics 770 for integrated graphics capabilities.",
     "shortDescription": "High-performance desktop processor with 16 cores and 24 threads",
-    "basePrice": 589.99,
+    "basePrice": 13569770,
     "isActive": true,
     "isNewProduct": true,
     "isBestSeller": true,
@@ -1035,8 +1037,6 @@
       {
         "name": "Standard",
         "sku": "INT-I9-12900K",
-        "price": 589.99,
-        "stock": 25,
         "attributes": {
           "cores": "16 (8P + 8E)",
           "threads": "24",
@@ -1045,24 +1045,28 @@
           "cache": "30MB Intel Smart Cache",
           "tdp": "125W",
           "socket": "LGA 1700"
-        }
+        },
+        "price": 13569770,
+        "salePrice": null,
+        "inventory": 25,
+        "isActive": true
       }
     ],
     "images": [
       {
         "imageUrl": "/images/products/intel-i9-12900k-1.jpg",
-        "alt": "Intel Core i9-12900K front view",
-        "isPrimary": true
+        "isMain": true,
+        "alt": "Intel Core i9-12900K front view"
       },
       {
         "imageUrl": "/images/products/intel-i9-12900k-2.jpg",
-        "alt": "Intel Core i9-12900K side view",
-        "isPrimary": false
+        "isMain": false,
+        "alt": "Intel Core i9-12900K side view"
       },
       {
         "imageUrl": "/images/products/intel-i9-12900k-3.jpg",
-        "alt": "Intel Core i9-12900K packaging",
-        "isPrimary": false
+        "isMain": false,
+        "alt": "Intel Core i9-12900K packaging"
       }
     ]
   },
@@ -1071,7 +1075,7 @@
     "brand": "NVIDIA",
     "description": "The NVIDIA GeForce RTX 3080 is a high-performance gaming graphics card that delivers exceptional ray tracing and AI capabilities. Built on the Ampere architecture, it features 10GB of GDDR6X memory and 8704 CUDA cores, providing up to 2x the performance of the previous generation. With real-time ray tracing and DLSS technology, it enables stunning visual effects and improved frame rates in supported games. The card supports PCIe 4.0 for maximum bandwidth and features NVIDIA's latest cooling solution with a dual-axial flow-through design. Perfect for 4K gaming, content creation, and professional applications that require significant GPU power.",
     "shortDescription": "High-performance gaming GPU with ray tracing and DLSS support",
-    "basePrice": 699.99,
+    "basePrice": 16099770,
     "isActive": true,
     "isNewProduct": true,
     "isBestSeller": true,
@@ -1090,8 +1094,8 @@
           "powerConsumption": "320W",
           "recommendedPSU": "750W"
         },
-        "price": 699.99,
-        "salePrice": 649.99,
+        "price": 16099770,
+        "salePrice": 14949770,
         "inventory": 15,
         "isActive": true
       }
@@ -1111,6 +1115,1404 @@
         "imageUrl": "/images/products/rtx-3080-3.jpg",
         "isMain": false,
         "alt": "NVIDIA RTX 3080 back view"
+      }
+    ]
+  },
+  {
+    "name": "Apple MacBook Pro 14",
+    "brand": "Apple",
+    "description": "The Apple MacBook Pro 14 features the powerful M1 Pro chip, delivering exceptional performance and battery life in a portable form factor. The stunning 14-inch Liquid Retina XDR display offers extreme dynamic range and contrast ratio, making it perfect for photo and video editing. With up to 32GB of unified memory and 8TB of SSD storage, it handles professional workflows with ease. The Magic Keyboard provides a comfortable typing experience, while the advanced camera and studio-quality mic array ensure clear communication. The comprehensive connectivity includes Thunderbolt 4, HDMI, and SD card reader, while the MagSafe charging connector provides convenient and secure charging.",
+    "shortDescription": "Professional laptop with M1 Pro chip and Liquid Retina XDR display",
+    "basePrice": 47999760,
+    "isActive": true,
+    "isNewProduct": true,
+    "isBestSeller": true,
+    "isFeatured": true,
+    "categoryNames": ["MacBooks/Chromebooks", "Laptops"],
+    "tags": ["macbook", "apple", "m1", "pro", "retina"],
+    "variants": [
+      {
+        "name": "M1 Pro / 16GB / 512GB",
+        "sku": "MB-PRO-14-M1P-16-512",
+        "attributes": {
+          "processor": "Apple M1 Pro (8-core CPU)",
+          "memory": "16GB Unified Memory",
+          "storage": "512GB SSD",
+          "display": "14\" Liquid Retina XDR",
+          "color": "Space Gray"
+        },
+        "price": 47999760,
+        "salePrice": 45599760,
+        "inventory": 20,
+        "isActive": true
+      },
+      {
+        "name": "M1 Pro / 32GB / 1TB",
+        "sku": "MB-PRO-14-M1P-32-1TB",
+        "attributes": {
+          "processor": "Apple M1 Pro (10-core CPU)",
+          "memory": "32GB Unified Memory",
+          "storage": "1TB SSD",
+          "display": "14\" Liquid Retina XDR",
+          "color": "Silver"
+        },
+        "price": 59999760,
+        "salePrice": null,
+        "inventory": 15,
+        "isActive": true
+      }
+    ],
+    "images": [
+      {
+        "imageUrl": "/images/products/macbook-pro-14-1.jpg",
+        "isMain": true,
+        "alt": "MacBook Pro 14 front view"
+      },
+      {
+        "imageUrl": "/images/products/macbook-pro-14-2.jpg",
+        "isMain": false,
+        "alt": "MacBook Pro 14 side view"
+      },
+      {
+        "imageUrl": "/images/products/macbook-pro-14-3.jpg",
+        "isMain": false,
+        "alt": "MacBook Pro 14 keyboard view"
+      }
+    ]
+  },
+  {
+    "name": "Google Pixelbook Go",
+    "brand": "Google",
+    "description": "The Google Pixelbook Go combines sleek design with Chrome OS efficiency, offering a premium Chromebook experience. The lightweight magnesium chassis weighs just 2.3 pounds, while the 13.3-inch touchscreen display delivers vibrant visuals. Powered by Intel processors and featuring up to 16GB of RAM, it handles multitasking with ease. The backlit keyboard with Hush Keys provides a quiet typing experience, while the extra-large trackpad ensures precise navigation. With up to 12 hours of battery life and fast charging capabilities, it's perfect for productivity on the go. The dual front-firing speakers deliver immersive audio, while the 1080p webcam ensures clear video calls.",
+    "shortDescription": "Premium Chromebook with lightweight design and long battery life",
+    "basePrice": 19199760,
+    "isActive": true,
+    "isNewProduct": false,
+    "isBestSeller": true,
+    "isFeatured": false,
+    "categoryNames": ["MacBooks/Chromebooks", "Laptops"],
+    "tags": ["chromebook", "google", "pixelbook", "chrome os"],
+    "variants": [
+      {
+        "name": "Core i5 / 8GB / 128GB",
+        "sku": "PIXELBOOK-GO-I5-8-128",
+        "attributes": {
+          "processor": "Intel Core i5-8200Y",
+          "memory": "8GB RAM",
+          "storage": "128GB SSD",
+          "display": "13.3\" Full HD Touch",
+          "color": "Just Black"
+        },
+        "price": 19199760,
+        "salePrice": 17999760,
+        "inventory": 25,
+        "isActive": true
+      },
+      {
+        "name": "Core i7 / 16GB / 256GB",
+        "sku": "PIXELBOOK-GO-I7-16-256",
+        "attributes": {
+          "processor": "Intel Core i7-8500Y",
+          "memory": "16GB RAM",
+          "storage": "256GB SSD",
+          "display": "13.3\" 4K Ultra HD Touch",
+          "color": "Not Pink"
+        },
+        "price": 26399760,
+        "salePrice": null,
+        "inventory": 15,
+        "isActive": true
+      }
+    ],
+    "images": [
+      {
+        "imageUrl": "/images/products/pixelbook-go-1.jpg",
+        "isMain": true,
+        "alt": "Google Pixelbook Go front view"
+      },
+      {
+        "imageUrl": "/images/products/pixelbook-go-2.jpg",
+        "isMain": false,
+        "alt": "Google Pixelbook Go side view"
+      },
+      {
+        "imageUrl": "/images/products/pixelbook-go-3.jpg",
+        "isMain": false,
+        "alt": "Google Pixelbook Go keyboard view"
+      }
+    ]
+  },
+  {
+    "name": "Dell P2422H",
+    "brand": "Dell",
+    "description": "The Dell P2422H is a professional Full HD monitor designed for productivity and comfort. The 24-inch IPS panel delivers consistent color reproduction and wide viewing angles, while the anti-glare coating reduces reflections in bright environments. With 99% sRGB color coverage, it provides accurate color representation for everyday office tasks. The monitor features a height-adjustable stand with tilt, swivel, and pivot options, allowing you to find the perfect ergonomic position. The ComfortView feature reduces harmful blue light emissions, reducing eye fatigue during long work sessions. With DisplayPort, HDMI, and VGA connectivity, it's compatible with a wide range of devices.",
+    "shortDescription": "Professional 24-inch Full HD monitor with ergonomic stand and ComfortView",
+    "basePrice": 5759760,
+    "isActive": true,
+    "isNewProduct": false,
+    "isBestSeller": true,
+    "isFeatured": false,
+    "categoryNames": ["Full HD Monitors", "Monitors"],
+    "tags": ["monitor", "full hd", "ips", "dell", "ergonomic"],
+    "variants": [
+      {
+        "name": "Standard",
+        "sku": "DELL-P2422H",
+        "attributes": {
+          "panel": "IPS",
+          "resolution": "Full HD (1920x1080)",
+          "refreshRate": "60Hz",
+          "responseTime": "5ms",
+          "colorGamut": "99% sRGB",
+          "ports": "DisplayPort, HDMI, VGA, USB Hub"
+        },
+        "price": 5759760,
+        "salePrice": 5279760,
+        "inventory": 30,
+        "isActive": true
+      },
+      {
+        "name": "Dual Pack",
+        "sku": "DELL-P2422H-DUAL",
+        "attributes": {
+          "panel": "IPS",
+          "resolution": "Full HD (1920x1080)",
+          "refreshRate": "60Hz",
+          "responseTime": "5ms",
+          "colorGamut": "99% sRGB",
+          "ports": "DisplayPort, HDMI, VGA, USB Hub",
+          "quantity": "2 Monitors"
+        },
+        "price": 10799760,
+        "salePrice": 9839760,
+        "inventory": 15,
+        "isActive": true
+      }
+    ],
+    "images": [
+      {
+        "imageUrl": "/images/products/dell-p2422h-1.jpg",
+        "isMain": true,
+        "alt": "Dell P2422H front view"
+      },
+      {
+        "imageUrl": "/images/products/dell-p2422h-2.jpg",
+        "isMain": false,
+        "alt": "Dell P2422H side view"
+      },
+      {
+        "imageUrl": "/images/products/dell-p2422h-3.jpg",
+        "isMain": false,
+        "alt": "Dell P2422H back view"
+      }
+    ]
+  },
+  {
+    "name": "LG UltraFine 27UP850",
+    "brand": "LG",
+    "description": "The LG UltraFine 27UP850 is a premium 4K monitor designed for professionals who demand exceptional clarity and color accuracy. With its 27-inch IPS display and 3840x2160 resolution, it delivers four times the detail of Full HD monitors. The monitor covers 95% of the DCI-P3 color space and is VESA DisplayHDR 400 certified, making it ideal for content creation, photo editing, and graphic design. The USB-C port provides video, data, and up to 60W power delivery through a single cable, simplifying workspace connectivity. The ergonomic stand offers height, tilt, and pivot adjustments for optimal viewing comfort throughout the day.",
+    "shortDescription": "Premium 27-inch 4K IPS monitor with USB-C connectivity and HDR support",
+    "basePrice": 11999040,
+    "isActive": true,
+    "isNewProduct": true,
+    "isBestSeller": false,
+    "isFeatured": true,
+    "categoryNames": ["4K Monitors", "Monitors"],
+    "tags": ["monitor", "4k", "ips", "lg", "usb-c", "hdr"],
+    "variants": [
+      {
+        "name": "Standard",
+        "sku": "LG-27UP850",
+        "attributes": {
+          "panel": "IPS",
+          "resolution": "4K UHD (3840x2160)",
+          "refreshRate": "60Hz",
+          "responseTime": "5ms",
+          "colorGamut": "95% DCI-P3",
+          "ports": "USB-C, HDMI, DisplayPort, USB Hub"
+        },
+        "price": 11999040,
+        "salePrice": 10799040,
+        "inventory": 20,
+        "isActive": true
+      },
+      {
+        "name": "Dual Pack",
+        "sku": "LG-27UP850-DUAL",
+        "attributes": {
+          "panel": "IPS",
+          "resolution": "4K UHD (3840x2160)",
+          "refreshRate": "60Hz",
+          "responseTime": "5ms",
+          "colorGamut": "95% DCI-P3",
+          "ports": "USB-C, HDMI, DisplayPort, USB Hub",
+          "quantity": "2 Monitors"
+        },
+        "price": 22799040,
+        "salePrice": 21599040,
+        "inventory": 10,
+        "isActive": true
+      }
+    ],
+    "images": [
+      {
+        "imageUrl": "/images/products/lg-27up850-1.jpg",
+        "isMain": true,
+        "alt": "LG UltraFine 27UP850 front view"
+      },
+      {
+        "imageUrl": "/images/products/lg-27up850-2.jpg",
+        "isMain": false,
+        "alt": "LG UltraFine 27UP850 side view"
+      },
+      {
+        "imageUrl": "/images/products/lg-27up850-3.jpg",
+        "isMain": false,
+        "alt": "LG UltraFine 27UP850 back view"
+      }
+    ]
+  },
+  {
+    "name": "Dell UltraSharp U2720Q",
+    "brand": "Dell",
+    "description": "The Dell UltraSharp U2720Q is a professional-grade 4K monitor that combines stunning visuals with versatile connectivity. The 27-inch IPS panel with 3840x2160 resolution delivers exceptional clarity for detailed work, while 95% DCI-P3 color coverage ensures accurate color reproduction. The monitor is factory calibrated to Delta E < 2, making it perfect for color-critical applications. With USB-C connectivity providing up to 90W power delivery, video signal, and data transfer through a single cable, it streamlines your workspace. The InfinityEdge design with ultra-thin bezels maximizes screen space while enabling seamless multi-monitor setups. The fully adjustable stand allows for height, tilt, swivel, and pivot adjustments to maintain ergonomic comfort.",
+    "shortDescription": "Professional 27-inch 4K monitor with precise color calibration and 90W USB-C power delivery",
+    "basePrice": 14399040,
+    "isActive": true,
+    "isNewProduct": false,
+    "isBestSeller": true,
+    "isFeatured": true,
+    "categoryNames": ["4K Monitors", "Professional Monitors", "Monitors"],
+    "tags": ["monitor", "4k", "ips", "dell", "usb-c", "professional"],
+    "variants": [
+      {
+        "name": "Standard",
+        "sku": "DELL-U2720Q",
+        "attributes": {
+          "panel": "IPS",
+          "resolution": "4K UHD (3840x2160)",
+          "refreshRate": "60Hz",
+          "responseTime": "8ms",
+          "colorGamut": "95% DCI-P3",
+          "ports": "USB-C (90W PD), HDMI, DisplayPort, USB Hub"
+        },
+        "price": 14399040,
+        "salePrice": 13199040,
+        "inventory": 15,
+        "isActive": true
+      },
+      {
+        "name": "With Calibration Tool",
+        "sku": "DELL-U2720Q-CAL",
+        "attributes": {
+          "panel": "IPS",
+          "resolution": "4K UHD (3840x2160)",
+          "refreshRate": "60Hz",
+          "responseTime": "8ms",
+          "colorGamut": "95% DCI-P3",
+          "ports": "USB-C (90W PD), HDMI, DisplayPort, USB Hub",
+          "extras": "X-Rite i1Display Pro Calibrator"
+        },
+        "price": 16799040,
+        "salePrice": null,
+        "inventory": 10,
+        "isActive": true
+      }
+    ],
+    "images": [
+      {
+        "imageUrl": "/images/products/dell-u2720q-1.jpg",
+        "isMain": true,
+        "alt": "Dell UltraSharp U2720Q front view"
+      },
+      {
+        "imageUrl": "/images/products/dell-u2720q-2.jpg",
+        "isMain": false,
+        "alt": "Dell UltraSharp U2720Q side view"
+      },
+      {
+        "imageUrl": "/images/products/dell-u2720q-3.jpg",
+        "isMain": false,
+        "alt": "Dell UltraSharp U2720Q ports view"
+      }
+    ]
+  },
+  {
+    "name": "Samsung Odyssey G7",
+    "brand": "Samsung",
+    "description": "The Samsung Odyssey G7 redefines immersive gaming with its 1000R curved screen that matches the natural curvature of the human eye. The 32-inch QLED panel with 2560x1440 resolution delivers vibrant visuals, while the 240Hz refresh rate and 1ms response time ensure buttery-smooth gameplay with minimal motion blur. NVIDIA G-SYNC and AMD FreeSync Premium Pro technologies eliminate screen tearing and stuttering. The QLED technology produces vivid colors with 95% DCI-P3 coverage, while HDR600 support brings out details in both bright and dark scenes. The futuristic design features CoreSync RGB lighting that adapts to on-screen content, enhancing immersion during gameplay.",
+    "shortDescription": "32-inch curved gaming monitor with 240Hz refresh rate and QLED technology",
+    "basePrice": 15599040,
+    "isActive": true,
+    "isNewProduct": true,
+    "isBestSeller": true,
+    "isFeatured": true,
+    "categoryNames": ["Curved Monitors", "Gaming Monitors", "Monitors"],
+    "tags": ["monitor", "curved", "gaming", "samsung", "qled", "240hz"],
+    "variants": [
+      {
+        "name": "32-inch",
+        "sku": "SAM-G7-32",
+        "attributes": {
+          "size": "32-inch",
+          "panel": "VA QLED",
+          "resolution": "QHD (2560x1440)",
+          "refreshRate": "240Hz",
+          "responseTime": "1ms",
+          "curvature": "1000R",
+          "hdrSupport": "HDR600"
+        },
+        "price": 15599040,
+        "salePrice": 14399040,
+        "inventory": 15,
+        "isActive": true
+      },
+      {
+        "name": "27-inch",
+        "sku": "SAM-G7-27",
+        "attributes": {
+          "size": "27-inch",
+          "panel": "VA QLED",
+          "resolution": "QHD (2560x1440)",
+          "refreshRate": "240Hz",
+          "responseTime": "1ms",
+          "curvature": "1000R",
+          "hdrSupport": "HDR600"
+        },
+        "price": 13199040,
+        "salePrice": 11999040,
+        "inventory": 20,
+        "isActive": true
+      }
+    ],
+    "images": [
+      {
+        "imageUrl": "/images/products/samsung-g7-1.jpg",
+        "isMain": true,
+        "alt": "Samsung Odyssey G7 front view"
+      },
+      {
+        "imageUrl": "/images/products/samsung-g7-2.jpg",
+        "isMain": false,
+        "alt": "Samsung Odyssey G7 side view"
+      },
+      {
+        "imageUrl": "/images/products/samsung-g7-3.jpg",
+        "isMain": false,
+        "alt": "Samsung Odyssey G7 back view with RGB lighting"
+      }
+    ]
+  },
+  {
+    "name": "MSI Optix MPG341CQR",
+    "brand": "MSI",
+    "description": "The MSI Optix MPG341CQR is an ultra-wide curved gaming monitor that combines immersive visuals with smart gaming features. The 34-inch VA panel with 3440x1440 resolution and 21:9 aspect ratio provides a panoramic view of your games, while the 1800R curve wraps around your field of vision for deeper immersion. With a 144Hz refresh rate and 1ms MPRT, it delivers smooth, responsive gameplay for competitive gaming. The monitor features a Gaming OSD app that allows you to control settings via keyboard and mouse, and a front-facing RGB light bar that can be synchronized with in-game events through SteelSeries GameSense. The Night Vision feature enhances visibility in dark scenes without overexposing bright areas.",
+    "shortDescription": "34-inch ultra-wide curved gaming monitor with 144Hz refresh rate and RGB lighting",
+    "basePrice": 19199040,
+    "isActive": true,
+    "isNewProduct": false,
+    "isBestSeller": true,
+    "isFeatured": false,
+    "categoryNames": ["Curved Monitors", "Gaming Monitors", "Monitors"],
+    "tags": ["monitor", "curved", "ultrawide", "gaming", "msi", "144hz"],
+    "variants": [
+      {
+        "name": "Standard",
+        "sku": "MSI-MPG341CQR",
+        "attributes": {
+          "panel": "VA",
+          "resolution": "UWQHD (3440x1440)",
+          "refreshRate": "144Hz",
+          "responseTime": "1ms MPRT",
+          "curvature": "1800R",
+          "aspectRatio": "21:9",
+          "hdrSupport": "HDR400"
+        },
+        "price": 19199040,
+        "salePrice": 17999040,
+        "inventory": 12,
+        "isActive": true
+      },
+      {
+        "name": "Premium Bundle",
+        "sku": "MSI-MPG341CQR-BUNDLE",
+        "attributes": {
+          "panel": "VA",
+          "resolution": "UWQHD (3440x1440)",
+          "refreshRate": "144Hz",
+          "responseTime": "1ms MPRT",
+          "curvature": "1800R",
+          "aspectRatio": "21:9",
+          "hdrSupport": "HDR400",
+          "extras": "Gaming Mouse, Mousepad, HDMI 2.0 Cable"
+        },
+        "price": 20399040,
+        "salePrice": null,
+        "inventory": 8,
+        "isActive": true
+      }
+    ],
+    "images": [
+      {
+        "imageUrl": "/images/products/msi-mpg341cqr-1.jpg",
+        "isMain": true,
+        "alt": "MSI Optix MPG341CQR front view"
+      },
+      {
+        "imageUrl": "/images/products/msi-mpg341cqr-2.jpg",
+        "isMain": false,
+        "alt": "MSI Optix MPG341CQR side view"
+      },
+      {
+        "imageUrl": "/images/products/msi-mpg341cqr-3.jpg",
+        "isMain": false,
+        "alt": "MSI Optix MPG341CQR RGB lighting view"
+      }
+    ]
+  },
+  {
+    "name": "BenQ SW321C",
+    "brand": "BenQ",
+    "description": "The BenQ SW321C is a professional-grade 32-inch 4K monitor designed for photographers, video editors, and graphic designers who demand exceptional color accuracy. The IPS panel with 3840x2160 resolution provides stunning clarity and detail, while 99% Adobe RGB, 95% DCI-P3, and 100% sRGB/Rec.709 color space coverage ensures precise color reproduction across multiple color standards. Each monitor is factory calibrated and comes with a Calibration Report, guaranteeing Delta E ≤ 2 accuracy. The monitor features BenQ's exclusive AQCOLOR technology, hardware calibration with the Palette Master Element software, and 16-bit 3D LUT for smooth gradients. The Paper Color Sync feature simulates print output on screen, while the Advanced Black & White mode helps photographers preview mono conversions.",
+    "shortDescription": "32-inch 4K color-accurate monitor for professional photography and video editing",
+    "basePrice": 28799040,
+    "isActive": true,
+    "isNewProduct": false,
+    "isBestSeller": true,
+    "isFeatured": true,
+    "categoryNames": ["Professional Monitors", "4K Monitors", "Monitors"],
+    "tags": [
+      "monitor",
+      "professional",
+      "4k",
+      "color-accurate",
+      "benq",
+      "photo-editing"
+    ],
+    "variants": [
+      {
+        "name": "Standard",
+        "sku": "BENQ-SW321C",
+        "attributes": {
+          "panel": "IPS",
+          "resolution": "4K UHD (3840x2160)",
+          "refreshRate": "60Hz",
+          "colorGamut": "99% Adobe RGB, 95% DCI-P3",
+          "bitDepth": "10-bit (8-bit + FRC)",
+          "ports": "USB-C, HDMI, DisplayPort, USB Hub",
+          "extras": "Shading Hood, Hotkey Puck G2"
+        },
+        "price": 28799040,
+        "salePrice": 26399040,
+        "inventory": 10,
+        "isActive": true
+      },
+      {
+        "name": "With Calibrator",
+        "sku": "BENQ-SW321C-CAL",
+        "attributes": {
+          "panel": "IPS",
+          "resolution": "4K UHD (3840x2160)",
+          "refreshRate": "60Hz",
+          "colorGamut": "99% Adobe RGB, 95% DCI-P3",
+          "bitDepth": "10-bit (8-bit + FRC)",
+          "ports": "USB-C, HDMI, DisplayPort, USB Hub",
+          "extras": "Shading Hood, Hotkey Puck G2, X-Rite i1Display Pro Calibrator"
+        },
+        "price": 31199040,
+        "salePrice": null,
+        "inventory": 5,
+        "isActive": true
+      }
+    ],
+    "images": [
+      {
+        "imageUrl": "/images/products/benq-sw321c-1.jpg",
+        "isMain": true,
+        "alt": "BenQ SW321C front view"
+      },
+      {
+        "imageUrl": "/images/products/benq-sw321c-2.jpg",
+        "isMain": false,
+        "alt": "BenQ SW321C with hood attached"
+      },
+      {
+        "imageUrl": "/images/products/benq-sw321c-3.jpg",
+        "isMain": false,
+        "alt": "BenQ SW321C ports view"
+      }
+    ]
+  },
+  {
+    "name": "EIZO ColorEdge CG279X",
+    "brand": "EIZO",
+    "description": "The EIZO ColorEdge CG279X is the ultimate professional monitor for color-critical workflows in photography, design, printing, and post-production. The 27-inch IPS panel with 2560x1440 resolution features a built-in calibration sensor that automatically maintains precise color accuracy over time. With 99% Adobe RGB, 98% DCI-P3, and 100% sRGB coverage, it supports all major color spaces used in professional workflows. The monitor's 16-bit look-up table and 10-bit display ensure smooth gradients and accurate color transitions. The Digital Uniformity Equalizer ensures consistent brightness and color across the entire screen, while the built-in shading hood prevents glare and reflections. The ColorNavigator 7 software simplifies calibration and color management across multiple ColorEdge monitors.",
+    "shortDescription": "27-inch professional monitor with built-in self-calibration sensor and wide gamut coverage",
+    "basePrice": 33599040,
+    "isActive": true,
+    "isNewProduct": true,
+    "isBestSeller": false,
+    "isFeatured": true,
+    "categoryNames": ["Professional Monitors", "Monitors"],
+    "tags": [
+      "monitor",
+      "professional",
+      "eizo",
+      "color-accurate",
+      "self-calibrating",
+      "graphic-design"
+    ],
+    "variants": [
+      {
+        "name": "Standard",
+        "sku": "EIZO-CG279X",
+        "attributes": {
+          "panel": "IPS",
+          "resolution": "WQHD (2560x1440)",
+          "refreshRate": "60Hz",
+          "colorGamut": "99% Adobe RGB, 98% DCI-P3",
+          "bitDepth": "10-bit (display from 16-bit LUT)",
+          "ports": "USB-C, HDMI, DisplayPort, USB Hub",
+          "extras": "Built-in Calibration Sensor, Shading Hood"
+        },
+        "price": 33599040,
+        "salePrice": 31199040,
+        "inventory": 8,
+        "isActive": true
+      },
+      {
+        "name": "Pro Bundle",
+        "sku": "EIZO-CG279X-PRO",
+        "attributes": {
+          "panel": "IPS",
+          "resolution": "WQHD (2560x1440)",
+          "refreshRate": "60Hz",
+          "colorGamut": "99% Adobe RGB, 98% DCI-P3",
+          "bitDepth": "10-bit (display from 16-bit LUT)",
+          "ports": "USB-C, HDMI, DisplayPort, USB Hub",
+          "extras": "Built-in Calibration Sensor, Shading Hood, ColorNavigator NX License, Print Profile Set"
+        },
+        "price": 35999040,
+        "salePrice": null,
+        "inventory": 5,
+        "isActive": true
+      }
+    ],
+    "images": [
+      {
+        "imageUrl": "/images/products/eizo-cg279x-1.jpg",
+        "isMain": true,
+        "alt": "EIZO ColorEdge CG279X front view"
+      },
+      {
+        "imageUrl": "/images/products/eizo-cg279x-2.jpg",
+        "isMain": false,
+        "alt": "EIZO ColorEdge CG279X side view"
+      },
+      {
+        "imageUrl": "/images/products/eizo-cg279x-3.jpg",
+        "isMain": false,
+        "alt": "EIZO ColorEdge CG279X calibration sensor"
+      }
+    ]
+  },
+  {
+    "name": "Samsung T7 Touch",
+    "brand": "Samsung",
+    "description": "The Samsung T7 Touch combines blazing-fast transfer speeds with enhanced security in a compact portable SSD. With read speeds up to 1,050 MB/s and write speeds up to 1,000 MB/s, it's nearly twice as fast as the previous T5 model. The integrated fingerprint scanner adds an extra layer of security alongside password protection and AES 256-bit encryption, ensuring your sensitive data remains protected. The sleek, shock-resistant aluminum case withstands falls from up to 6 feet while weighing just 58 grams. The touch sensor's LED status indicator keeps you informed of drive activity at a glance. With both USB Type-C-to-C and Type-C-to-A cables included, it's compatible with PCs, Macs, Android devices, game consoles, and more.",
+    "shortDescription": "Portable SSD with fingerprint security and transfer speeds up to 1,050 MB/s",
+    "basePrice": 5039760,
+    "isActive": true,
+    "isNewProduct": true,
+    "isBestSeller": true,
+    "isFeatured": true,
+    "categoryNames": ["External SSD", "Storage"],
+    "tags": [
+      "storage",
+      "ssd",
+      "external",
+      "portable",
+      "samsung",
+      "fingerprint",
+      "usb-c"
+    ],
+    "variants": [
+      {
+        "name": "500GB",
+        "sku": "SAM-T7T-500GB",
+        "attributes": {
+          "capacity": "500GB",
+          "interface": "USB 3.2 Gen 2",
+          "readSpeed": "1,050 MB/s",
+          "writeSpeed": "1,000 MB/s",
+          "security": "Fingerprint, Password, AES 256-bit",
+          "color": "Silver"
+        },
+        "price": 5039760,
+        "salePrice": 4559760,
+        "inventory": 30,
+        "isActive": true
+      },
+      {
+        "name": "1TB",
+        "sku": "SAM-T7T-1TB",
+        "attributes": {
+          "capacity": "1TB",
+          "interface": "USB 3.2 Gen 2",
+          "readSpeed": "1,050 MB/s",
+          "writeSpeed": "1,000 MB/s",
+          "security": "Fingerprint, Password, AES 256-bit",
+          "color": "Black"
+        },
+        "price": 7679760,
+        "salePrice": 7199760,
+        "inventory": 25,
+        "isActive": true
+      },
+      {
+        "name": "2TB",
+        "sku": "SAM-T7T-2TB",
+        "attributes": {
+          "capacity": "2TB",
+          "interface": "USB 3.2 Gen 2",
+          "readSpeed": "1,050 MB/s",
+          "writeSpeed": "1,000 MB/s",
+          "security": "Fingerprint, Password, AES 256-bit",
+          "color": "Black"
+        },
+        "price": 14399760,
+        "salePrice": 13199760,
+        "inventory": 15,
+        "isActive": true
+      }
+    ],
+    "images": [
+      {
+        "imageUrl": "/images/products/samsung-t7-touch-1.jpg",
+        "isMain": true,
+        "alt": "Samsung T7 Touch front view"
+      },
+      {
+        "imageUrl": "/images/products/samsung-t7-touch-2.jpg",
+        "isMain": false,
+        "alt": "Samsung T7 Touch with fingerprint scanner glowing"
+      },
+      {
+        "imageUrl": "/images/products/samsung-t7-touch-3.jpg",
+        "isMain": false,
+        "alt": "Samsung T7 Touch size comparison"
+      }
+    ]
+  },
+  {
+    "name": "WD Elements Desktop",
+    "brand": "Western Digital",
+    "description": "The WD Elements Desktop external hard drive provides reliable, high-capacity storage for all your important files. With capacities up to a massive 14TB, it's ideal for storing large media libraries, system backups, and document archives. The drive delivers reliable performance with USB 3.0 connectivity, offering transfer rates up to 130 MB/s for quick file access. The sleek, minimalist design complements any desktop setup while the sturdy enclosure protects your data. The drive is formatted for Windows out of the box, but can be easily reformatted for use with macOS. With plug-and-play functionality, no software installation is required—simply connect the drive and start transferring files immediately.",
+    "shortDescription": "High-capacity desktop external hard drive with USB 3.0 connectivity",
+    "basePrice": 3359760,
+    "isActive": true,
+    "isNewProduct": false,
+    "isBestSeller": true,
+    "isFeatured": false,
+    "categoryNames": ["External HDD", "Storage"],
+    "tags": [
+      "storage",
+      "hdd",
+      "external",
+      "desktop",
+      "western digital",
+      "high-capacity"
+    ],
+    "variants": [
+      {
+        "name": "4TB",
+        "sku": "WD-ELEMENTS-4TB",
+        "attributes": {
+          "capacity": "4TB",
+          "interface": "USB 3.0",
+          "formFactor": "3.5-inch Desktop",
+          "transferRate": "Up to 130 MB/s",
+          "powerSupply": "AC Adapter Required"
+        },
+        "price": 3359760,
+        "salePrice": 2879760,
+        "inventory": 35,
+        "isActive": true
+      },
+      {
+        "name": "8TB",
+        "sku": "WD-ELEMENTS-8TB",
+        "attributes": {
+          "capacity": "8TB",
+          "interface": "USB 3.0",
+          "formFactor": "3.5-inch Desktop",
+          "transferRate": "Up to 130 MB/s",
+          "powerSupply": "AC Adapter Required"
+        },
+        "price": 5519760,
+        "salePrice": 4799760,
+        "inventory": 25,
+        "isActive": true
+      },
+      {
+        "name": "14TB",
+        "sku": "WD-ELEMENTS-14TB",
+        "attributes": {
+          "capacity": "14TB",
+          "interface": "USB 3.0",
+          "formFactor": "3.5-inch Desktop",
+          "transferRate": "Up to 130 MB/s",
+          "powerSupply": "AC Adapter Required"
+        },
+        "price": 9119760,
+        "salePrice": 8159760,
+        "inventory": 15,
+        "isActive": true
+      }
+    ],
+    "images": [
+      {
+        "imageUrl": "/images/products/wd-elements-1.jpg",
+        "isMain": true,
+        "alt": "WD Elements Desktop front view"
+      },
+      {
+        "imageUrl": "/images/products/wd-elements-2.jpg",
+        "isMain": false,
+        "alt": "WD Elements Desktop back ports view"
+      },
+      {
+        "imageUrl": "/images/products/wd-elements-3.jpg",
+        "isMain": false,
+        "alt": "WD Elements Desktop setup view"
+      }
+    ]
+  },
+  {
+    "name": "AMD Ryzen 9 5950X",
+    "brand": "AMD",
+    "description": "The AMD Ryzen 9 5950X represents the pinnacle of high-performance computing for enthusiasts and professionals. With 16 cores and 32 threads based on the advanced Zen 3 architecture, it delivers unmatched multi-threaded performance for demanding workloads like 3D rendering, video editing, and software development. The processor achieves boost clocks up to 4.9GHz with a base clock of 3.4GHz, while maintaining a reasonable 105W TDP. With a massive 72MB of combined cache (64MB L3 + 8MB L2), it reduces memory latency for faster application response. The CPU supports PCIe 4.0 for next-generation storage and graphics cards, while precision boost and precision boost overdrive technologies intelligently optimize performance based on workload and thermal headroom. Compatible with AM4 socket motherboards, it offers an accessible upgrade path for existing AMD systems.",
+    "shortDescription": "16-core, 32-thread desktop processor with boost speeds up to 4.9GHz",
+    "basePrice": 16799760,
+    "isActive": true,
+    "isNewProduct": false,
+    "isBestSeller": true,
+    "isFeatured": true,
+    "categoryNames": ["AMD Processors", "Desktop CPUs", "Processors"],
+    "tags": [
+      "processor",
+      "cpu",
+      "amd",
+      "ryzen",
+      "desktop",
+      "high-performance",
+      "zen3"
+    ],
+    "variants": [
+      {
+        "name": "Processor Only",
+        "sku": "AMD-R9-5950X",
+        "attributes": {
+          "cores": "16 Cores",
+          "threads": "32 Threads",
+          "baseFrequency": "3.4 GHz",
+          "maxBoost": "4.9 GHz",
+          "cache": "72MB (64MB L3 + 8MB L2)",
+          "tdp": "105W",
+          "pciSupport": "PCIe 4.0",
+          "cooler": "Not Included"
+        },
+        "price": 16799760,
+        "salePrice": 15599760,
+        "inventory": 20,
+        "isActive": true
+      },
+      {
+        "name": "With Liquid Cooler",
+        "sku": "AMD-R9-5950X-LC",
+        "attributes": {
+          "cores": "16 Cores",
+          "threads": "32 Threads",
+          "baseFrequency": "3.4 GHz",
+          "maxBoost": "4.9 GHz",
+          "cache": "72MB (64MB L3 + 8MB L2)",
+          "tdp": "105W",
+          "pciSupport": "PCIe 4.0",
+          "cooler": "240mm AIO Liquid Cooler Included"
+        },
+        "price": 19199760,
+        "salePrice": 17999760,
+        "inventory": 15,
+        "isActive": true
+      }
+    ],
+    "images": [
+      {
+        "imageUrl": "/images/products/ryzen-5950x-1.jpg",
+        "isMain": true,
+        "alt": "AMD Ryzen 9 5950X processor top view"
+      },
+      {
+        "imageUrl": "/images/products/ryzen-5950x-2.jpg",
+        "isMain": false,
+        "alt": "AMD Ryzen 9 5950X processor angle view"
+      },
+      {
+        "imageUrl": "/images/products/ryzen-5950x-3.jpg",
+        "isMain": false,
+        "alt": "AMD Ryzen 9 5950X packaging"
+      }
+    ]
+  },
+  {
+    "name": "AMD Ryzen 7 5800X3D",
+    "brand": "AMD",
+    "description": "The AMD Ryzen 7 5800X3D is the world's first desktop processor with revolutionary 3D V-Cache technology, delivering unmatched gaming performance. With 8 cores and 16 threads running at up to 4.5GHz boost clock, it's augmented by a massive 96MB of total cache (64MB L3 + 32MB 3D V-Cache) that significantly reduces memory latency in games. This innovative cache stacking technology provides up to 15% gaming performance improvement over standard processors. Built on the efficient Zen 3 architecture with a 105W TDP, it balances exceptional performance with reasonable power consumption. The processor is compatible with existing AM4 socket motherboards, offering a simple upgrade path for gamers looking to maximize their frame rates without replacing their entire system.",
+    "shortDescription": "Gaming-optimized 8-core processor with revolutionary 3D V-Cache technology",
+    "basePrice": 10799760,
+    "isActive": true,
+    "isNewProduct": true,
+    "isBestSeller": true,
+    "isFeatured": true,
+    "categoryNames": ["AMD Processors", "Desktop CPUs", "Processors"],
+    "tags": [
+      "processor",
+      "cpu",
+      "amd",
+      "ryzen",
+      "desktop",
+      "gaming",
+      "3d-cache"
+    ],
+    "variants": [
+      {
+        "name": "Processor Only",
+        "sku": "AMD-R7-5800X3D",
+        "attributes": {
+          "cores": "8 Cores",
+          "threads": "16 Threads",
+          "baseFrequency": "3.4 GHz",
+          "maxBoost": "4.5 GHz",
+          "cache": "96MB (64MB L3 + 32MB 3D V-Cache)",
+          "tdp": "105W",
+          "pciSupport": "PCIe 4.0",
+          "cooler": "Not Included"
+        },
+        "price": 10799760,
+        "salePrice": 9599760,
+        "inventory": 25,
+        "isActive": true
+      },
+      {
+        "name": "With Air Cooler",
+        "sku": "AMD-R7-5800X3D-AC",
+        "attributes": {
+          "cores": "8 Cores",
+          "threads": "16 Threads",
+          "baseFrequency": "3.4 GHz",
+          "maxBoost": "4.5 GHz",
+          "cache": "96MB (64MB L3 + 32MB 3D V-Cache)",
+          "tdp": "105W",
+          "pciSupport": "PCIe 4.0",
+          "cooler": "Premium Air Cooler Included"
+        },
+        "price": 11999760,
+        "salePrice": 11279760,
+        "inventory": 20,
+        "isActive": true
+      }
+    ],
+    "images": [
+      {
+        "imageUrl": "/images/products/ryzen-5800x3d-1.jpg",
+        "isMain": true,
+        "alt": "AMD Ryzen 7 5800X3D processor top view"
+      },
+      {
+        "imageUrl": "/images/products/ryzen-5800x3d-2.jpg",
+        "isMain": false,
+        "alt": "AMD Ryzen 7 5800X3D processor angle view"
+      },
+      {
+        "imageUrl": "/images/products/ryzen-5800x3d-3.jpg",
+        "isMain": false,
+        "alt": "AMD Ryzen 7 5800X3D packaging"
+      }
+    ]
+  },
+  {
+    "name": "ASUS ROG Strix X570-E Gaming",
+    "brand": "ASUS",
+    "description": "The ASUS ROG Strix X570-E Gaming motherboard combines cutting-edge technology with robust design for enthusiast-level PC builds. Built around AMD's X570 chipset with support for Ryzen 5000, 4000G, 3000, 3000G, and 2000 series processors, it provides exceptional performance and future-proof connectivity. The 16 power stages deliver clean, stable power to even the most demanding CPUs, while comprehensive cooling includes an active chipset heatsink, M.2 heatsinks, and a water pump+ header. Connectivity options include lightning-fast 2.5Gbps Ethernet and WiFi 6 (802.11ax), along with USB 3.2 Gen 2 Type-A and Type-C. The motherboard features PCIe 4.0 support for next-gen graphics cards and storage devices, while SupremeFX S1220A audio with DTS Sound Unbound delivers immersive in-game audio. RGB headers with Aura Sync support allow for customized lighting effects throughout your system.",
+    "shortDescription": "Premium ATX motherboard for AMD Ryzen processors with PCIe 4.0, WiFi 6 and 2.5G Ethernet",
+    "basePrice": 8639760,
+    "isActive": true,
+    "isNewProduct": false,
+    "isBestSeller": true,
+    "isFeatured": true,
+    "categoryNames": ["AMD Compatible", "ATX Motherboards", "Motherboards"],
+    "tags": [
+      "motherboard",
+      "amd",
+      "asus",
+      "rog",
+      "x570",
+      "pcie4",
+      "wifi6",
+      "rgb"
+    ],
+    "variants": [
+      {
+        "name": "Standard",
+        "sku": "ASUS-X570E-GAMING",
+        "attributes": {
+          "formFactor": "ATX",
+          "chipset": "AMD X570",
+          "socketType": "AM4",
+          "memorySlots": "4x DIMM, Max 128GB DDR4",
+          "pciSlots": "2x PCIe 4.0 x16, 1x PCIe 4.0 x16 (x4), 2x PCIe 4.0 x1",
+          "m2Slots": "2x M.2 (PCIe 4.0), 1x M.2 (PCIe 3.0)",
+          "sataConnectors": "8x SATA 6Gb/s",
+          "networking": "2.5Gbps Ethernet, WiFi 6 (802.11ax)"
+        },
+        "price": 8639760,
+        "salePrice": 7919760,
+        "inventory": 20,
+        "isActive": true
+      },
+      {
+        "name": "WiFi Bundle",
+        "sku": "ASUS-X570E-WIFI-BUNDLE",
+        "attributes": {
+          "formFactor": "ATX",
+          "chipset": "AMD X570",
+          "socketType": "AM4",
+          "memorySlots": "4x DIMM, Max 128GB DDR4",
+          "pciSlots": "2x PCIe 4.0 x16, 1x PCIe 4.0 x16 (x4), 2x PCIe 4.0 x1",
+          "m2Slots": "2x M.2 (PCIe 4.0), 1x M.2 (PCIe 3.0)",
+          "sataConnectors": "8x SATA 6Gb/s",
+          "networking": "2.5Gbps Ethernet, WiFi 6 (802.11ax)",
+          "extras": "External WiFi Antenna, ROG Strix Division Mousepad"
+        },
+        "price": 9119760,
+        "salePrice": 8639760,
+        "inventory": 15,
+        "isActive": true
+      }
+    ],
+    "images": [
+      {
+        "imageUrl": "/images/products/asus-x570e-1.jpg",
+        "isMain": true,
+        "alt": "ASUS ROG Strix X570-E Gaming front view"
+      },
+      {
+        "imageUrl": "/images/products/asus-x570e-2.jpg",
+        "isMain": false,
+        "alt": "ASUS ROG Strix X570-E Gaming IO panel"
+      },
+      {
+        "imageUrl": "/images/products/asus-x570e-3.jpg",
+        "isMain": false,
+        "alt": "ASUS ROG Strix X570-E Gaming with RGB lighting"
+      }
+    ]
+  },
+  {
+    "name": "MSI MPG Z690 Gaming Edge WiFi",
+    "brand": "MSI",
+    "description": "The MSI MPG Z690 Gaming Edge WiFi delivers cutting-edge performance for Intel 12th generation processors, featuring support for both DDR5 and PCIe 5.0 technologies. The robust 18+1+1 Duet Rail Power System with 75A SPS ensures stable power delivery for reliable overclocking, while the Extended Heatsink Design with heatpipe effectively dissipates heat from critical components. Networking options include WiFi 6E (6GHz) and 2.5G LAN for high-speed connectivity. The motherboard supports up to 128GB of DDR5-6400+ (OC) memory, delivering breakthrough memory performance. Comprehensive cooling control includes multiple temperature sensors and hybrid fan headers with Fan Control 2 software. The Lightning USB 20G provides 20Gbps transfer speeds, while Lightning Gen 5 M.2 with Shield Frozr offers maximum storage performance. Mystic Light with RGB headers allows for customized lighting throughout your system.",
+    "shortDescription": "Premium Z690 ATX motherboard for Intel 12th Gen processors with DDR5 and PCIe 5.0 support",
+    "basePrice": 9599760,
+    "isActive": true,
+    "isNewProduct": true,
+    "isBestSeller": false,
+    "isFeatured": true,
+    "categoryNames": ["Intel Compatible", "ATX Motherboards", "Motherboards"],
+    "tags": [
+      "motherboard",
+      "intel",
+      "msi",
+      "z690",
+      "ddr5",
+      "pcie5",
+      "wifi6e",
+      "rgb"
+    ],
+    "variants": [
+      {
+        "name": "Standard",
+        "sku": "MSI-Z690-GAMING-EDGE",
+        "attributes": {
+          "formFactor": "ATX",
+          "chipset": "Intel Z690",
+          "socketType": "LGA 1700",
+          "memorySlots": "4x DIMM, Max 128GB DDR5",
+          "pciSlots": "1x PCIe 5.0 x16, 1x PCIe 4.0 x16 (x4), 2x PCIe 3.0 x1",
+          "m2Slots": "1x M.2 (PCIe 5.0 x4), 3x M.2 (PCIe 4.0 x4)",
+          "sataConnectors": "6x SATA 6Gb/s",
+          "networking": "2.5Gbps Ethernet, WiFi 6E (802.11ax)"
+        },
+        "price": 9599760,
+        "salePrice": 8879760,
+        "inventory": 15,
+        "isActive": true
+      },
+      {
+        "name": "Bundle",
+        "sku": "MSI-Z690-BUNDLE",
+        "attributes": {
+          "formFactor": "ATX",
+          "chipset": "Intel Z690",
+          "socketType": "LGA 1700",
+          "memorySlots": "4x DIMM, Max 128GB DDR5",
+          "pciSlots": "1x PCIe 5.0 x16, 1x PCIe 4.0 x16 (x4), 2x PCIe 3.0 x1",
+          "m2Slots": "1x M.2 (PCIe 5.0 x4), 3x M.2 (PCIe 4.0 x4)",
+          "sataConnectors": "6x SATA 6Gb/s",
+          "networking": "2.5Gbps Ethernet, WiFi 6E (802.11ax)",
+          "extras": "LGA1700 CPU Cooler Mounting Bracket, MSI Gaming Mouse"
+        },
+        "price": 10319760,
+        "salePrice": 9599760,
+        "inventory": 10,
+        "isActive": true
+      }
+    ],
+    "images": [
+      {
+        "imageUrl": "/images/products/msi-z690-1.jpg",
+        "isMain": true,
+        "alt": "MSI MPG Z690 Gaming Edge WiFi front view"
+      },
+      {
+        "imageUrl": "/images/products/msi-z690-2.jpg",
+        "isMain": false,
+        "alt": "MSI MPG Z690 Gaming Edge WiFi IO panel"
+      },
+      {
+        "imageUrl": "/images/products/msi-z690-3.jpg",
+        "isMain": false,
+        "alt": "MSI MPG Z690 Gaming Edge WiFi with RGB lighting"
+      }
+    ]
+  },
+  {
+    "name": "Sapphire Nitro+ AMD Radeon RX 6800 XT",
+    "brand": "Sapphire",
+    "description": "The Sapphire Nitro+ RX 6800 XT delivers exceptional gaming performance with AMD's RDNA 2 architecture, featuring 72 compute units, 16GB of GDDR6 memory, and a 256-bit memory interface. The Tri-X cooling system uses three efficient fans with hybrid fan bearings for optimal cooling and acoustic performance, while the two-position BIOS switch allows you to choose between maximum performance or quieter operation. The card features intelligent fan control that stops fans completely during light loads for silent operation. Premium components including a 14-layer PCB and 14+2 phase power design ensure stability under intense gaming sessions. The ARGB lighting can be customized using Sapphire's TriXX software, with multiple effects and synchronization options. With support for PCIe 4.0, DirectX 12 Ultimate, and AMD's Smart Access Memory, it delivers cutting-edge features for next-generation gaming.",
+    "shortDescription": "High-performance AMD graphics card with 16GB GDDR6 memory and advanced cooling",
+    "basePrice": 28799760,
+    "isActive": true,
+    "isNewProduct": false,
+    "isBestSeller": true,
+    "isFeatured": true,
+    "categoryNames": ["AMD GPUs", "Graphics Cards"],
+    "tags": [
+      "gpu",
+      "graphics card",
+      "amd",
+      "sapphire",
+      "radeon",
+      "gaming",
+      "rdna2"
+    ],
+    "variants": [
+      {
+        "name": "Standard Edition",
+        "sku": "SAPPHIRE-RX6800XT-STD",
+        "attributes": {
+          "streamProcessors": "4608 Stream Processors",
+          "gameFrequency": "2015 MHz",
+          "boostFrequency": "2360 MHz",
+          "memory": "16GB GDDR6",
+          "memoryInterface": "256-bit",
+          "memorySpeed": "16 Gbps",
+          "powerConnectors": "2x 8-pin",
+          "recommendedPSU": "750W"
+        },
+        "price": 28799760,
+        "salePrice": 26399760,
+        "inventory": 12,
+        "isActive": true
+      },
+      {
+        "name": "Special Edition",
+        "sku": "SAPPHIRE-RX6800XT-SE",
+        "attributes": {
+          "streamProcessors": "4608 Stream Processors",
+          "gameFrequency": "2090 MHz",
+          "boostFrequency": "2410 MHz",
+          "memory": "16GB GDDR6",
+          "memoryInterface": "256-bit",
+          "memorySpeed": "16 Gbps",
+          "powerConnectors": "2x 8-pin",
+          "recommendedPSU": "850W",
+          "extras": "Custom Backplate, Enhanced Cooling"
+        },
+        "price": 30959760,
+        "salePrice": null,
+        "inventory": 8,
+        "isActive": true
+      }
+    ],
+    "images": [
+      {
+        "imageUrl": "/images/products/sapphire-6800xt-1.jpg",
+        "isMain": true,
+        "alt": "Sapphire Nitro+ AMD Radeon RX 6800 XT front view"
+      },
+      {
+        "imageUrl": "/images/products/sapphire-6800xt-2.jpg",
+        "isMain": false,
+        "alt": "Sapphire Nitro+ AMD Radeon RX 6800 XT side view with RGB lighting"
+      },
+      {
+        "imageUrl": "/images/products/sapphire-6800xt-3.jpg",
+        "isMain": false,
+        "alt": "Sapphire Nitro+ AMD Radeon RX 6800 XT backplate view"
+      }
+    ]
+  },
+  {
+    "name": "PowerColor Red Devil AMD Radeon RX 6700 XT",
+    "brand": "PowerColor",
+    "description": "The PowerColor Red Devil RX 6700 XT combines gaming performance and cooling excellence in a striking package. Powered by AMD's RDNA 2 architecture with 40 compute units and 12GB of GDDR6 memory on a 192-bit bus, it delivers high-resolution gaming performance with support for ray tracing. The triple-fan cooling system features two 100mm and one 90mm fan for optimal airflow, while the massive heatsink with seven heat pipes efficiently dissipates heat under load. The dual BIOS switch offers a choice between OC mode for maximum performance and Silent mode for quieter operation. Premium components including DrMOS and high-polymer capacitors ensure durability and stable overclocking potential. RGB lighting on the shroud and backplate adds customizable style to your build, controllable through PowerColor's Devil Zone software. With a factory overclock and robust VRM design, it delivers reliable gaming performance that exceeds reference specifications.",
+    "shortDescription": "Factory overclocked AMD graphics card with triple-fan cooling and 12GB GDDR6 memory",
+    "basePrice": 19199760,
+    "isActive": true,
+    "isNewProduct": true,
+    "isBestSeller": false,
+    "isFeatured": true,
+    "categoryNames": ["AMD GPUs", "Graphics Cards"],
+    "tags": [
+      "gpu",
+      "graphics card",
+      "amd",
+      "powercolor",
+      "radeon",
+      "gaming",
+      "rdna2"
+    ],
+    "variants": [
+      {
+        "name": "Standard",
+        "sku": "PC-RX6700XT-RD",
+        "attributes": {
+          "streamProcessors": "2560 Stream Processors",
+          "gameFrequency": "2424 MHz",
+          "boostFrequency": "2615 MHz",
+          "memory": "12GB GDDR6",
+          "memoryInterface": "192-bit",
+          "memorySpeed": "16 Gbps",
+          "powerConnectors": "1x 8-pin + 1x 6-pin",
+          "recommendedPSU": "650W"
+        },
+        "price": 19199760,
+        "salePrice": 17999760,
+        "inventory": 15,
+        "isActive": true
+      },
+      {
+        "name": "Limited Edition",
+        "sku": "PC-RX6700XT-RD-LE",
+        "attributes": {
+          "streamProcessors": "2560 Stream Processors",
+          "gameFrequency": "2450 MHz",
+          "boostFrequency": "2650 MHz",
+          "memory": "12GB GDDR6",
+          "memoryInterface": "192-bit",
+          "memorySpeed": "16 Gbps",
+          "powerConnectors": "1x 8-pin + 1x 6-pin",
+          "recommendedPSU": "650W",
+          "extras": "Metal Carrying Case, RGB GPU Support Bracket"
+        },
+        "price": 20399760,
+        "salePrice": null,
+        "inventory": 5,
+        "isActive": true
+      }
+    ],
+    "images": [
+      {
+        "imageUrl": "/images/products/powercolor-6700xt-1.jpg",
+        "isMain": true,
+        "alt": "PowerColor Red Devil AMD Radeon RX 6700 XT front view"
+      },
+      {
+        "imageUrl": "/images/products/powercolor-6700xt-2.jpg",
+        "isMain": false,
+        "alt": "PowerColor Red Devil AMD Radeon RX 6700 XT with RGB lighting"
+      },
+      {
+        "imageUrl": "/images/products/powercolor-6700xt-3.jpg",
+        "isMain": false,
+        "alt": "PowerColor Red Devil AMD Radeon RX 6700 XT backplate view"
+      }
+    ]
+  },
+  {
+    "name": "Corsair Vengeance RGB Pro",
+    "brand": "Corsair",
+    "description": "The Corsair Vengeance RGB Pro series delivers premium DDR4 performance with dynamic multi-zone RGB lighting in a modern aluminum heat spreader design. Each module features ten individually addressable RGB LEDs, customizable through Corsair iCUE software to synchronize with other RGB components in your system. The carefully screened memory chips are optimized for maximum bandwidth and tight response times on the latest Intel and AMD DDR4 motherboards. A custom performance PCB provides superior signal quality and stability, while the aluminum heat spreader efficiently dissipates heat for reliable operation even when overclocked. XMP 2.0 support provides simple one-setting installation on compatible systems, automatically configuring your memory to its certified speed, timings, and voltages.",
+    "shortDescription": "High-performance DDR4 memory with dynamic multi-zone RGB lighting",
+    "basePrice": 3359760,
+    "isActive": true,
+    "isNewProduct": false,
+    "isBestSeller": true,
+    "isFeatured": true,
+    "categoryNames": ["Desktop RAM", "RAM"],
+    "tags": ["ram", "memory", "ddr4", "corsair", "rgb", "desktop", "gaming"],
+    "variants": [
+      {
+        "name": "16GB (2x8GB) DDR4-3200",
+        "sku": "CORSAIR-VRGBP-16-3200",
+        "attributes": {
+          "capacity": "16GB (2x8GB)",
+          "memoryType": "DDR4",
+          "speed": "3200MHz",
+          "timings": "16-18-18-36",
+          "voltage": "1.35V",
+          "lighting": "RGB",
+          "profile": "XMP 2.0",
+          "color": "Black"
+        },
+        "price": 3359760,
+        "salePrice": 2879760,
+        "inventory": 30,
+        "isActive": true
+      },
+      {
+        "name": "32GB (2x16GB) DDR4-3600",
+        "sku": "CORSAIR-VRGBP-32-3600",
+        "attributes": {
+          "capacity": "32GB (2x16GB)",
+          "memoryType": "DDR4",
+          "speed": "3600MHz",
+          "timings": "18-22-22-42",
+          "voltage": "1.35V",
+          "lighting": "RGB",
+          "profile": "XMP 2.0",
+          "color": "Black"
+        },
+        "price": 5519760,
+        "salePrice": 4799760,
+        "inventory": 25,
+        "isActive": true
+      },
+      {
+        "name": "64GB (2x32GB) DDR4-3200",
+        "sku": "CORSAIR-VRGBP-64-3200",
+        "attributes": {
+          "capacity": "64GB (2x32GB)",
+          "memoryType": "DDR4",
+          "speed": "3200MHz",
+          "timings": "16-20-20-38",
+          "voltage": "1.35V",
+          "lighting": "RGB",
+          "profile": "XMP 2.0",
+          "color": "Black"
+        },
+        "price": 8639760,
+        "salePrice": 7679760,
+        "inventory": 15,
+        "isActive": true
+      }
+    ],
+    "images": [
+      {
+        "imageUrl": "/images/products/corsair-vengeance-rgb-1.jpg",
+        "isMain": true,
+        "alt": "Corsair Vengeance RGB Pro front view"
+      },
+      {
+        "imageUrl": "/images/products/corsair-vengeance-rgb-2.jpg",
+        "isMain": false,
+        "alt": "Corsair Vengeance RGB Pro with lighting effects"
+      },
+      {
+        "imageUrl": "/images/products/corsair-vengeance-rgb-3.jpg",
+        "isMain": false,
+        "alt": "Corsair Vengeance RGB Pro installed on motherboard"
+      }
+    ]
+  },
+  {
+    "name": "Crucial SO-DIMM DDR4",
+    "brand": "Crucial",
+    "description": "Crucial SO-DIMM DDR4 memory offers reliable performance upgrade for laptops, mini PCs, and small form factor systems. These modules are engineered for 100% component and module testing to ensure quality and compatibility across thousands of laptop models. With speeds starting at 2666 MHz, they deliver responsive performance for everyday computing tasks and multitasking. The energy-efficient design requires just 1.2V, helping to extend laptop battery life compared to older memory generations. Crucial's 35+ years of memory engineering experience ensures dependable quality backed by a limited lifetime warranty. Installation is straightforward, making this one of the most cost-effective ways to improve your laptop's performance and extend its usable life.",
+    "shortDescription": "Reliable DDR4 memory modules for laptops and small form factor systems",
+    "basePrice": 1199760,
+    "isActive": true,
+    "isNewProduct": false,
+    "isBestSeller": true,
+    "isFeatured": false,
+    "categoryNames": ["Laptop RAM", "RAM"],
+    "tags": ["ram", "memory", "ddr4", "crucial", "laptop", "sodimm", "upgrade"],
+    "variants": [
+      {
+        "name": "8GB DDR4-2666",
+        "sku": "CRUCIAL-SODIMM-8-2666",
+        "attributes": {
+          "capacity": "8GB (1x8GB)",
+          "memoryType": "DDR4 SO-DIMM",
+          "speed": "2666MHz",
+          "timings": "CL19",
+          "voltage": "1.2V",
+          "formFactor": "260-pin SO-DIMM"
+        },
+        "price": 1199760,
+        "salePrice": 1079760,
+        "inventory": 40,
+        "isActive": true
+      },
+      {
+        "name": "16GB DDR4-2666",
+        "sku": "CRUCIAL-SODIMM-16-2666",
+        "attributes": {
+          "capacity": "16GB (1x16GB)",
+          "memoryType": "DDR4 SO-DIMM",
+          "speed": "2666MHz",
+          "timings": "CL19",
+          "voltage": "1.2V",
+          "formFactor": "260-pin SO-DIMM"
+        },
+        "price": 2399760,
+        "salePrice": 2159760,
+        "inventory": 35,
+        "isActive": true
+      },
+      {
+        "name": "32GB DDR4-2666",
+        "sku": "CRUCIAL-SODIMM-32-2666",
+        "attributes": {
+          "capacity": "32GB (1x32GB)",
+          "memoryType": "DDR4 SO-DIMM",
+          "speed": "2666MHz",
+          "timings": "CL19",
+          "voltage": "1.2V",
+          "formFactor": "260-pin SO-DIMM"
+        },
+        "price": 4319760,
+        "salePrice": 3839760,
+        "inventory": 20,
+        "isActive": true
+      }
+    ],
+    "images": [
+      {
+        "imageUrl": "/images/products/crucial-sodimm-1.jpg",
+        "isMain": true,
+        "alt": "Crucial SO-DIMM DDR4 front view"
+      },
+      {
+        "imageUrl": "/images/products/crucial-sodimm-2.jpg",
+        "isMain": false,
+        "alt": "Crucial SO-DIMM DDR4 packaging"
+      },
+      {
+        "imageUrl": "/images/products/crucial-sodimm-3.jpg",
+        "isMain": false,
+        "alt": "Crucial SO-DIMM DDR4 installed in laptop"
       }
     ]
   }

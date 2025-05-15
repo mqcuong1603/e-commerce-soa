@@ -13,8 +13,15 @@ import { toast } from "react-toastify";
  * This page displays items in the user's cart and provides a summary with checkout option
  */
 const CartPage = () => {
-  const { cart, clearCart, loading, error, refreshCart, applyDiscount } =
-    useCart();
+  const {
+    cart,
+    clearCart,
+    loading,
+    error,
+    refreshCart,
+    applyDiscount,
+    isAuthenticated,
+  } = useCart();
   const [discountCode, setDiscountCode] = useState("");
   const [discountAmount, setDiscountAmount] = useState(0);
   const [loyaltyPoints, setLoyaltyPoints] = useState(0);
@@ -192,25 +199,54 @@ const CartPage = () => {
                 </Button>
               </Link>
 
-              {/* Quick checkout button for mobile view */}
+              {/* Checkout buttons */}
               <div className="d-md-none w-100 mt-3">
-                <Button
-                  variant="danger"
-                  fullWidth
-                  onClick={() =>
-                    navigate("/checkout", {
-                      state: {
-                        discountCode,
-                        discountAmount,
-                        loyaltyPoints,
-                      },
-                    })
-                  }
-                >
-                  <i className="bi bi-credit-card me-2"></i>
-                  Checkout - ₫
-                  {(cart.subtotal + 35000 - discountAmount).toLocaleString()}
-                </Button>
+                {!isAuthenticated ? (
+                  <div className="mt-2 d-flex gap-2">
+                    <button
+                      className="btn btn-danger"
+                      onClick={() =>
+                        navigate("/checkout", {
+                          state: {
+                            discountCode,
+                            discountAmount,
+                            loyaltyPoints,
+                          },
+                        })
+                      }
+                    >
+                      <i className="bi bi-bag me-2"></i>
+                      Checkout as Guest
+                    </button>
+                    <button
+                      className="btn btn-outline-secondary"
+                      onClick={() =>
+                        navigate("/login", {
+                          state: { from: { pathname: "/checkout" } },
+                        })
+                      }
+                    >
+                      Login to Checkout
+                    </button>
+                  </div>
+                ) : (
+                  <button
+                    className="btn btn-danger"
+                    onClick={() =>
+                      navigate("/checkout", {
+                        state: {
+                          discountCode,
+                          discountAmount,
+                          loyaltyPoints,
+                        },
+                      })
+                    }
+                  >
+                    <i className="bi bi-credit-card me-2"></i>
+                    Checkout - ₫
+                    {(cart.subtotal + 35000 - discountAmount).toLocaleString()}
+                  </button>
+                )}
               </div>
             </div>
           </Card>

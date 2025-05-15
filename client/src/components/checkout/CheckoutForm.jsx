@@ -7,14 +7,20 @@ import PaymentForm from "./PaymentForm";
 import orderService from "../../services/order.service";
 import userService from "../../services/user.service";
 
-const CheckoutForm = () => {
+// Add isGuestCheckout to props
+const CheckoutForm = ({
+  discountCode,
+  usingLoyaltyPoints,
+  onOrderSuccess,
+  isGuestCheckout = false,
+}) => {
   const { cart, clearCart } = useCart();
   const { isAuthenticated, user } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
 
   // State from previous page (if any)
-  const { discountCode, usingLoyaltyPoints } = location.state || {};
+  // const { discountCode, usingLoyaltyPoints } = location.state || {};
 
   // Step state
   const [currentStep, setCurrentStep] = useState(1);
@@ -23,7 +29,10 @@ const CheckoutForm = () => {
   // Form states
   const [addresses, setAddresses] = useState([]);
   const [selectedAddressId, setSelectedAddressId] = useState("");
-  const [showAddressForm, setShowAddressForm] = useState(!isAuthenticated);
+  // const [showAddressForm, setShowAddressForm] = useState(!isAuthenticated);
+  const [showAddressForm, setShowAddressForm] = useState(
+    !isAuthenticated || isGuestCheckout
+  );
   const [addressFormData, setAddressFormData] = useState({
     fullName: user?.fullName || "",
     phoneNumber: "",
@@ -53,6 +62,22 @@ const CheckoutForm = () => {
   const [error, setError] = useState("");
   const [orderSuccess, setOrderSuccess] = useState(false);
   const [orderData, setOrderData] = useState(null);
+
+  // Make sure this state variable exists
+  const [guestEmail, setGuestEmail] = useState("");
+  const [emailError, setEmailError] = useState("");
+
+  // New state for shipping address
+  const [shippingAddress, setShippingAddress] = useState({
+    fullName: "",
+    phoneNumber: "",
+    addressLine1: "",
+    addressLine2: "",
+    city: "",
+    state: "",
+    postalCode: "",
+    country: "Vietnam",
+  });
 
   // Fetch user addresses if authenticated
   useEffect(() => {
@@ -174,14 +199,32 @@ const CheckoutForm = () => {
     setAddressFormData((prev) => ({ ...prev, [name]: value }));
   };
 
+  // Handle guest email change
+  const handleGuestEmailChange = (e) => {
+    setGuestEmail(e.target.value);
+    if (emailError) setEmailError("");
+  };
+
   // Handle next step
   const nextStep = () => {
     if (currentStep < totalSteps) {
       // Validate current step
       if (currentStep === 1) {
-        // Validate shipping address
-        if (!selectedAddressId && !validateAddressForm()) {
+        // First check email for guest checkout
+        if (isGuestCheckout && (!guestEmail || !validateEmail(guestEmail))) {
+          setEmailError(
+            guestEmail
+              ? "Please enter a valid email address"
+              : "Email is required for guest checkout"
+          );
           return;
+        }
+
+        // Then validate address form
+        if (!selectedAddressId) {
+          if (!validateAddressForm()) {
+            return;
+          }
         }
       }
 
@@ -198,8 +241,18 @@ const CheckoutForm = () => {
     }
   };
 
-  // Validate address form
+  // Validate email
+  const validateEmail = (email) => {
+    const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return regex.test(email);
+  };
+
+  // Update the validateAddressForm function
+
   const validateAddressForm = () => {
+    // Update to validate shippingAddress instead of addressFormData
+    console.log("Form data:", shippingAddress);
+
     const requiredFields = [
       "fullName",
       "phoneNumber",
@@ -210,9 +263,17 @@ const CheckoutForm = () => {
       "country",
     ];
 
+    // Debug the fields
+    console.log(
+      "Checking fields:",
+      requiredFields.map((f) => [f, Boolean(shippingAddress[f])])
+    );
+
     for (const field of requiredFields) {
-      if (!addressFormData[field]) {
-        setError(`Please fill in all required address fields`);
+      if (!shippingAddress[field]) {
+        setError(
+          `Please fill in all required address fields (missing ${field})`
+        );
         return false;
       }
     }
@@ -251,6 +312,19 @@ const CheckoutForm = () => {
       return;
     }
 
+    // For guest checkout, validate email
+    if (isGuestCheckout) {
+      if (!guestEmail) {
+        setEmailError("Email is required for guest checkout");
+        return;
+      }
+
+      if (!validateEmail(guestEmail)) {
+        setEmailError("Please enter a valid email address");
+        return;
+      }
+    }
+
     // Prepare shipping address
     let shippingAddress = null;
     if (selectedAddressId) {
@@ -280,12 +354,25 @@ const CheckoutForm = () => {
 
     // Prepare order data
     const orderData = {
-      shippingAddress,
+      shippingAddress: {
+        fullName: shippingAddress.fullName, // Must match server's expected property name
+        phoneNumber: shippingAddress.phoneNumber,
+        addressLine1: shippingAddress.addressLine1,
+        addressLine2: shippingAddress.addressLine2 || "",
+        city: shippingAddress.city,
+        state: shippingAddress.state,
+        postalCode: shippingAddress.postalCode,
+        country: shippingAddress.country,
+      },
       paymentMethod,
       discountCode: discountData.code || null,
       loyaltyPointsUsed: loyaltyPoints.used || 0,
       notes: orderNotes,
+      email: isGuestCheckout ? guestEmail : undefined,
     };
+
+    // Debug output
+    console.log("Order data being sent:", orderData);
 
     setLoading(true);
     setError("");
@@ -466,6 +553,45 @@ const CheckoutForm = () => {
             <div>
               <h4 className="mb-3">Shipping Address</h4>
 
+              {/* Guest email input - Put this BEFORE address selection */}
+              {isGuestCheckout && (
+                <div className="mb-4">
+                  <h5 className="mb-3">Contact Information</h5>
+                  <div className="form-floating">
+                    <input
+                      type="email"
+                      className={`form-control ${
+                        emailError ? "is-invalid" : ""
+                      }`}
+                      id="guestEmail"
+                      placeholder="name@example.com"
+                      value={guestEmail}
+                      onChange={handleGuestEmailChange}
+                      required
+                    />
+                    <label htmlFor="guestEmail">
+                      Email address for order confirmation
+                    </label>
+                    {emailError && (
+                      <div className="invalid-feedback">{emailError}</div>
+                    )}
+                  </div>
+                  <div className="mt-3 small text-muted">
+                    <i className="bi bi-info-circle me-2"></i>
+                    Your order confirmation and receipt will be sent to this
+                    email address
+                  </div>
+                  <div className="mt-3">
+                    <div className="form-text">
+                      Already have an account?{" "}
+                      <a href="/login" className="text-danger">
+                        Login here
+                      </a>
+                    </div>
+                  </div>
+                </div>
+              )}
+
               {/* Address selection for logged in users */}
               {isAuthenticated && addresses.length > 0 && (
                 <div className="mb-4">
@@ -531,8 +657,39 @@ const CheckoutForm = () => {
               {/* Address form (for new addresses or guest checkout) */}
               {(showAddressForm || !isAuthenticated) && (
                 <AddressForm
-                  onSubmit={() => nextStep()}
-                  initialData={addressFormData}
+                  onSubmit={(addressData) => {
+                    console.log("Received address data:", addressData);
+
+                    // Store in both state variables to ensure consistency
+                    setShippingAddress({
+                      fullName: addressData.fullName,
+                      phoneNumber: addressData.phoneNumber,
+                      addressLine1: addressData.addressLine1,
+                      addressLine2: addressData.addressLine2 || "",
+                      city: addressData.city,
+                      state: addressData.state,
+                      postalCode: addressData.postalCode,
+                      country: addressData.country,
+                    });
+
+                    // Also update addressFormData to maintain consistency
+                    setAddressFormData({
+                      fullName: addressData.fullName,
+                      phoneNumber: addressData.phoneNumber,
+                      addressLine1: addressData.addressLine1,
+                      addressLine2: addressData.addressLine2 || "",
+                      city: addressData.city,
+                      state: addressData.state,
+                      postalCode: addressData.postalCode,
+                      country: addressData.country,
+                    });
+
+                    // Continue to next step only if validation passes
+                    if (validateAddressForm()) {
+                      setCurrentStep(currentStep + 1);
+                    }
+                  }}
+                  initialData={addressFormData} // Pass the previously entered data
                   savedAddresses={addresses}
                 />
               )}
@@ -640,7 +797,13 @@ const CheckoutForm = () => {
                   {currentStep === totalSteps && (
                     <button
                       type="button"
-                      onClick={() => setCurrentStep(1)}
+                      onClick={() => {
+                        // Make sure this sets the correct step (step 1 for shipping)
+                        setCurrentStep(1);
+                        // Make sure to preserve the address data when navigating back
+                        setAddressFormData(shippingAddress);
+                        setShowAddressForm(true); // Show the address form when returning
+                      }}
                       className="btn btn-link text-danger p-0"
                     >
                       Change
@@ -679,21 +842,22 @@ const CheckoutForm = () => {
                     // Show address form data
                     <div>
                       <div className="fw-medium">
-                        {addressFormData.fullName}
+                        {shippingAddress.fullName}{" "}
+                        {/* Use shippingAddress instead of addressFormData */}
                       </div>
                       <div className="text-muted small">
-                        {addressFormData.phoneNumber}
+                        {shippingAddress.phoneNumber}
                       </div>
                       <div className="mt-2">
-                        {addressFormData.addressLine1}
-                        {addressFormData.addressLine2 && (
-                          <span>, {addressFormData.addressLine2}</span>
+                        {shippingAddress.addressLine1}
+                        {shippingAddress.addressLine2 && (
+                          <span>, {shippingAddress.addressLine2}</span>
                         )}
                         <br />
-                        {addressFormData.city}, {addressFormData.state}{" "}
-                        {addressFormData.postalCode}
+                        {shippingAddress.city}, {shippingAddress.state}{" "}
+                        {shippingAddress.postalCode}
                         <br />
-                        {addressFormData.country}
+                        {shippingAddress.country}
                       </div>
                     </div>
                   )}
@@ -777,6 +941,21 @@ const CheckoutForm = () => {
                   </div>
                 </div>
               </div>
+
+              {/* Show guest email in review step */}
+              {isGuestCheckout && currentStep === 3 && (
+                <div className="card mb-4">
+                  <div className="card-header">
+                    <h5 className="mb-0">Contact Information</h5>
+                  </div>
+                  <div className="card-body">
+                    <p className="mb-0">
+                      <i className="bi bi-envelope me-2 text-muted"></i>
+                      {guestEmail}
+                    </p>
+                  </div>
+                </div>
+              )}
             </div>
           )}
         </div>

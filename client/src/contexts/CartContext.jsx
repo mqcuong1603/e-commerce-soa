@@ -52,23 +52,9 @@ export const CartProvider = ({ children }) => {
 
   const fetchCart = useCallback(async (force = false) => {
     // Prevent multiple simultaneous requests
-    if (fetchInProgressRef.current) {
+    if (fetchInProgressRef.current && !force) {
       console.log("Cart fetch already in progress, skipping duplicate request");
       return { success: false, error: "Request already in progress" };
-    }
-
-    // Prevent excessive rapid fetches
-    const now = Date.now();
-    const timeSinceLastFetch = now - lastSuccessfulFetchRef.current;
-    if (
-      !force &&
-      timeSinceLastFetch < 1000 &&
-      lastSuccessfulFetchRef.current !== 0
-    ) {
-      console.log(
-        `Skipping fetch, last successful fetch was ${timeSinceLastFetch}ms ago`
-      );
-      return { success: true, cached: true };
     }
 
     // Generate a unique request ID
@@ -81,7 +67,7 @@ export const CartProvider = ({ children }) => {
       const response = await cartService.getCart();
 
       // If another request has started since this one, discard this result
-      if (currentRequestId !== requestIdRef.current) {
+      if (currentRequestId !== requestIdRef.current && !force) {
         console.log("Discarding outdated fetch cart response");
         return { success: false, error: "Superseded by newer request" };
       }
@@ -103,36 +89,20 @@ export const CartProvider = ({ children }) => {
         setError(null);
         setRequestFailed(false);
         // Track successful fetch time
-        lastSuccessfulFetchRef.current = now;
+        lastSuccessfulFetchRef.current = Date.now();
         return { success: true };
       } else {
         throw new Error(response.message || "Failed to fetch cart");
       }
     } catch (err) {
-      if (currentRequestId !== requestIdRef.current) return;
+      if (currentRequestId !== requestIdRef.current && !force) return;
 
       setError(err.message || "Error fetching cart");
       console.error("Error fetching cart:", err);
-
-      // Handle failed requests with exponential backoff
-      if (!requestFailed) {
-        setRequestFailed(true);
-
-        // Only set up a retry if one isn't already scheduled
-        if (!requestTimeoutRef.current) {
-          requestTimeoutRef.current = setTimeout(() => {
-            requestTimeoutRef.current = null;
-            // Try again once after 3 seconds
-            fetchCart(true);
-          }, 3000);
-        }
-      }
       return { success: false, error: err.message };
     } finally {
-      if (currentRequestId === requestIdRef.current) {
-        setLoading(false);
-        fetchInProgressRef.current = false;
-      }
+      setLoading(false);
+      fetchInProgressRef.current = false;
     }
   }, []);
 
@@ -154,19 +124,8 @@ export const CartProvider = ({ children }) => {
         }
 
         if (response.success) {
-          setCart({
-            items: response.data.items || [],
-            total: response.data.total || 0,
-            subtotal: response.data.subtotal || 0,
-            itemCount: response.data.itemCount || 0,
-            userLoyaltyPoints: response.data.userId
-              ? response.data.user?.loyaltyPoints || 0
-              : 0,
-            loading: false,
-            error: null,
-          });
-
-          lastSuccessfulFetchRef.current = Date.now();
+          // Instead of updating cart state directly, fetch fresh cart data
+          await fetchCart(true);
 
           // Show success toast
           toast.success("Item removed from cart", {
@@ -281,20 +240,8 @@ export const CartProvider = ({ children }) => {
         }
 
         if (response.success) {
-          // Update local state with cart data
-          setCart({
-            items: response.data.items || [],
-            total: response.data.total || 0,
-            subtotal: response.data.subtotal || 0,
-            itemCount: response.data.itemCount || 0,
-            userLoyaltyPoints: response.data.userId
-              ? response.data.user?.loyaltyPoints || 0
-              : 0,
-            loading: false,
-            error: null,
-          });
-
-          lastSuccessfulFetchRef.current = Date.now();
+          // Instead of updating cart state directly, fetch fresh cart data
+          await fetchCart(true);
 
           // Show success toast
           toast.success("Item added to cart", {
@@ -354,19 +301,9 @@ export const CartProvider = ({ children }) => {
         }
 
         if (response.success) {
-          setCart({
-            items: response.data.items || [],
-            total: response.data.total || 0,
-            subtotal: response.data.subtotal || 0,
-            itemCount: response.data.itemCount || 0,
-            userLoyaltyPoints: response.data.userId
-              ? response.data.user?.loyaltyPoints || 0
-              : 0,
-            loading: false,
-            error: null,
-          });
+          // Instead of updating cart state directly, fetch fresh cart data
+          await fetchCart(true);
 
-          lastSuccessfulFetchRef.current = Date.now();
           return { success: true };
         } else {
           throw new Error(response.message || "Failed to update cart item");

@@ -8,7 +8,7 @@
         "variantName": "500GB",
         "productVariantId": "SM-980PRO-500",
         "quantity": 1,
-        "price": 199.99
+        "price": 4599770
       }
     ],
     "createdAt": "2024-05-05T10:15:00.000Z",
@@ -23,7 +23,7 @@
         "variantName": "10GB GDDR6X",
         "productVariantId": "NV-RTX3080-10G",
         "quantity": 1,
-        "price": 699.99
+        "price": 16099770
       }
     ],
     "createdAt": "2024-05-04T15:30:00.000Z",
@@ -37,14 +37,14 @@
         "variantName": "Core i7 / 16GB / 512GB",
         "productVariantId": "XPS13-I7-16-512",
         "quantity": 1,
-        "price": 1299.99
+        "price": 29899770
       },
       {
         "productName": "Samsung 980 PRO",
         "variantName": "1TB",
         "productVariantId": "SM-980PRO-1TB",
         "quantity": 2,
-        "price": 399.99
+        "price": 9199770
       }
     ],
     "createdAt": "2024-05-06T09:20:00.000Z",
@@ -58,7 +58,7 @@
         "variantName": "RTX 3070 / 16GB / 1TB",
         "productVariantId": "ROG-ZEPH-G15-3070",
         "quantity": 1,
-        "price": 1699.99
+        "price": 39099770
       }
     ],
     "createdAt": "2024-05-05T14:45:00.000Z",
@@ -72,14 +72,14 @@
         "variantName": "Standard",
         "productVariantId": "LG-27GN950-STD",
         "quantity": 1,
-        "price": 849.99
+        "price": 19549770
       },
       {
         "productName": "Intel Core i9-12900K",
         "variantName": "Standard",
         "productVariantId": "INT-I9-12900K",
         "quantity": 1,
-        "price": 589.99
+        "price": 13569770
       }
     ],
     "createdAt": "2024-05-07T11:15:00.000Z",
@@ -93,7 +93,7 @@
         "variantName": "10GB GDDR6X",
         "productVariantId": "NV-RTX3080-10G",
         "quantity": 1,
-        "price": 799.99
+        "price": 18399770
       }
     ],
     "createdAt": "2024-05-06T16:30:00.000Z",
@@ -107,14 +107,14 @@
         "variantName": "Core i5 / 8GB / 256GB",
         "productVariantId": "XPS13-I5-8-256",
         "quantity": 1,
-        "price": 1199.99
+        "price": 27599770
       },
       {
         "productName": "Samsung 980 PRO",
         "variantName": "2TB",
         "productVariantId": "SM-980PRO-2TB",
         "quantity": 1,
-        "price": 799.99
+        "price": 18399770
       }
     ],
     "createdAt": "2024-05-08T10:00:00.000Z",
@@ -128,7 +128,7 @@
         "variantName": "RTX 3080 / 32GB / 2TB",
         "productVariantId": "ROG-ZEPH-G15-3080",
         "quantity": 1,
-        "price": 2499.99
+        "price": 57499770
       }
     ],
     "createdAt": "2024-05-07T15:45:00.000Z",
@@ -142,7 +142,7 @@
         "variantName": "Standard",
         "productVariantId": "LG-27GN950-STD",
         "quantity": 2,
-        "price": 849.99
+        "price": 19549770
       }
     ],
     "createdAt": "2024-05-08T13:30:00.000Z",
@@ -156,14 +156,14 @@
         "variantName": "Standard",
         "productVariantId": "INT-I9-12900K",
         "quantity": 1,
-        "price": 589.99
+        "price": 13569770
       },
       {
         "productName": "NVIDIA GeForce RTX 3080",
         "variantName": "10GB GDDR6X",
         "productVariantId": "NV-RTX3080-10G",
         "quantity": 1,
-        "price": 799.99
+        "price": 18399770
       }
     ],
     "createdAt": "2024-05-09T09:15:00.000Z",

@@ -102,11 +102,7 @@ const routes = [
       // Protected routes - authentication required
       {
         path: "checkout",
-        element: (
-          <ProtectedRoute>
-            <CheckoutPage />
-          </ProtectedRoute>
-        ),
+        element: <CheckoutPage />,
       },
       {
         path: "profile",

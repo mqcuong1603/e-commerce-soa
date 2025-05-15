@@ -8,16 +8,43 @@ import { ApiError } from "../middleware/response.middleware.js";
  */
 export const getCart = async (req, res, next) => {
   try {
-    console.log(`Session ID in getCart: ${req.session.id}`);
-    console.log(`User: ${req.user ? req.user._id : "Guest"}`);
+    // Get the cart from middleware
+    let cart = req.cart;
 
-    // Ensure session is properly saved before responding
+    // Populate the cart with full product information
+    cart = await Cart.findById(cart._id).populate({
+      path: "items.productVariantId",
+      model: "ProductVariant",
+      populate: [
+        {
+          path: "productId",
+          model: "Product",
+        },
+        {
+          path: "images",
+          model: "ProductImage",
+        },
+      ],
+    });
+
+    // Make sure to calculate the subtotal
+    const subtotal = cart.items.reduce((total, item) => {
+      return total + item.price * item.quantity;
+    }, 0);
+
+    // Send response with explicitly calculated subtotal
     req.session.save((err) => {
       if (err) {
-        return next(err);
+        next(err);
+      } else {
+        res.status(200).json({
+          success: true,
+          data: {
+            ...cart.toObject({ virtuals: true }),
+            subtotal: subtotal,
+          },
+        });
       }
-
-      return res.success(req.cart);
     });
   } catch (error) {
     next(error);

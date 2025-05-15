@@ -3,14 +3,14 @@
     "userEmail": "john.doe@example.com",
     "fullName": "John Doe",
     "orderNumber": "ORD-20240415-A1B2",
-    "subtotal": 1199.99,
+    "subtotal": 27599770,
     "shippingFee": 35000,
     "tax": 0,
     "discountCode": "FIRST",
-    "discountAmount": 119.99,
+    "discountAmount": 2759977,
     "loyaltyPointsUsed": 0,
     "loyaltyPointsEarned": 111,
-    "total": 1115000,
+    "total": 24874793,
     "paymentStatus": "paid",
     "createdAt": "2024-04-15T14:30:00.000Z",
     "shippingAddress": {
@@ -27,9 +27,9 @@
       {
         "productName": "Dell XPS 13",
         "variantName": "Core i5 / 8GB / 256GB",
-        "price": 1199.99,
+        "price": 27599770,
         "quantity": 1,
-        "totalPrice": 1199.99,
+        "totalPrice": 27599770,
         "sku": "XPS13-I5-8-256"
       }
     ],
@@ -65,14 +65,14 @@
     "userEmail": "sarah.johnson@example.com",
     "fullName": "Sarah Johnson",
     "orderNumber": "ORD-20240420-C3D4",
-    "subtotal": 1699.99,
+    "subtotal": 39099770,
     "shippingFee": 35000,
     "tax": 0,
     "discountCode": null,
     "discountAmount": 0,
-    "loyaltyPointsUsed": 50,
+    "loyaltyPointsUsed": 50000,
     "loyaltyPointsEarned": 168,
-    "total": 1684990,
+    "total": 39084770,
     "paymentStatus": "paid",
     "createdAt": "2024-04-20T09:45:00.000Z",
     "shippingAddress": {
@@ -89,9 +89,9 @@
       {
         "productName": "ASUS ROG Zephyrus G15",
         "variantName": "RTX 3070 / 16GB / 1TB",
-        "price": 1699.99,
+        "price": 39099770,
         "quantity": 1,
-        "totalPrice": 1699.99,
+        "totalPrice": 39099770,
         "sku": "ROG-ZEPH-G15-3070"
       }
     ],
@@ -122,14 +122,14 @@
     "userEmail": "michael.chen@example.com",
     "fullName": "Michael Chen",
     "orderNumber": "ORD-20240422-E5F6",
-    "subtotal": 849.99,
+    "subtotal": 19549770,
     "shippingFee": 35000,
     "tax": 0,
     "discountCode": "SAVE20",
-    "discountAmount": 169.99,
+    "discountAmount": 3909954,
     "loyaltyPointsUsed": 0,
     "loyaltyPointsEarned": 71,
-    "total": 715000,
+    "total": 15674816,
     "paymentStatus": "paid",
     "createdAt": "2024-04-22T16:15:00.000Z",
     "shippingAddress": {
@@ -146,9 +146,9 @@
       {
         "productName": "LG UltraGear 27GN950",
         "variantName": "Standard",
-        "price": 849.99,
+        "price": 19549770,
         "quantity": 1,
-        "totalPrice": 849.99,
+        "totalPrice": 19549770,
         "sku": "LG-27GN950-STD"
       }
     ],
@@ -174,14 +174,14 @@
     "userEmail": "emily.wilson@example.com",
     "fullName": "Emily Wilson",
     "orderNumber": "ORD-20240425-G7H8",
-    "subtotal": 399.99,
+    "subtotal": 9199770,
     "shippingFee": 35000,
     "tax": 0,
     "discountCode": "SAVE20",
-    "discountAmount": 80.0,
+    "discountAmount": 1839954,
     "loyaltyPointsUsed": 0,
     "loyaltyPointsEarned": 35,
-    "total": 354990,
+    "total": 7394816,
     "paymentStatus": "paid",
     "createdAt": "2024-04-25T11:20:00.000Z",
     "shippingAddress": {
@@ -198,9 +198,9 @@
       {
         "productName": "Samsung 980 PRO",
         "variantName": "1TB",
-        "price": 399.99,
+        "price": 9199770,
         "quantity": 1,
-        "totalPrice": 399.99,
+        "totalPrice": 9199770,
         "sku": "SM-980PRO-1TB"
       }
     ],
@@ -226,14 +226,14 @@
     "userEmail": "david.rodriguez@example.com",
     "fullName": "David Rodriguez",
     "orderNumber": "ORD-20240428-I9J0",
-    "subtotal": 589.99,
+    "subtotal": 13569770,
     "shippingFee": 35000,
     "tax": 0,
     "discountCode": "FIX50K",
     "discountAmount": 50000,
-    "loyaltyPointsUsed": 100,
+    "loyaltyPointsUsed": 100000,
     "loyaltyPointsEarned": 47,
-    "total": 474990,
+    "total": 13454770,
     "paymentStatus": "paid",
     "createdAt": "2024-04-28T15:10:00.000Z",
     "shippingAddress": {
@@ -250,9 +250,9 @@
       {
         "productName": "Intel Core i9-12900K",
         "variantName": "Standard",
-        "price": 589.99,
+        "price": 13569770,
         "quantity": 1,
-        "totalPrice": 589.99,
+        "totalPrice": 13569770,
         "sku": "INT-I9-12900K"
       }
     ],
@@ -283,14 +283,14 @@
     "userEmail": "jennifer.park@example.com",
     "fullName": "Jennifer Park",
     "orderNumber": "ORD-20240430-K1L2",
-    "subtotal": 1299.99,
+    "subtotal": 29899770,
     "shippingFee": 35000,
     "tax": 0,
     "discountCode": "SAVE20",
-    "discountAmount": 260.0,
+    "discountAmount": 5979954,
     "loyaltyPointsUsed": 0,
     "loyaltyPointsEarned": 120,
-    "total": 1034990,
+    "total": 23954816,
     "paymentStatus": "paid",
     "createdAt": "2024-04-30T10:15:00.000Z",
     "shippingAddress": {
@@ -307,9 +307,9 @@
       {
         "productName": "Dell XPS 13",
         "variantName": "Core i7 / 16GB / 512GB",
-        "price": 1299.99,
+        "price": 29899770,
         "quantity": 1,
-        "totalPrice": 1299.99,
+        "totalPrice": 29899770,
         "sku": "XPS13-I7-16-512"
       }
     ],
@@ -335,14 +335,14 @@
     "userEmail": "robert.williams@example.com",
     "fullName": "Robert Williams",
     "orderNumber": "ORD-20240501-M3N4",
-    "subtotal": 799.99,
+    "subtotal": 18399770,
     "shippingFee": 35000,
     "tax": 0,
     "discountCode": null,
     "discountAmount": 0,
     "loyaltyPointsUsed": 0,
     "loyaltyPointsEarned": 75,
-    "total": 834990,
+    "total": 18434770,
     "paymentStatus": "paid",
     "createdAt": "2024-05-01T14:20:00.000Z",
     "shippingAddress": {
@@ -359,9 +359,9 @@
       {
         "productName": "NVIDIA GeForce RTX 3080",
         "variantName": "10GB GDDR6X",
-        "price": 799.99,
+        "price": 18399770,
         "quantity": 1,
-        "totalPrice": 799.99,
+        "totalPrice": 18399770,
         "sku": "NV-RTX3080-10G"
       }
     ],
