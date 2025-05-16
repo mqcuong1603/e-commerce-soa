@@ -5,10 +5,10 @@ import PropTypes from "prop-types";
  * Pagination component using Bootstrap styling
  */
 const Pagination = ({
-  currentPage,
-  totalPages,
-  totalItems,
-  pageSize,
+  currentPage = 1,
+  totalPages = 1,
+  totalItems = 0,
+  pageSize = 12,
   onPageChange,
   showPageNumbers = true,
   showPageInfo = true,
@@ -16,8 +16,12 @@ const Pagination = ({
   size = "medium",
   className = "",
 }) => {
+  // Calculate totalPages if it's not provided or incorrect
+  const calculatedTotalPages = Math.max(1, Math.ceil(totalItems / pageSize));
+  const effectiveTotalPages = totalPages || calculatedTotalPages;
+
   // No need to render pagination if there's only 1 page
-  if (totalPages <= 1) {
+  if (effectiveTotalPages <= 1) {
     // Still render the info text if showPageInfo is true
     if (showPageInfo) {
       const startItem = Math.min(totalItems, (currentPage - 1) * pageSize + 1);
@@ -43,8 +47,8 @@ const Pagination = ({
   // Generate array of page numbers to display
   const getPageNumbers = () => {
     // If we have 7 or fewer pages, show all
-    if (totalPages <= 7) {
-      return Array.from({ length: totalPages }, (_, i) => i + 1);
+    if (effectiveTotalPages <= 7) {
+      return Array.from({ length: effectiveTotalPages }, (_, i) => i + 1);
     }
 
     // Otherwise, show first, last, current, and neighbors with ellipses
@@ -60,7 +64,7 @@ const Pagination = ({
 
     // Calculate range around current page
     const rangeStart = Math.max(2, currentPage - 1);
-    const rangeEnd = Math.min(totalPages - 1, currentPage + 1);
+    const rangeEnd = Math.min(effectiveTotalPages - 1, currentPage + 1);
 
     // Add range pages
     for (let i = rangeStart; i <= rangeEnd; i++) {
@@ -68,13 +72,13 @@ const Pagination = ({
     }
 
     // Show ellipsis if needed
-    if (currentPage < totalPages - 2) {
+    if (currentPage < effectiveTotalPages - 2) {
       pages.push("...");
     }
 
     // Always show last page
-    if (totalPages > 1) {
-      pages.push(totalPages);
+    if (effectiveTotalPages > 1) {
+      pages.push(effectiveTotalPages);
     }
 
     return pages;
@@ -159,13 +163,13 @@ const Pagination = ({
             {/* Next page button */}
             <li
               className={`page-item ${
-                currentPage === totalPages ? "disabled" : ""
+                currentPage === effectiveTotalPages ? "disabled" : ""
               }`}
             >
               <button
                 className="page-link"
                 onClick={() => onPageChange(currentPage + 1)}
-                disabled={currentPage === totalPages}
+                disabled={currentPage === effectiveTotalPages}
                 aria-label="Next page"
               >
                 <i className="bi bi-chevron-right"></i>
@@ -176,13 +180,13 @@ const Pagination = ({
             {showFirstLastButtons && (
               <li
                 className={`page-item ${
-                  currentPage === totalPages ? "disabled" : ""
+                  currentPage === effectiveTotalPages ? "disabled" : ""
                 }`}
               >
                 <button
                   className="page-link"
-                  onClick={() => onPageChange(totalPages)}
-                  disabled={currentPage === totalPages}
+                  onClick={() => onPageChange(effectiveTotalPages)}
+                  disabled={currentPage === effectiveTotalPages}
                   aria-label="Last page"
                 >
                   <i className="bi bi-chevron-double-right"></i>
@@ -204,10 +208,10 @@ const Pagination = ({
           onChange={(e) => onPageChange(Number(e.target.value))}
           aria-label="Select page"
         >
-          {Array.from({ length: totalPages }, (_, i) => i + 1).map(
+          {Array.from({ length: effectiveTotalPages }, (_, i) => i + 1).map(
             (pageNum) => (
               <option key={pageNum} value={pageNum}>
-                Page {pageNum} of {totalPages}
+                Page {pageNum} of {effectiveTotalPages}
               </option>
             )
           )}

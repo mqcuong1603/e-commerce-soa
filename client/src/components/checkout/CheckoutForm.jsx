@@ -250,8 +250,11 @@ const CheckoutForm = ({
   // Update the validateAddressForm function
 
   const validateAddressForm = () => {
-    // Update to validate shippingAddress instead of addressFormData
-    console.log("Form data:", shippingAddress);
+    // Check both shippingAddress and addressFormData for safety
+    const addressToCheck = selectedAddressId
+      ? shippingAddress
+      : addressFormData;
+    console.log("Validating address:", addressToCheck);
 
     const requiredFields = [
       "fullName",
@@ -263,14 +266,38 @@ const CheckoutForm = ({
       "country",
     ];
 
-    // Debug the fields
-    console.log(
-      "Checking fields:",
-      requiredFields.map((f) => [f, Boolean(shippingAddress[f])])
-    );
+    for (const field of requiredFields) {
+      if (!addressToCheck[field]) {
+        setError(
+          `Please fill in all required address fields (missing ${field})`
+        );
+        return false;
+      }
+    }
+
+    // If validation passes, update shippingAddress to ensure it has the latest data
+    if (!selectedAddressId) {
+      setShippingAddress({ ...addressFormData });
+    }
+
+    setError("");
+    return true;
+  };
+
+  // Add this helper function to validate with provided data
+  const validateAddressWithData = (addressData) => {
+    const requiredFields = [
+      "fullName",
+      "phoneNumber",
+      "addressLine1",
+      "city",
+      "state",
+      "postalCode",
+      "country",
+    ];
 
     for (const field of requiredFields) {
-      if (!shippingAddress[field]) {
+      if (!addressData[field]) {
         setError(
           `Please fill in all required address fields (missing ${field})`
         );
@@ -387,6 +414,25 @@ const CheckoutForm = ({
 
         // Clear cart
         await clearCart();
+
+        // If this was a guest checkout, redirect to success page with account info
+        if (isGuestCheckout) {
+          // Pass both order data and guest email for proper notification
+          navigate("/order-success", {
+            state: {
+              order: response.data.order,
+              isGuestCheckout: true,
+              guestEmail: guestEmail,
+            },
+            replace: true,
+          });
+        } else {
+          // For logged in users, go to order detail page
+          navigate(`/orders/${response.data.order._id}`, {
+            state: { isNewOrder: true },
+            replace: true,
+          });
+        }
       } else {
         setError(response.message || "Failed to create order");
       }
@@ -658,38 +704,24 @@ const CheckoutForm = ({
               {(showAddressForm || !isAuthenticated) && (
                 <AddressForm
                   onSubmit={(addressData) => {
-                    console.log("Received address data:", addressData);
+                    console.log(
+                      "Received address data in CheckoutForm:",
+                      addressData
+                    );
 
-                    // Store in both state variables to ensure consistency
-                    setShippingAddress({
-                      fullName: addressData.fullName,
-                      phoneNumber: addressData.phoneNumber,
-                      addressLine1: addressData.addressLine1,
-                      addressLine2: addressData.addressLine2 || "",
-                      city: addressData.city,
-                      state: addressData.state,
-                      postalCode: addressData.postalCode,
-                      country: addressData.country,
-                    });
+                    // First update the state with the new data
+                    setShippingAddress(addressData);
+                    setAddressFormData(addressData);
 
-                    // Also update addressFormData to maintain consistency
-                    setAddressFormData({
-                      fullName: addressData.fullName,
-                      phoneNumber: addressData.phoneNumber,
-                      addressLine1: addressData.addressLine1,
-                      addressLine2: addressData.addressLine2 || "",
-                      city: addressData.city,
-                      state: addressData.state,
-                      postalCode: addressData.postalCode,
-                      country: addressData.country,
-                    });
-
-                    // Continue to next step only if validation passes
-                    if (validateAddressForm()) {
-                      setCurrentStep(currentStep + 1);
-                    }
+                    // Then validate with the updated data
+                    setTimeout(() => {
+                      // Use the passed data directly instead of relying on state
+                      if (validateAddressWithData(addressData)) {
+                        setCurrentStep(currentStep + 1);
+                      }
+                    }, 0);
                   }}
-                  initialData={addressFormData} // Pass the previously entered data
+                  initialData={addressFormData}
                   savedAddresses={addresses}
                 />
               )}
@@ -742,6 +774,17 @@ const CheckoutForm = ({
                         const product = item.productVariantId.productId;
                         const variant = item.productVariantId;
 
+                        // Get image from variant first, then fall back to product
+                        const itemImage =
+                          variant.images && variant.images.length > 0
+                            ? variant.images[0]
+                            : product &&
+                              product.images &&
+                              product.images.length > 0
+                            ? product.images.find((img) => img.isMain) ||
+                              product.images[0]
+                            : null;
+
                         return (
                           <li
                             key={item.productVariantId._id}
@@ -752,9 +795,9 @@ const CheckoutForm = ({
                                 className="border rounded me-3"
                                 style={{ width: "60px", height: "60px" }}
                               >
-                                {variant.images && variant.images.length > 0 ? (
+                                {itemImage ? (
                                   <img
-                                    src={variant.images[0].imageUrl}
+                                    src={itemImage.imageUrl}
                                     alt={product?.name || "Product"}
                                     className="w-100 h-100 object-fit-contain"
                                   />
@@ -974,11 +1017,18 @@ const CheckoutForm = ({
             <div></div> // Empty div for spacing
           )}
 
-          {currentStep < totalSteps ? (
-            <button className="btn btn-danger" onClick={nextStep}>
+          {/* Only show the Continue button for steps after shipping (step 1) */}
+          {currentStep < totalSteps && currentStep !== 1 ? (
+            <button
+              className="btn btn-danger"
+              onClick={(e) => {
+                e.preventDefault();
+                nextStep();
+              }}
+            >
               Continue<i className="bi bi-arrow-right ms-2"></i>
             </button>
-          ) : (
+          ) : currentStep === totalSteps ? (
             <button
               className="btn btn-danger"
               onClick={placeOrder}
@@ -999,7 +1049,7 @@ const CheckoutForm = ({
                 </span>
               )}
             </button>
-          )}
+          ) : null}
         </div>
       </div>
     </div>

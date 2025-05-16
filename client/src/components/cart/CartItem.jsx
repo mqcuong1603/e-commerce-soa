@@ -18,10 +18,16 @@ const CartItem = ({ item }) => {
   const { productVariantId, price } = item;
   const product = productVariantId.productId;
   const variant = productVariantId;
-  const mainImage =
-    productVariantId.images && productVariantId.images.length > 0
-      ? productVariantId.images[0]
-      : null;
+
+  // Get product image - products always have the images, not variants
+  let imageUrl = null;
+  if (product && product.images && product.images.length > 0) {
+    // Try to find the main image first
+    const mainImage =
+      product.images.find((img) => img.isMain) || product.images[0];
+    imageUrl = mainImage.imageUrl; // Add this critical line
+    console.log("Image URL assigned:", imageUrl); // Add for debugging
+  }
 
   // Format price with comma for thousands
   const formatPrice = (price) => {
@@ -120,17 +126,15 @@ const CartItem = ({ item }) => {
             className="d-block h-100"
           >
             <div className="position-relative h-100 rounded-3 overflow-hidden bg-gradient">
-              {mainImage ? (
-                <div className="ratio ratio-1x1 border-start border-5 border-danger rounded-3 shadow-sm bg-white p-1">
-                  <img
-                    src={mainImage.imageUrl}
-                    alt={mainImage.alt || product?.name || "Product"}
-                    className="img-fluid p-2 object-fit-contain"
-                  />
-                </div>
+              {imageUrl ? (
+                <img
+                  src={imageUrl}
+                  alt={product?.name || "Product"}
+                  className="img-fluid h-100 w-100 object-fit-contain p-1"
+                />
               ) : (
-                <div className="d-flex align-items-center justify-content-center h-100 border-start border-5 border-warning rounded-3 bg-light">
-                  <span className="text-muted small fw-bold">No image</span>
+                <div className="d-flex align-items-center justify-content-center h-100 bg-light">
+                  <span className="text-muted small">No image</span>
                 </div>
               )}
             </div>

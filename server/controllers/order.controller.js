@@ -4,8 +4,10 @@ import OrderStatus from "../models/orderStatus.model.js";
 import DiscountCode from "../models/discountCode.model.js";
 import User from "../models/user.model.js";
 import ProductVariant from "../models/productVariant.model.js";
+import Address from "../models/address.model.js";
 import { ApiError } from "../middleware/response.middleware.js";
 import emailService from "../services/emailService.js";
+import crypto from "crypto";
 
 /**
  * Generate a unique order number
@@ -28,6 +30,7 @@ export const createOrder = async (req, res, next) => {
       discountCode,
       loyaltyPointsUsed = 0,
       paymentMethod,
+      email, // Important for guest checkout
     } = req.body;
 
     // Validate required fields
@@ -35,30 +38,101 @@ export const createOrder = async (req, res, next) => {
       throw new ApiError("Missing required fields", 400);
     }
 
-    // Validate shipping address
-    if (
-      !shippingAddress.fullName ||
-      !shippingAddress.phoneNumber ||
-      !shippingAddress.addressLine1 ||
-      !shippingAddress.city ||
-      !shippingAddress.state ||
-      !shippingAddress.postalCode ||
-      !shippingAddress.country
-    ) {
-      throw new ApiError("Invalid shipping address", 400);
+    // Ensure we have an email for guest checkout
+    if (!req.user && !email) {
+      throw new ApiError("Email is required for guest checkout", 400);
     }
 
-    // Check if cart exists and has items
-    if (!req.cart || req.cart.items.length === 0) {
-      throw new ApiError("Cart is empty", 400);
+    // Generate a random password for the new user
+    const generateRandomPassword = () => {
+      return crypto.randomBytes(10).toString("hex");
+    };
+
+    // Check if this email already exists as a user
+    let userId = req.user?._id || null;
+
+    // For guest users (no user logged in but email provided)
+    let guestUser = null;
+    let accountCreated = false;
+    let tempPassword = null;
+
+    if (!req.user && email) {
+      // Check if user with this email already exists
+      guestUser = await User.findOne({ email });
+
+      // If no existing user, create a new account
+      if (!guestUser) {
+        // Generate a secure random password
+        tempPassword = crypto.randomBytes(8).toString("hex");
+
+        guestUser = new User({
+          email: email,
+          fullName: shippingAddress.fullName,
+          // Set the plain password - the model's pre-save hook will hash it
+          passwordHash: tempPassword, // FIXED: Let the model handle hashing
+          phoneNumber: shippingAddress.phoneNumber,
+          role: "customer",
+          status: "active",
+          // Save the address as default address
+          addresses: [
+            {
+              fullName: shippingAddress.fullName,
+              phoneNumber: shippingAddress.phoneNumber,
+              addressLine1: shippingAddress.addressLine1,
+              addressLine2: shippingAddress.addressLine2 || "",
+              city: shippingAddress.city,
+              state: shippingAddress.state,
+              postalCode: shippingAddress.postalCode,
+              country: shippingAddress.country,
+              isDefault: true,
+            },
+          ],
+        });
+
+        await guestUser.save();
+        userId = guestUser._id;
+        accountCreated = true;
+
+        console.log(`Created new account for guest checkout: ${email}`);
+      } else {
+        userId = guestUser._id;
+      }
     }
 
-    // Start building order
+    // For a guest user who already exists but doesn't have the address saved
+    if (guestUser && !accountCreated) {
+      // Check if the user already has this address
+      const existingAddress = await Address.findOne({
+        userId: guestUser._id,
+        addressLine1: shippingAddress.addressLine1,
+        city: shippingAddress.city,
+        postalCode: shippingAddress.postalCode,
+      });
+
+      // If no matching address, save this one
+      if (!existingAddress) {
+        const newAddress = new Address({
+          userId: guestUser._id,
+          fullName: shippingAddress.fullName,
+          phoneNumber: shippingAddress.phoneNumber,
+          addressLine1: shippingAddress.addressLine1,
+          addressLine2: shippingAddress.addressLine2 || "",
+          city: shippingAddress.city,
+          state: shippingAddress.state,
+          postalCode: shippingAddress.postalCode,
+          country: shippingAddress.country,
+          isDefault: !(await Address.findOne({ userId: guestUser._id })), // Make default if no other addresses
+        });
+
+        await newAddress.save();
+      }
+    }
+
+    // Build order data with the userId (existing or newly created)
     const orderData = {
-      orderNumber: generateOrderNumber(), // Add this line
-      // If user is authenticated, use their ID and email
-      userId: req.user ? req.user._id : null,
-      email: req.user ? req.user.email : req.body.email,
+      orderNumber: generateOrderNumber(),
+      userId: userId,
+      email: req.user ? req.user.email : email,
       fullName: shippingAddress.fullName,
       shippingAddress,
       items: [],
@@ -71,11 +145,6 @@ export const createOrder = async (req, res, next) => {
       total: 0,
       paymentStatus: "pending",
     };
-
-    // If email is not provided and user is not authenticated
-    if (!orderData.email && !req.user) {
-      throw new ApiError("Email is required for guest checkout", 400);
-    }
 
     // Process cart items
     for (const item of req.cart.items) {
@@ -200,10 +269,26 @@ export const createOrder = async (req, res, next) => {
       // Don't fail the order if email fails
     }
 
+    // If a new account was created, send welcome email with password
+    if (accountCreated && tempPassword) {
+      try {
+        await emailService.sendWelcomeEmail({
+          email,
+          fullName: shippingAddress.fullName,
+          password: tempPassword,
+          isGuestCheckout: true,
+        });
+      } catch (emailError) {
+        console.error("Failed to send welcome email:", emailError);
+      }
+    }
+
     return res.success(
       {
         order,
         message: "Order placed successfully",
+        accountCreated: accountCreated,
+        tempPassword: accountCreated ? tempPassword : null,
       },
       "Order created successfully",
       201

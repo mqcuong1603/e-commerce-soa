@@ -169,7 +169,7 @@ export const socialAuthCallback = async (req, res, next) => {
 
     // For browser redirects, redirect with token in URL
     // The frontend can extract this token from URL and store in localStorage
-    const frontendURL = process.env.CLIENT_URL || "http://localhost:3000";
+    const frontendURL = process.env.CLIENT_URL || "http://localhost:8080";
     res.redirect(`${frontendURL}/auth/callback?token=${token}`);
   } catch (error) {
     next(error);

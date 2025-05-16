@@ -411,11 +411,9 @@ const ProfilePage = () => {
                         <div className="form-text">Email cannot be changed</div>
                       </div>
 
+                      {/* REMOVE PHONE NUMBER FIELD
                       <div className="col-md-6">
-                        <label
-                          className="form-label fw-bold"
-                          htmlFor="phoneNumber"
-                        >
+                        <label htmlFor="phoneNumber" className="form-label fw-medium">
                           Phone Number
                         </label>
                         <div className="input-group">
@@ -425,14 +423,14 @@ const ProfilePage = () => {
                           <input
                             type="tel"
                             id="phoneNumber"
-                            name="phoneNumber"
+                            name="phoneNumber" 
                             value={profileData.phoneNumber}
                             onChange={handleInputChange}
                             className="form-control form-control-lg bg-light border-0"
                             placeholder="Your phone number"
                           />
                         </div>
-                      </div>
+                      </div> */}
                     </div>
 
                     <div className="d-flex justify-content-end mt-4">

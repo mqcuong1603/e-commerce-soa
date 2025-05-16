@@ -72,9 +72,13 @@ const ProductCard = ({ product, className = "" }) => {
     inStock = typeof product.inventory === "number" && product.inventory > 0;
   }
 
-  // Format price with comma for thousands
+  // Format price with proper thousands separators
   const formatPrice = (price) => {
-    return price?.toLocaleString("en-US") || "";
+    if (!price) return "0";
+    return price.toLocaleString("vi-VN", {
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0,
+    });
   };
 
   // Handle add to cart with inventory check
@@ -228,42 +232,73 @@ const ProductCard = ({ product, className = "" }) => {
             </div>
           </div>
 
-          {/* Product badges with improved z-index */}
+          {/* Product badges with elegant styling */}
           <div
             className="position-absolute top-0 start-0 p-2"
             style={{ zIndex: 3 }}
           >
+            {/* Discount badge */}
             {discount && (
-              <div className="badge bg-danger mb-1 rounded-pill px-3 fw-medium d-block">
+              <div
+                className="badge bg-danger rounded-pill px-2 fw-medium d-block mb-1"
+                style={{
+                  fontSize: "0.7rem",
+                  minWidth: "60px",
+                  textAlign: "center",
+                  whiteSpace: "nowrap",
+                }}
+              >
                 {discount}% OFF
               </div>
             )}
-            {product.isNewProduct && (
-              <div className="d-block badge bg-success rounded-pill px-3 fw-medium mb-1">
+
+            {/* Only show NEW if it's not also a best seller */}
+            {product.isNewProduct && !product.isBestSeller && (
+              <div
+                className="badge bg-success rounded-pill px-2 fw-medium d-block mb-1"
+                style={{
+                  fontSize: "0.7rem",
+                  minWidth: "60px",
+                  textAlign: "center",
+                }}
+              >
                 NEW
               </div>
             )}
+
+            {/* Best seller badge - takes priority */}
             {product.isBestSeller && (
-              <div className="d-block badge bg-warning text-dark rounded-pill px-3 fw-medium">
+              <div
+                className="badge bg-warning text-dark rounded-pill px-2 fw-medium d-block"
+                style={{
+                  fontSize: "0.7rem",
+                  minWidth: "60px",
+                  textAlign: "center",
+                }}
+              >
                 BEST SELLER
               </div>
             )}
           </div>
 
-          {/* Stock badge */}
+          {/* Stock badge - only show Out of Stock, not variants (already shown elsewhere) */}
           <div
             className="position-absolute top-0 end-0 p-2"
             style={{ zIndex: 3 }}
           >
-            {!inStock ? (
-              <div className="badge bg-secondary rounded-pill px-3 fw-medium">
+            {!inStock && (
+              <div
+                className="badge bg-secondary rounded-pill px-2 fw-medium"
+                style={{
+                  fontSize: "0.7rem",
+                  minWidth: "60px",
+                  textAlign: "center",
+                }}
+              >
                 OUT OF STOCK
               </div>
-            ) : product.variants && product.variants.length > 1 ? (
-              <div className="badge bg-primary rounded-pill px-3 fw-medium">
-                {product.variants.length} VARIANTS
-              </div>
-            ) : null}
+            )}
+            {/* Removed variant count badge as requested */}
           </div>
         </div>
       </Link>
@@ -284,12 +319,13 @@ const ProductCard = ({ product, className = "" }) => {
           </span>
         </div>
 
-        {/* Product name */}
+        {/* Product name with constrained height */}
         <Link to={`/products/${product.slug}`} className="text-decoration-none">
           <h6
             className="card-title product-title mb-2 text-dark fw-medium"
             style={{
-              height: "40px",
+              height: "38px",
+              fontSize: "0.9rem",
               overflow: "hidden",
               display: "-webkit-box",
               WebkitLineClamp: 2,
@@ -321,20 +357,28 @@ const ProductCard = ({ product, className = "" }) => {
           </div>
         )}
 
-        {/* Price with more elegant styling */}
+        {/* Price with responsive font size */}
         <div className="mt-auto">
           <div className="d-flex align-items-center">
             {salePrice ? (
               <>
-                <div className="text-danger fw-bold me-2 fs-5">
+                <div
+                  className="text-danger fw-bold me-2"
+                  style={{ fontSize: "0.95rem" }}
+                >
                   ₫{formatPrice(salePrice)}
                 </div>
-                <div className="text-muted small text-decoration-line-through opacity-75">
+                <div
+                  className="text-muted small text-decoration-line-through opacity-75"
+                  style={{ fontSize: "0.8rem" }}
+                >
                   ₫{formatPrice(regularPrice)}
                 </div>
               </>
             ) : (
-              <div className="fw-bold fs-5">₫{formatPrice(regularPrice)}</div>
+              <div className="fw-bold" style={{ fontSize: "0.95rem" }}>
+                ₫{formatPrice(regularPrice)}
+              </div>
             )}
           </div>
         </div>

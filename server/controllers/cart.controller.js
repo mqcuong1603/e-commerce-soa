@@ -19,6 +19,12 @@ export const getCart = async (req, res, next) => {
         {
           path: "productId",
           model: "Product",
+          select: "name slug brand images",
+          populate: {
+            path: "images",
+            model: "ProductImage",
+            select: "imageUrl isMain alt",
+          },
         },
         {
           path: "images",

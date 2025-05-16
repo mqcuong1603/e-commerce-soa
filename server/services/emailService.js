@@ -117,6 +117,78 @@ class EmailService {
   }
 
   /**
+   * Send welcome email for new user or guest checkout user
+   * @param {Object} options - Email options
+   * @param {string} options.email - User email address
+   * @param {string} options.fullName - User's full name
+   * @param {string} options.password - Temporary password for guest users
+   * @param {boolean} options.isGuestCheckout - Whether this is a guest checkout account
+   * @returns {Promise<Object>} Send result
+   */
+  async sendWelcomeEmail({
+    email,
+    fullName,
+    password,
+    isGuestCheckout = false,
+  }) {
+    const subject = isGuestCheckout
+      ? "Your TechStore Account Has Been Created"
+      : "Welcome to TechStore";
+
+    const htmlContent = `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+        <div style="text-align: center; margin-bottom: 30px;">
+          <h1 style="color: #dc3545;">${
+            isGuestCheckout ? "Your TechStore Account" : "Welcome to TechStore"
+          }</h1>
+        </div>
+        
+        <p>Hello ${fullName},</p>
+        
+        ${
+          isGuestCheckout
+            ? `<p>Thank you for your recent purchase at TechStore! We've automatically created an account for you to make tracking your orders easier.</p>`
+            : `<p>Thank you for creating an account with TechStore! We're excited to have you join our community.</p>`
+        }
+        
+        <div style="background-color: #f8f9fa; padding: 15px; border-radius: 5px; margin: 20px 0;">
+          <p><strong>Your login details:</strong></p>
+          <p>Email: ${email}</p>
+          <p>Temporary Password: ${password}</p>
+        </div>
+        <p>For security reasons, we recommend changing your password after your first login.</p>
+        <div style="text-align: center; margin-top: 30px;">
+          <a href="${
+            process.env.CLIENT_URL
+          }/login" style="background-color: #dc3545; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px; font-weight: bold;">
+            Log into Your Account
+          </a>
+        </div>
+        
+        <p>If you have any questions or need assistance, please don't hesitate to contact our customer support team.</p>
+        
+        <p>Thanks,<br>The TechStore Team</p>
+      </div>
+    `;
+
+    const mailOptions = {
+      from: `"TechStore" <${process.env.EMAIL_FROM}>`,
+      to: email,
+      subject,
+      html: htmlContent,
+    };
+
+    try {
+      const info = await this.transporter.sendMail(mailOptions);
+      console.log(`Welcome email sent to ${email}: ${info.messageId}`);
+      return { success: true, messageId: info.messageId };
+    } catch (error) {
+      console.error("Error sending welcome email:", error);
+      return { success: false, error: error.message };
+    }
+  }
+
+  /**
    * Send order confirmation email
    * @param {Object} order - Order details
    * @returns {Promise<Object>} Send result
@@ -312,7 +384,8 @@ class EmailService {
       await this.sendWelcomeEmail({
         email,
         fullName,
-        password,
+        password, // Pass the password for all registrations
+        isGuestCheckout: false, // Explicitly set this for clarity
       });
 
       return {

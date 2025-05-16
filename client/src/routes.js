@@ -25,6 +25,7 @@ import ProfilePage from "./pages/user/ProfilePage";
 import OrdersPage from "./pages/user/OrdersPage";
 import OrderDetailPage from "./pages/user/OrderDetailPage";
 import NotFoundPage from "./pages/NotFoundPage";
+import OrderSuccessPage from "./pages/OrderSuccessPage";
 
 // Auth guards
 import ProtectedRoute from "./components/auth/ProtectedRoute";
@@ -127,6 +128,10 @@ const routes = [
             <OrderDetailPage />
           </ProtectedRoute>
         ),
+      },
+      {
+        path: "/order-success",
+        element: <OrderSuccessPage />,
       },
 
       // 404 Not Found - fallback route

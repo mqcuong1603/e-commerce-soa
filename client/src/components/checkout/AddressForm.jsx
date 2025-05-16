@@ -109,7 +109,9 @@ const AddressForm = ({ onSubmit, initialData, savedAddresses }) => {
     const newErrors = {};
 
     // Required fields
-    if (!formData.fullName) newErrors.fullName = "Full name is required";
+    if (!formData.fullName || formData.fullName.trim() === "") {
+      newErrors.fullName = "Full name is required";
+    }
     if (!formData.phoneNumber)
       newErrors.phoneNumber = "Phone number is required";
     if (!formData.addressLine1)
@@ -420,8 +422,35 @@ const AddressForm = ({ onSubmit, initialData, savedAddresses }) => {
         )}
 
         <div className="mt-4">
-          <button type="submit" className="btn btn-danger w-100">
-            Continue to Payment
+          <button
+            type="submit"
+            className="btn btn-danger w-100"
+            onClick={(e) => {
+              e.preventDefault();
+              if (validate()) {
+                // Pass validated data to parent component
+                const addressData = {
+                  fullName: formData.fullName,
+                  phoneNumber: formData.phoneNumber,
+                  addressLine1: formData.addressLine1,
+                  addressLine2: formData.addressLine2 || "",
+                  city: formData.city,
+                  state: formData.state,
+                  postalCode: formData.postalCode,
+                  country: formData.country,
+                  saveAddress:
+                    e.target.form.elements.saveAddress?.checked || false,
+                };
+
+                // Log the data being sent up to parent
+                console.log("Submitting validated address data:", addressData);
+                onSubmit(addressData);
+              } else {
+                console.log("Address validation failed, not submitting");
+              }
+            }}
+          >
+            Continue
           </button>
         </div>
       </form>

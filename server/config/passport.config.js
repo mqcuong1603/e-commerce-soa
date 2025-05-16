@@ -25,7 +25,7 @@ passport.use(
       clientID: process.env.GOOGLE_CLIENT_ID || "google-client-id",
       clientSecret: process.env.GOOGLE_CLIENT_SECRET || "google-client-secret",
       callbackURL: `${
-        process.env.process.REACT_APP_API_URL || "http://localhost:3000/api"
+        process.env.REACT_APP_API_URL || "http://localhost:3000/api"
       }/auth/google/callback`,
       proxy: true,
     },

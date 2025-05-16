@@ -32,6 +32,7 @@ import OrdersPage from "./pages/user/OrdersPage";
 import OrderDetailPage from "./pages/user/OrderDetailPage";
 import NotFoundPage from "./pages/NotFoundPage";
 import AuthCallback from "./pages/auth/AuthCallback";
+import OrderSuccessPage from "./pages/OrderSuccessPage";
 
 // Auth Guard for protected routes
 const ProtectedRoute = ({ children }) => {
@@ -59,6 +60,7 @@ const App = () => {
               <Route path="products/:slug" element={<ProductDetailPage />} />
               <Route path="category/:slug" element={<CategoryPage />} />
               <Route path="cart" element={<CartPage />} />
+              <Route path="order-success" element={<OrderSuccessPage />} />
 
               {/* Auth Routes */}
               <Route path="login" element={<LoginPage />} />

@@ -117,13 +117,15 @@ const ProductList = ({
       )}
 
       {/* Enhanced pagination */}
-      {pagination && pagination.totalPages > 1 && (
+      {pagination && (
         <div className="mt-4">
           <Pagination
-            currentPage={pagination.page}
-            totalPages={pagination.totalPages}
-            totalItems={pagination.total}
-            pageSize={pagination.limit}
+            currentPage={pagination.page || 1}
+            totalPages={Math.ceil(
+              (pagination.total || 0) / (pagination.limit || 12)
+            )}
+            totalItems={pagination.total || 0}
+            pageSize={pagination.limit || 12}
             onPageChange={onPageChange}
             showFirstLastButtons
           />
