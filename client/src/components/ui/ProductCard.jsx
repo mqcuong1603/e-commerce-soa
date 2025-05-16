@@ -47,8 +47,30 @@ const ProductCard = ({ product, className = "" }) => {
   const salePrice = firstVariant?.salePrice || product.salePrice;
 
   // Get inventory level - check first variant if available
-  const inventory = firstVariant?.inventory || product.inventory || 0;
-  const inStock = inventory > 0;
+  const inventory = firstVariant
+    ? firstVariant.inventory
+    : product.inventory || 0;
+  // Initialize stock status
+  let inStock = false;
+
+  // FIXED STOCK DETERMINATION LOGIC
+  // Case 1: If variant data is loaded, check the variants directly
+  if (product.variants && product.variants.length > 0) {
+    // Check if any loaded variant has inventory
+    inStock = product.variants.some(
+      (variant) => variant && variant.inventory > 0
+    );
+  }
+  // Case 2: If variants array is empty but we know there are variants
+  else if (product.variantCount > 0) {
+    // For product listings, we don't load all variants - assume in stock if variants exist
+    // This prevents false "out of stock" messages when variants aren't loaded
+    inStock = true;
+  }
+  // Case 3: No variants, check product inventory directly
+  else {
+    inStock = typeof product.inventory === "number" && product.inventory > 0;
+  }
 
   // Format price with comma for thousands
   const formatPrice = (price) => {
@@ -229,26 +251,20 @@ const ProductCard = ({ product, className = "" }) => {
           </div>
 
           {/* Stock badge */}
-          {!inStock && (
-            <div
-              className="position-absolute top-0 end-0 p-2"
-              style={{ zIndex: 3 }}
-            >
+          <div
+            className="position-absolute top-0 end-0 p-2"
+            style={{ zIndex: 3 }}
+          >
+            {!inStock ? (
               <div className="badge bg-secondary rounded-pill px-3 fw-medium">
                 OUT OF STOCK
               </div>
-            </div>
-          )}
-          {inventory > 0 && inventory <= 5 && (
-            <div
-              className="position-absolute top-0 end-0 p-2"
-              style={{ zIndex: 3 }}
-            >
-              <div className="badge bg-warning text-dark rounded-pill px-3 fw-medium">
-                ONLY {inventory} LEFT
+            ) : product.variants && product.variants.length > 1 ? (
+              <div className="badge bg-primary rounded-pill px-3 fw-medium">
+                {product.variants.length} VARIANTS
               </div>
-            </div>
-          )}
+            ) : null}
+          </div>
         </div>
       </Link>
 

@@ -129,6 +129,27 @@ const HomePage = () => {
     );
   }
 
+  // Replace the current image code with this icon approach
+  const getCategoryIcon = (categoryName) => {
+    const name = categoryName.toLowerCase();
+    if (name.includes("laptop")) return "bi-laptop";
+    if (name.includes("pc") || name.includes("desktop")) return "bi-pc-display";
+    if (name.includes("monitor")) return "bi-display";
+    if (name.includes("motherboard")) return "bi-motherboard";
+    if (name.includes("processor") || name.includes("cpu")) return "bi-cpu";
+    if (name.includes("graphics") || name.includes("gpu")) return "bi-gpu-card";
+    if (name.includes("ram") || name.includes("memory")) return "bi-memory";
+    if (name.includes("ssd") || name.includes("storage"))
+      return "bi-device-ssd";
+    if (name.includes("hdd") || name.includes("hard")) return "bi-hdd";
+    if (name.includes("phone") || name.includes("mobile")) return "bi-phone";
+    if (name.includes("accessory") || name.includes("accessories"))
+      return "bi-headphones";
+    if (name.includes("network")) return "bi-router";
+    if (name.includes("peripheral")) return "bi-keyboard";
+    return "bi-cpu-fill"; // Default icon
+  };
+
   return (
     <div>
       {/* Hero Slider */}
@@ -221,21 +242,12 @@ const HomePage = () => {
                           className="rounded-circle bg-white shadow-sm mx-auto mb-3 d-flex align-items-center justify-content-center"
                           style={{ width: "80px", height: "80px" }}
                         >
-                          <img
-                            src={
-                              category.image ||
-                              `/images/categories/${category.slug}.jpg`
-                            }
-                            alt={category.name}
-                            className="object-fit-contain"
-                            width="64"
-                            height="64"
-                            onError={(e) => {
-                              e.target.onerror = null;
-                              e.target.src =
-                                "/images/categories/placeholder.jpg";
-                            }}
-                          />
+                          <i
+                            className={`${getCategoryIcon(
+                              category.name
+                            )} text-danger`}
+                            style={{ fontSize: "2.5rem" }}
+                          ></i>
                         </div>
                         <h6 className="card-title fw-medium text-dark">
                           {category.name}

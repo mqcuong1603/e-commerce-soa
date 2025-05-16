@@ -40,6 +40,8 @@ const ProductsPage = () => {
     order: searchParams.get("order") || "desc",
   });
 
+  const [sortOption, setSortOption] = useState(getSortValueFromParams());
+
   const [activeFilters, setActiveFilters] = useState([]);
   const [availableBrands, setAvailableBrands] = useState([]);
   const [availablePriceRanges, setAvailablePriceRanges] = useState([]);
@@ -245,47 +247,73 @@ const ProductsPage = () => {
     setPagination({ ...pagination, page: 1 }); // Reset to first page
   };
 
+  // This converts the URL parameters to a sort option value when the page loads
+  function getSortValueFromParams() {
+    const field = searchParams.get("sortBy") || "createdAt";
+    const order = searchParams.get("order") || "desc";
+
+    if (field === "createdAt" && order === "desc") return "newest";
+    if (field === "createdAt" && order === "asc") return "oldest";
+    if (field === "price" && order === "asc") return "priceAsc";
+    if (field === "price" && order === "desc") return "priceDesc";
+    if (field === "name" && order === "asc") return "nameAsc";
+    if (field === "name" && order === "desc") return "nameDesc";
+    if (field === "averageRating" && order === "desc") return "rating";
+
+    return "newest"; // Default
+  }
+
   // Handle sort change
   const handleSortChange = (e) => {
-    const value = e.target.value;
-    let field = "createdAt";
-    let order = "desc";
+    const selectedOption = e.target.value;
+    setSortOption(selectedOption);
 
-    switch (value) {
+    // Update the sort state to match the selected option
+    setSort({
+      field: getSortField(selectedOption),
+      order: getSortOrder(selectedOption),
+    });
+
+    // Reset to first page when changing sort
+    setPagination({ ...pagination, page: 1 });
+  };
+
+  const getSortField = (option) => {
+    switch (option) {
       case "newest":
-        field = "createdAt";
-        order = "desc";
-        break;
+        return "createdAt";
       case "oldest":
-        field = "createdAt";
-        order = "asc";
-        break;
+        return "createdAt";
       case "priceAsc":
-        field = "price";
-        order = "asc";
-        break;
       case "priceDesc":
-        field = "price";
-        order = "desc";
-        break;
+        return "price"; // This is now correctly handled on server
       case "nameAsc":
-        field = "name";
-        order = "asc";
-        break;
       case "nameDesc":
-        field = "name";
-        order = "desc";
-        break;
+        return "name";
+      case "bestSelling":
+        return "salesCount";
       case "rating":
-        field = "averageRating";
-        order = "desc";
-        break;
+        return "averageRating";
       default:
-        break;
+        return "createdAt";
     }
+  };
 
-    setSort({ field, order });
-    setPagination({ ...pagination, page: 1 }); // Reset to first page
+  const getSortOrder = (option) => {
+    switch (option) {
+      case "oldest":
+      case "priceAsc":
+      case "nameAsc":
+        return "asc";
+      case "newest":
+      case "priceDesc":
+      case "nameDesc":
+      case "bestSelling":
+      case "rating":
+        return "desc";
+      default:
+        return "desc";
+    }
   };
 
   // Handle page change

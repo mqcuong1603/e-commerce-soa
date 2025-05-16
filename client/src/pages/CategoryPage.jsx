@@ -118,12 +118,14 @@ const CategoryPage = () => {
       const params = {
         page: pagination.page,
         limit: pagination.limit,
-        sort: sortOption,
+        // Replace single sort parameter with sortBy and order
+        sortBy: getSortField(sortOption),
+        order: getSortOrder(sortOption),
         minPrice: priceRange.min,
         maxPrice: priceRange.max,
       };
 
-      // Add brands filter if selected
+      // If brands exist in the filter
       if (selectedBrands.length > 0) {
         params.brands = selectedBrands.join(",");
       }
@@ -144,6 +146,46 @@ const CategoryPage = () => {
     }
   };
 
+  // Helper function to convert sort option to field
+  const getSortField = (option) => {
+    switch (option) {
+      case "newest":
+        return "createdAt";
+      case "oldest":
+        return "createdAt";
+      case "priceAsc":
+      case "priceDesc":
+        return "price"; // This is now correctly handled on server
+      case "nameAsc":
+      case "nameDesc":
+        return "name";
+      case "bestSelling":
+        return "salesCount";
+      case "rating":
+        return "averageRating";
+      default:
+        return "createdAt";
+    }
+  };
+
+  // Helper function to convert sort option to order direction
+  const getSortOrder = (option) => {
+    switch (option) {
+      case "oldest":
+      case "priceAsc":
+      case "nameAsc":
+        return "asc";
+      case "newest":
+      case "priceDesc":
+      case "nameDesc":
+      case "bestSelling":
+      case "rating":
+        return "desc";
+      default:
+        return "desc";
+    }
+  };
+
   // Handle page change
   const handlePageChange = (newPage) => {
     setPagination({ ...pagination, page: newPage });
@@ -153,9 +195,16 @@ const CategoryPage = () => {
 
   // Handle sort change
   const handleSortChange = (e) => {
-    setSortOption(e.target.value);
+    const newSortOption = e.target.value;
+    setSortOption(newSortOption);
+
     // Reset to page 1 when changing sort
     setPagination({ ...pagination, page: 1 });
+
+    // Update URL parameters to include the sort
+    const params = new URLSearchParams(searchParams);
+    params.set("sort", newSortOption);
+    setSearchParams(params);
   };
 
   // Handle brand selection
