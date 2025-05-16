@@ -3,8 +3,8 @@ import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../../contexts/AuthContext";
 
 const LoginForm = () => {
-  const { login } = useAuth();
   const navigate = useNavigate();
+  const { login } = useAuth();
 
   const [formData, setFormData] = useState({
     email: "",
@@ -28,20 +28,24 @@ const LoginForm = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
     setIsSubmitting(true);
     setLoginError("");
 
     try {
-      const response = await login(formData.email, formData.password);
+      const result = await login(formData.email, formData.password);
 
-      if (response.success) {
-        navigate("/");
+      if (result.success) {
+        // Check role and redirect accordingly
+        if (result.role === "admin") {
+          navigate("/admin");
+        } else {
+          navigate("/");
+        }
       } else {
-        setLoginError(response.error || "Invalid email or password");
+        setLoginError(result.error || "Login failed");
       }
-    } catch (error) {
-      setLoginError("An error occurred. Please try again.");
+    } catch (err) {
+      setLoginError("An unexpected error occurred");
     } finally {
       setIsSubmitting(false);
     }

@@ -3,6 +3,7 @@ import Order from "../../models/order.model.js";
 import OrderStatus from "../../models/orderStatus.model.js";
 import { ApiError } from "../../middleware/response.middleware.js";
 import emailService from "../../services/emailService.js";
+import mongoose from "mongoose";
 
 /**
  * Get all orders with filters and pagination
@@ -17,51 +18,71 @@ export const getAllOrders = async (req, res, next) => {
     // Filter params
     const { status, period, startDate, endDate } = req.query;
 
-    // Build query
+    // Build query with safer error handling
     const query = {};
 
-    // Date filters
+    // Check database connection
+    if (mongoose.connection.readyState !== 1) {
+      throw new ApiError("Database connection issue", 500);
+    }
+
+    // Date filters with validation
     if (period || (startDate && endDate)) {
       const dateQuery = {};
 
       if (startDate && endDate) {
-        // Custom date range
-        dateQuery.$gte = new Date(startDate);
-        dateQuery.$lte = new Date(endDate);
-        dateQuery.$lte.setHours(23, 59, 59, 999); // End of the day
+        try {
+          dateQuery.$gte = new Date(startDate);
+          dateQuery.$lte = new Date(endDate);
+          // Ensure endDate includes the whole day
+          dateQuery.$lte.setHours(23, 59, 59, 999);
+        } catch (err) {
+          console.error("Date parsing error:", err);
+          throw new ApiError("Invalid date format", 400);
+        }
       } else if (period) {
+        // Safer period handling with validation
         const now = new Date();
         dateQuery.$lte = now;
 
-        switch (period) {
-          case "today":
-            const today = new Date();
-            today.setHours(0, 0, 0, 0);
-            dateQuery.$gte = today;
-            break;
-          case "yesterday":
-            const yesterday = new Date();
-            yesterday.setDate(yesterday.getDate() - 1);
-            yesterday.setHours(0, 0, 0, 0);
-            const yesterdayEnd = new Date();
-            yesterdayEnd.setDate(yesterdayEnd.getDate() - 1);
-            yesterdayEnd.setHours(23, 59, 59, 999);
-            dateQuery.$gte = yesterday;
-            dateQuery.$lte = yesterdayEnd;
-            break;
-          case "week":
-            const week = new Date();
-            week.setDate(week.getDate() - 7);
-            dateQuery.$gte = week;
-            break;
-          case "month":
-            const month = new Date();
-            month.setMonth(month.getMonth() - 1);
-            dateQuery.$gte = month;
-            break;
-          default:
-            // No filter
-            break;
+        // Set safer defaults that won't crash if data is malformed
+        try {
+          switch (period) {
+            case "today":
+              const today = new Date();
+              today.setHours(0, 0, 0, 0);
+              dateQuery.$gte = today;
+              break;
+            case "yesterday":
+              const yesterday = new Date();
+              yesterday.setDate(yesterday.getDate() - 1);
+              yesterday.setHours(0, 0, 0, 0);
+              dateQuery.$gte = yesterday;
+              dateQuery.$lte = new Date(yesterday);
+              dateQuery.$lte.setHours(23, 59, 59, 999);
+              break;
+            case "week":
+              const week = new Date();
+              week.setDate(week.getDate() - 7);
+              dateQuery.$gte = week;
+              break;
+            case "month":
+              const month = new Date();
+              month.setMonth(month.getMonth() - 1);
+              dateQuery.$gte = month;
+              break;
+            default:
+              // Default to last 30 days if period is invalid
+              const defaultPeriod = new Date();
+              defaultPeriod.setDate(defaultPeriod.getDate() - 30);
+              dateQuery.$gte = defaultPeriod;
+          }
+        } catch (err) {
+          console.error("Period calculation error:", err);
+          // Don't fail, use a safe default
+          const defaultPeriod = new Date();
+          defaultPeriod.setDate(defaultPeriod.getDate() - 30);
+          dateQuery.$gte = defaultPeriod;
         }
       }
 
@@ -71,55 +92,105 @@ export const getAllOrders = async (req, res, next) => {
       }
     }
 
-    // Status filter (need to find order IDs with this status)
+    // Status filter with better error handling
+    let orderIds = [];
     if (status) {
-      // Find all orders with this status
-      const orderStatuses = await OrderStatus.find({
-        status,
-        // Find latest status for each order
-        createdAt: {
-          $in: await OrderStatus.aggregate([
-            { $sort: { orderId: 1, createdAt: -1 } },
-            {
-              $group: { _id: "$orderId", latestDate: { $first: "$createdAt" } },
+      try {
+        // Find all orders with this status (latest status only)
+        const orderStatuses = await OrderStatus.aggregate([
+          { $sort: { createdAt: -1 } },
+          {
+            $group: {
+              _id: "$orderId",
+              latestStatus: { $first: "$status" },
+              createdAt: { $first: "$createdAt" },
             },
-            { $project: { _id: 0, latestDate: 1 } },
-          ]).then((results) => results.map((r) => r.latestDate)),
-        },
-      });
+          },
+          { $match: { latestStatus: status } },
+          { $project: { _id: 1 } },
+        ]);
 
-      const orderIds = orderStatuses.map((status) => status.orderId);
-      query._id = { $in: orderIds };
+        orderIds = orderStatuses.map((item) => item._id);
+        if (orderIds.length === 0) {
+          // Return empty result instead of failing
+          return res.success({
+            orders: [],
+            pagination: {
+              page,
+              limit,
+              total: 0,
+              totalPages: 0,
+              hasNextPage: false,
+              hasPrevPage: false,
+            },
+          });
+        }
+        query._id = { $in: orderIds };
+      } catch (err) {
+        console.error("Order status filter error:", err);
+        // Continue without status filter rather than failing
+      }
     }
 
-    // Count total matching orders
-    const total = await Order.countDocuments(query);
+    // Use safer promises with timeouts
+    try {
+      // Count total matching orders with timeout
+      const countPromise = new Promise((resolve, reject) => {
+        const timeout = setTimeout(
+          () => reject(new Error("Query timeout")),
+          5000
+        );
+        Order.countDocuments(query)
+          .then((count) => {
+            clearTimeout(timeout);
+            resolve(count);
+          })
+          .catch(reject);
+      });
 
-    // Get orders with pagination
-    const orders = await Order.find(query)
-      .select("orderNumber createdAt email fullName total paymentStatus")
-      .populate("status") // Current status (virtual)
-      .sort({ createdAt: -1 })
-      .skip(skip)
-      .limit(limit);
+      // Get orders with pagination and timeout
+      const ordersPromise = new Promise((resolve, reject) => {
+        const timeout = setTimeout(
+          () => reject(new Error("Query timeout")),
+          5000
+        );
+        Order.find(query)
+          .select("orderNumber createdAt email fullName total paymentStatus")
+          .populate("status") // Current status (virtual)
+          .sort({ createdAt: -1 })
+          .skip(skip)
+          .limit(limit)
+          .then((orders) => {
+            clearTimeout(timeout);
+            resolve(orders);
+          })
+          .catch(reject);
+      });
 
-    // Calculate pagination info
-    const totalPages = Math.ceil(total / limit);
-    const hasNextPage = page < totalPages;
-    const hasPrevPage = page > 1;
+      const [total, orders] = await Promise.all([countPromise, ordersPromise]);
 
-    return res.success({
-      orders,
-      pagination: {
-        page,
-        limit,
-        total,
-        totalPages,
-        hasNextPage,
-        hasPrevPage,
-      },
-    });
+      // Calculate pagination info
+      const totalPages = Math.ceil(total / limit);
+      const hasNextPage = page < totalPages;
+      const hasPrevPage = page > 1;
+
+      return res.success({
+        orders,
+        pagination: {
+          page,
+          limit,
+          total,
+          totalPages,
+          hasNextPage,
+          hasPrevPage,
+        },
+      });
+    } catch (error) {
+      console.error("Order query error:", error);
+      throw new ApiError("Error retrieving orders", 500);
+    }
   } catch (error) {
+    console.error("Order controller error:", error);
     next(error);
   }
 };

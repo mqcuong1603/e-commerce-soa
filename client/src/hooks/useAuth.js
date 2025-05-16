@@ -64,7 +64,11 @@ export const AuthProvider = ({ children }) => {
         setToken(newToken);
         setUser(userData);
 
-        return { success: true };
+        // Return success with role for redirection
+        return {
+          success: true,
+          role: userData.role, // Add this line to return the role
+        };
       } else {
         throw new Error(response.message || "Login failed");
       }

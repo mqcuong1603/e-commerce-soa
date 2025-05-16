@@ -14,7 +14,7 @@
     "userName": "Sarah Johnson",
     "rating": 4,
     "comment": "Great laptop overall. The display is stunning with vibrant colors and the keyboard feels great to type on. My only complaint is that it runs a bit hot during intensive tasks.",
-    "isVerifiedPurchase": true,
+    "isVerifiedPurchase": false,
     "createdAt": "2024-04-20T14:45:00.000Z"
   },
   {
@@ -32,7 +32,7 @@
     "userName": "Emily Wilson",
     "rating": 4,
     "comment": "Amazing gaming performance in a relatively thin and light package. The fans can get loud when gaming but that's expected for this level of performance.",
-    "isVerifiedPurchase": true,
+    "isVerifiedPurchase": false,
     "createdAt": "2024-05-01T18:20:00.000Z"
   },
   {
@@ -41,7 +41,7 @@
     "userName": "David Rodriguez",
     "rating": 5,
     "comment": "The SSD is insanely fast! Boot times are almost instantaneous, and applications load in a blink. File transfers that used to take minutes now complete in seconds.",
-    "isVerifiedPurchase": true,
+    "isVerifiedPurchase": false,
     "createdAt": "2024-04-10T11:15:00.000Z"
   },
   {
@@ -77,7 +77,7 @@
     "userName": "John Doe",
     "rating": 5,
     "comment": "Finally able to play games at 4K with ray tracing enabled. This card is an absolute beast - worth every penny if you can find it at MSRP.",
-    "isVerifiedPurchase": true,
+    "isVerifiedPurchase": false,
     "createdAt": "2024-04-12T17:10:00.000Z"
   },
   {
@@ -104,7 +104,7 @@
     "userName": "Robert Williams",
     "rating": 4,
     "comment": "Great gaming laptop with excellent performance. The only downside is the limited port selection, but that's a minor issue given the overall quality.",
-    "isVerifiedPurchase": true,
+    "isVerifiedPurchase": false,
     "createdAt": "2024-04-30T12:20:00.000Z"
   },
   {
@@ -113,7 +113,7 @@
     "userName": "Sophia Martinez",
     "rating": 5,
     "comment": "Incredible speed and reliability. Perfect for my video editing workflow. The difference in load times is night and day compared to my old SSD.",
-    "isVerifiedPurchase": true,
+    "isVerifiedPurchase": false,
     "createdAt": "2024-04-25T09:55:00.000Z"
   },
   {

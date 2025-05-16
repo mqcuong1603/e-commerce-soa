@@ -108,30 +108,13 @@ const Pagination = ({
 
         {/* Pagination */}
         <nav aria-label="Page navigation">
-          <ul className={`pagination ${sizeClass} mb-0`}>
-            {/* First page button */}
-            {showFirstLastButtons && (
-              <li
-                className={`page-item ${currentPage === 1 ? "disabled" : ""}`}
-              >
-                <button
-                  className="page-link"
-                  onClick={() => onPageChange(1)}
-                  disabled={currentPage === 1}
-                  aria-label="First page"
-                >
-                  <i className="bi bi-chevron-double-left"></i>
-                </button>
-              </li>
-            )}
-
+          <ul className="pagination justify-content-center">
             {/* Previous page button */}
             <li className={`page-item ${currentPage === 1 ? "disabled" : ""}`}>
               <button
-                className="page-link"
+                className="page-link text-primary"
                 onClick={() => onPageChange(currentPage - 1)}
                 disabled={currentPage === 1}
-                aria-label="Previous page"
               >
                 <i className="bi bi-chevron-left"></i>
               </button>
@@ -147,12 +130,12 @@ const Pagination = ({
                   } ${pageNumber === "..." ? "disabled" : ""}`}
                 >
                   <button
-                    className="page-link"
-                    onClick={() => {
-                      if (pageNumber !== "...") {
-                        onPageChange(pageNumber);
-                      }
-                    }}
+                    className={`page-link ${
+                      currentPage === pageNumber
+                        ? "bg-primary border-primary"
+                        : "text-primary"
+                    }`}
+                    onClick={() => onPageChange(pageNumber)}
                     disabled={pageNumber === "..."}
                   >
                     {pageNumber}
@@ -167,32 +150,13 @@ const Pagination = ({
               }`}
             >
               <button
-                className="page-link"
+                className="page-link text-primary"
                 onClick={() => onPageChange(currentPage + 1)}
                 disabled={currentPage === effectiveTotalPages}
-                aria-label="Next page"
               >
                 <i className="bi bi-chevron-right"></i>
               </button>
             </li>
-
-            {/* Last page button */}
-            {showFirstLastButtons && (
-              <li
-                className={`page-item ${
-                  currentPage === effectiveTotalPages ? "disabled" : ""
-                }`}
-              >
-                <button
-                  className="page-link"
-                  onClick={() => onPageChange(effectiveTotalPages)}
-                  disabled={currentPage === effectiveTotalPages}
-                  aria-label="Last page"
-                >
-                  <i className="bi bi-chevron-double-right"></i>
-                </button>
-              </li>
-            )}
           </ul>
         </nav>
       </div>

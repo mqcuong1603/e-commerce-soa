@@ -4,7 +4,7 @@
     "discountType": "percentage",
     "discountValue": 10,
     "usageLimit": 10,
-    "usedCount": 0,
+    "usedCount": 1,
     "createdByEmail": "admin@example.com",
     "isActive": true
   },
@@ -13,7 +13,7 @@
     "discountType": "percentage",
     "discountValue": 20,
     "usageLimit": 5,
-    "usedCount": 2,
+    "usedCount": 3,
     "createdByEmail": "admin@example.com",
     "isActive": true
   },
@@ -22,7 +22,7 @@
     "discountType": "fixed",
     "discountValue": 50000,
     "usageLimit": 10,
-    "usedCount": 0,
+    "usedCount": 1,
     "createdByEmail": "admin@example.com",
     "isActive": true
   },
@@ -31,7 +31,7 @@
     "discountType": "percentage",
     "discountValue": 25,
     "usageLimit": 10,
-    "usedCount": 1,
+    "usedCount": 0,
     "createdByEmail": "admin@example.com",
     "isActive": true
   },

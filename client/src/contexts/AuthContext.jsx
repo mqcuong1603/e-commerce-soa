@@ -59,9 +59,16 @@ export const AuthProvider = ({ children }) => {
         setUser(response.data);
         setIsAuthenticated(true);
 
+        // Extract role from user data
+        const userRole = response.data.role;
+
         // No need to manually merge carts - the server handles this via cartMiddleware
 
-        return { success: true };
+        // Return success status and role for redirection handling in the component
+        return {
+          success: true,
+          role: userRole,
+        };
       } else {
         throw new Error(response.message || "Login failed");
       }

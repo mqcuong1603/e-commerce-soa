@@ -9,6 +9,7 @@ import { Navigate } from "react-router-dom";
 
 // Layout
 import MainLayout from "./components/layout/MainLayout";
+import AdminLayout from "./components/layout/AdminLayout";
 
 // Page components
 import HomePage from "./pages/HomePage";
@@ -26,10 +27,13 @@ import OrdersPage from "./pages/user/OrdersPage";
 import OrderDetailPage from "./pages/user/OrderDetailPage";
 import NotFoundPage from "./pages/NotFoundPage";
 import OrderSuccessPage from "./pages/OrderSuccessPage";
+import AdminDiscountPage from "./pages/admin/DiscountPage";
+import UserManagement from "./pages/admin/UserManagement";
 
 // Auth guards
 import ProtectedRoute from "./components/auth/ProtectedRoute";
 import GuestOnlyRoute from "./components/auth/GuestOnlyRoute";
+import RequireAdmin from "./components/auth/RequireAdmin";
 
 /**
  * Routes configuration
@@ -132,6 +136,20 @@ const routes = [
       {
         path: "/order-success",
         element: <OrderSuccessPage />,
+      },
+      {
+        path: "/admin/discounts",
+        element: <AdminDiscountPage />,
+      },
+      {
+        path: "/admin/users",
+        element: (
+          <AdminLayout>
+            <RequireAdmin>
+              <UserManagement />
+            </RequireAdmin>
+          </AdminLayout>
+        ),
       },
 
       // 404 Not Found - fallback route
