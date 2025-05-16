@@ -184,6 +184,8 @@ export const AuthProvider = ({ children }) => {
     updatePassword,
     forgotPassword,
     resetPassword,
+    setToken, // Add this
+    setUser, // Add this
   };
 
   return (

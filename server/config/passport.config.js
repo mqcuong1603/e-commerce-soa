@@ -24,7 +24,9 @@ passport.use(
     {
       clientID: process.env.GOOGLE_CLIENT_ID || "google-client-id",
       clientSecret: process.env.GOOGLE_CLIENT_SECRET || "google-client-secret",
-      callbackURL: "/api/auth/google/callback",
+      callbackURL: `${
+        process.env.process.REACT_APP_API_URL || "http://localhost:3000/api"
+      }/auth/google/callback`,
       proxy: true,
     },
     async (accessToken, refreshToken, profile, done) => {
@@ -81,7 +83,9 @@ passport.use(
     {
       clientID: process.env.FACEBOOK_APP_ID || "facebook-app-id",
       clientSecret: process.env.FACEBOOK_APP_SECRET || "facebook-app-secret",
-      callbackURL: "/api/auth/facebook/callback",
+      callbackURL: `${
+        process.env.REACT_APP_API_URL || "http://localhost:3000/api"
+      }/auth/facebook/callback`,
       profileFields: ["id", "emails", "name"],
       proxy: true,
     },

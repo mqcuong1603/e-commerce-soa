@@ -2,7 +2,6 @@ import express from "express";
 import mongoose from "mongoose";
 import path from "path";
 import { fileURLToPath } from "url";
-import passport from "passport";
 import { createServer } from "http";
 import { Server } from "socket.io";
 import dotenv from "dotenv";
@@ -35,6 +34,7 @@ import {
 } from "./middleware/auth.middleware.js";
 
 // Import passport configuration
+import passport from "passport";
 import "./config/passport.config.js";
 
 // Import database seeding function
@@ -74,7 +74,6 @@ configureMiddleware(
 
 // Initialize passport
 app.use(passport.initialize());
-app.use(passport.session());
 
 // Database connection
 mongoose

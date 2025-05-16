@@ -31,6 +31,7 @@ import ProfilePage from "./pages/user/ProfilePage";
 import OrdersPage from "./pages/user/OrdersPage";
 import OrderDetailPage from "./pages/user/OrderDetailPage";
 import NotFoundPage from "./pages/NotFoundPage";
+import AuthCallback from "./pages/auth/AuthCallback";
 
 // Auth Guard for protected routes
 const ProtectedRoute = ({ children }) => {
@@ -98,6 +99,7 @@ const App = () => {
               {/* 404 Not Found */}
               <Route path="*" element={<NotFoundPage />} />
             </Route>
+            <Route path="auth/callback" element={<AuthCallback />} />
           </Routes>
         </CartProvider>
       </AuthProvider>
