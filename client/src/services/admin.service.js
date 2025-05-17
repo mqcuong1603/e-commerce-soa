@@ -27,7 +27,7 @@ const adminService = {
   },
   getOrderDetails: (orderId) => api.get(`/admin/orders/${orderId}`),
   updateOrderStatus: (orderId, statusData) =>
-    api.put(`/admin/orders/${orderId}/status`, statusData),
+    api.patch(`/admin/orders/${orderId}/status`, statusData),
 
   // Discounts
   getDiscounts: (page = 1, limit = 20) =>
@@ -112,6 +112,11 @@ const adminService = {
   // Categories
   getCategories: () => {
     return api.get("/admin/categories");
+  },
+
+  // Get only parent categories
+  getParentCategories: () => {
+    return api.get("/admin/categories/parents");
   },
 };
 

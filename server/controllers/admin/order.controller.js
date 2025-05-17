@@ -147,7 +147,6 @@ export const getAllOrders = async (req, res, next) => {
           })
           .catch(reject);
       });
-
       // Get orders with pagination and timeout
       const ordersPromise = new Promise((resolve, reject) => {
         const timeout = setTimeout(
@@ -156,11 +155,28 @@ export const getAllOrders = async (req, res, next) => {
         );
         Order.find(query)
           .select("orderNumber createdAt email fullName total paymentStatus")
-          .populate("status") // Current status (virtual)
+          .populate({
+            path: "status", // Current status (virtual)
+            options: { sort: { createdAt: -1 } },
+          })
+          .populate("statusHistory") // Also populate statusHistory for consistency
           .sort({ createdAt: -1 })
           .skip(skip)
           .limit(limit)
-          .then((orders) => {
+          .then(async (orders) => {
+            // Create default statuses for orders with empty status arrays
+            // This ensures consistency with the detail endpoint
+            for (const order of orders) {
+              if (
+                !order.status ||
+                (Array.isArray(order.status) && order.status.length === 0)
+              ) {
+                if (order.statusHistory && order.statusHistory.length > 0) {
+                  // Use statusHistory if available
+                  order.status = [order.statusHistory[0]];
+                }
+              }
+            }
             clearTimeout(timeout);
             resolve(orders);
           })
@@ -202,16 +218,47 @@ export const getOrderDetails = async (req, res, next) => {
   try {
     const { orderId } = req.params;
 
+    // Validate orderId format
+    if (!mongoose.Types.ObjectId.isValid(orderId)) {
+      return res.error("Invalid order ID format", 400);
+    }
+
+    // Find order with all necessary data
     const order = await Order.findById(orderId)
       .populate("statusHistory")
       .populate("userId", "fullName email");
 
     if (!order) {
-      throw new ApiError("Order not found", 404);
+      return res.error("Order not found", 404);
+    }
+
+    // Make sure order has a status history array, even if empty
+    if (!order.statusHistory) {
+      order.statusHistory = [];
+    }
+
+    // Create a default status if no status history exists
+    if (order.statusHistory.length === 0) {
+      const OrderStatus = mongoose.model("OrderStatus");
+      const defaultStatus = new OrderStatus({
+        orderId: order._id,
+        status: "pending",
+        note: "Order created",
+        createdAt: order.createdAt,
+      });
+
+      try {
+        await defaultStatus.save();
+        order.statusHistory = [defaultStatus];
+      } catch (err) {
+        console.error("Error creating default status:", err);
+        // Continue even if save fails
+      }
     }
 
     return res.success(order);
   } catch (error) {
+    console.error("Error in getOrderDetails:", error);
     next(error);
   }
 };

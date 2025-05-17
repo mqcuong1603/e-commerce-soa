@@ -19,6 +19,7 @@ import discountRoutes from "./routes/discount.routes.js";
 import adminOrderRoutes from "./routes/admin/order.routes.js";
 import adminProductRoutes from "./routes/admin/product.routes.js";
 import adminUserRoutes from "./routes/admin/user.routes.js";
+import adminCategoryRoutes from "./routes/admin/category.routes.js";
 
 // Import middleware configuration
 import {
@@ -111,7 +112,7 @@ app.use("/api/discounts", authMiddleware, adminMiddleware, discountRoutes);
 app.use("/api/admin/orders", adminOrderRoutes);
 app.use("/api/admin/products", adminProductRoutes);
 app.use("/api/admin/users", adminUserRoutes);
-app.use("/api/admin/categories", categoryRoutes); // Registering admin category routes
+app.use("/api/admin/categories", adminCategoryRoutes); // Registering admin category routes
 
 // Health check endpoint
 app.get("/health", (req, res) => {

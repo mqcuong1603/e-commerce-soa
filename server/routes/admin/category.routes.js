@@ -1,14 +1,27 @@
 import express from "express";
 import * as categoryController from "../../controllers/admin/category.controller.js";
-import { isAdmin, isAuth } from "../../middleware/auth.middleware.js";
+import {
+  authMiddleware,
+  adminMiddleware,
+} from "../../middleware/auth.middleware.js";
 
 const router = express.Router();
 
-// Add this route to get all categories
-router.get("/", isAuth, isAdmin, categoryController.getAllCategories);
+// Get all categories
+router.get(
+  "/",
+  authMiddleware,
+  adminMiddleware,
+  categoryController.getAllCategories
+);
 
-// Add this route if missing
-router.get("/", isAuth, isAdmin, categoryController.getParentCategories);
+// Get only parent categories
+router.get(
+  "/parents",
+  authMiddleware,
+  adminMiddleware,
+  categoryController.getParentCategories
+);
 
 // Other category routes
 // ...

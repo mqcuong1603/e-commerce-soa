@@ -3,6 +3,7 @@ import User from "../models/user.model.js";
 import Address from "../models/address.model.js";
 import Order from "../models/order.model.js";
 import { ApiError } from "../middleware/response.middleware.js";
+import mongoose from "mongoose";
 
 /**
  * Get user profile
@@ -279,6 +280,30 @@ export const getOrderDetails = async (req, res, next) => {
 
     if (!order) {
       throw new ApiError("Order not found", 404);
+    }
+
+    // Make sure order has a status history array, even if empty
+    if (!order.statusHistory) {
+      order.statusHistory = [];
+    }
+
+    // Create a default status if no status history exists
+    if (order.statusHistory.length === 0) {
+      const OrderStatus = mongoose.model("OrderStatus");
+      const defaultStatus = new OrderStatus({
+        orderId: order._id,
+        status: "pending",
+        note: "Order created",
+        createdAt: order.createdAt,
+      });
+
+      try {
+        await defaultStatus.save();
+        order.statusHistory = [defaultStatus];
+      } catch (err) {
+        console.error("Error creating default status:", err);
+        // Continue even if save fails
+      }
     }
 
     return res.success(order);

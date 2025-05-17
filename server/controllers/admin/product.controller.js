@@ -33,14 +33,13 @@ export const getProducts = async (req, res, next) => {
     // Filter by category
     if (category) {
       query.categories = category;
-    }
-
-    // Filter by status - properly map "active"/"inactive" to boolean
+    } // Filter by status - properly map "active"/"inactive" to boolean
     if (status === "active") {
       query.isActive = true;
     } else if (status === "inactive") {
       query.isActive = false;
     }
+    // Don't filter if status is blank, null, "all", or any other value
 
     // Get total count for pagination
     const total = await Product.countDocuments(query);
@@ -255,14 +254,19 @@ export const updateProductStatus = async (req, res, next) => {
     const { productId } = req.params;
     const { isActive } = req.body;
 
-    // Validate that isActive is a boolean
-    if (typeof isActive !== "boolean") {
+    // Validate that isActive is present and convert to boolean if needed
+    let statusValue;
+    if (isActive === true || isActive === "true" || isActive === 1) {
+      statusValue = true;
+    } else if (isActive === false || isActive === "false" || isActive === 0) {
+      statusValue = false;
+    } else {
       return res.error("Status value must be boolean", 400);
     }
 
     const product = await Product.findByIdAndUpdate(
       productId,
-      { isActive },
+      { isActive: statusValue },
       { new: true }
     );
 

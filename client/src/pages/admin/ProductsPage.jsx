@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useCallback } from "react";
-import { debounce } from "lodash";
 import {
   Row,
   Col,
@@ -72,12 +71,11 @@ const AdminProductsPage = () => {
   useEffect(() => {
     fetchProducts();
   }, [pagination.page, filters]);
-
   // Fetch categories on component mount
   useEffect(() => {
     const fetchCategories = async () => {
       try {
-        const response = await adminService.getCategories();
+        const response = await adminService.getParentCategories();
         if (response.success) {
           // Add "All Categories" option
           const formattedCategories = [
@@ -121,37 +119,51 @@ const AdminProductsPage = () => {
       setLoading(false);
     }
   };
-
-  // Add this custom debounce function in your component
-  const debounce = (callback, delay) => {
+  // Create debounced search function
+  const debouncedSearch = useCallback((term) => {
+    // Create a cleaner debounce implementation
     let timer;
     return (...args) => {
       clearTimeout(timer);
-      timer = setTimeout(() => callback(...args), delay);
+      timer = setTimeout(() => {
+        setFilters((prev) => ({ ...prev, search: term }));
+        setPagination((prev) => ({ ...prev, page: 1 }));
+      }, 300);
     };
-  };
+  }, []);
 
-  // Create debounced search function using useCallback
-  const debouncedSearch = useCallback(
-    debounce((term) => {
-      fetchProducts({ search: term, page: 1 });
-    }, 300),
-    []
-  );
-
-  // Handle search input change
+  // Handle search input change with proper debouncing
   const handleSearchChange = (e) => {
     const value = e.target.value;
     setSearchTerm(value);
-    debouncedSearch(value);
-  };
 
+    // Clear any previous timeout
+    if (window.searchTimeout) {
+      clearTimeout(window.searchTimeout);
+    }
+
+    // Set a new timeout
+    window.searchTimeout = setTimeout(() => {
+      setFilters((prev) => ({ ...prev, search: value }));
+      setPagination((prev) => ({ ...prev, page: 1 }));
+    }, 300);
+  };
   // Handle filter changes
   const handleFilterChange = (e) => {
     const { name, value } = e.target;
-    setFilters((prev) => ({ ...prev, [name]: value }));
+
+    // For status filter, make sure we handle it correctly
+    if (name === "status") {
+      // Only set status if it's active or inactive, otherwise use empty string
+      const statusValue =
+        value === "active" || value === "inactive" ? value : "";
+      setFilters((prev) => ({ ...prev, status: statusValue }));
+    } else {
+      setFilters((prev) => ({ ...prev, [name]: value }));
+    }
+
+    // Reset to first page when filters change
     setPagination((prev) => ({ ...prev, page: 1 }));
-    fetchProducts({ ...filters, [name]: value, page: 1 });
   };
 
   // Handle reset filters
@@ -168,44 +180,10 @@ const AdminProductsPage = () => {
   const handlePageChange = (page) => {
     setPagination({ ...pagination, page });
   };
-
-  // Handle product status toggle
-  const handleToggleProductStatus = async (productId, currentStatus) => {
-    try {
-      const newStatus = currentStatus === "active" ? "inactive" : "active";
-
-      const response = await adminService.updateProductStatus(productId, {
-        status: newStatus,
-      });
-
-      if (response.success) {
-        // Update products list
-        setProducts(
-          products.map((product) =>
-            product._id === productId
-              ? { ...product, status: newStatus }
-              : product
-          )
-        );
-
-        toast.success(
-          `Product ${
-            newStatus === "active" ? "activated" : "deactivated"
-          } successfully`
-        );
-      } else {
-        throw new Error(response.message || "Failed to update product status");
-      }
-    } catch (err) {
-      console.error("Error updating product status:", err);
-      toast.error("Failed to update product status");
-    }
-  };
-
-  // Update your status toggle handler
+  // Status toggle handler
   const handleToggleStatus = async (productId, currentStatus) => {
     try {
-      // Make sure we send a boolean value
+      // Send a boolean value for status
       const newStatus = !currentStatus;
 
       const response = await adminService.updateProductStatus(productId, {
@@ -221,8 +199,12 @@ const AdminProductsPage = () => {
               : product
           )
         );
+
+        toast.success(
+          `Product ${newStatus ? "activated" : "deactivated"} successfully`
+        );
       } else {
-        toast.error("Failed to update product status");
+        toast.error(response.message || "Failed to update product status");
       }
     } catch (error) {
       console.error("Error updating status:", error);
@@ -341,14 +323,14 @@ const AdminProductsPage = () => {
             <div className="input-group">
               <span className="input-group-text bg-light">
                 <i className="bi bi-toggle-on"></i>
-              </span>
+              </span>{" "}
               <select
                 className="form-select"
                 name="status"
                 value={filters.status}
                 onChange={handleFilterChange}
               >
-                <option value="">All Status</option>
+                <option value="">All</option>
                 <option value="active">Active</option>
                 <option value="inactive">Inactive</option>
               </select>

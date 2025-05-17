@@ -119,11 +119,27 @@ const OrderDetail = () => {
 
   // Check if order can be cancelled
   const canBeCancelled = () => {
-    if (!order || !order.status) return false;
+    if (!order) return false;
 
-    // Only allow cancellation for pending or confirmed status
-    const cancellableStatuses = ["pending", "confirmed"];
-    return cancellableStatuses.includes(order.status[0]?.status);
+    // If no status information is available in the list view, check the statusHistory
+    if (order.statusHistory && order.statusHistory.length > 0) {
+      const latestStatus = order.statusHistory[0].status;
+      const cancellableStatuses = ["pending", "confirmed"];
+      return cancellableStatuses.includes(latestStatus);
+    }
+
+    // Otherwise use the status field if available
+    if (order.status) {
+      const cancellableStatuses = ["pending", "confirmed"];
+      const currentStatus =
+        Array.isArray(order.status) && order.status.length > 0
+          ? order.status[0]?.status
+          : order.status?.status || "pending";
+      return cancellableStatuses.includes(currentStatus);
+    }
+
+    // Default to being cancellable (as pending) if no status info is available
+    return true;
   };
 
   // Get appropriate status badge color based on status
@@ -170,12 +186,23 @@ const OrderDetail = () => {
       </div>
     );
   }
-
   if (!order) return null;
 
-  // Get current status
-  const currentStatus =
-    order.status && order.status.length > 0 ? order.status[0] : null;
+  // Get current status - first try the statusHistory for details page
+  let currentStatus;
+  if (order.statusHistory && order.statusHistory.length > 0) {
+    // In detail page, we show the latest status from statusHistory
+    currentStatus = { status: order.statusHistory[0].status };
+  } else if (Array.isArray(order.status) && order.status.length > 0) {
+    // In list view, we use the status array if available
+    currentStatus = order.status[0];
+  } else if (order.status) {
+    // Handle case where status isn't an array
+    currentStatus = order.status;
+  } else {
+    // Default to pending if no status information
+    currentStatus = { status: "pending" };
+  }
 
   return (
     <div className="bg-white rounded-lg shadow-md">

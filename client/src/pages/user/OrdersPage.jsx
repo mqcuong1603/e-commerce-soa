@@ -167,13 +167,20 @@ const OrdersPage = () => {
                   </div>
 
                   <div className="col-md-6 text-md-end mt-3 mt-md-0">
+                    {" "}
                     <span
                       className={`badge ${getStatusBadgeClass(
-                        order.status[0]?.status
+                        Array.isArray(order.status) && order.status.length > 0
+                          ? order.status[0]?.status
+                          : "pending"
                       )} py-2 px-3 me-3`}
                     >
                       <i className="bi bi-circle-fill me-1 small"></i>
-                      {formatStatus(order.status[0]?.status)}
+                      {formatStatus(
+                        Array.isArray(order.status) && order.status.length > 0
+                          ? order.status[0]?.status
+                          : "pending"
+                      )}
                     </span>
                     <span className="fw-bold fs-5 text-danger">
                       ₫{formatPrice(order.total)}

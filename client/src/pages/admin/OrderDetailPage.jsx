@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams, Link } from "react-router-dom";
 import { useAuth } from "../../contexts/AuthContext";
-import axios from "axios";
+import adminService from "../../services/admin.service";
 import AdminLayout from "../../components/admin/AdminLayout";
 import Loader from "../../components/ui/Loader";
 import { Card, Badge, Form, Button, Row, Col, Alert } from "react-bootstrap";
@@ -32,31 +32,28 @@ const AdminOrderDetailPage = () => {
       fetchOrderDetails();
     }
   }, [isAuthenticated, user, navigate, id]);
-
   const fetchOrderDetails = async () => {
     try {
       setLoading(true);
       setError(null);
 
-      const response = await axios.get(`/api/admin/orders/${id}`);
+      const response = await adminService.getOrderDetails(id);
 
-      if (response.data.success) {
-        setOrder(response.data.data);
+      if (response.success) {
+        setOrder(response.data);
 
         // Set current status for the update form
         if (
-          response.data.data.statusHistory &&
-          response.data.data.statusHistory.length > 0
+          response.data.statusHistory &&
+          response.data.statusHistory.length > 0
         ) {
           setStatusUpdate((prev) => ({
             ...prev,
-            status: response.data.data.statusHistory[0].status,
+            status: response.data.statusHistory[0].status,
           }));
         }
       } else {
-        throw new Error(
-          response.data.message || "Failed to fetch order details"
-        );
+        throw new Error(response.message || "Failed to fetch order details");
       }
     } catch (err) {
       console.error("Error fetching order details:", err);
@@ -72,26 +69,20 @@ const AdminOrderDetailPage = () => {
     // Clear previous success message when form changes
     if (updateSuccess) setUpdateSuccess(false);
   };
-
   const handleStatusUpdate = async (e) => {
     e.preventDefault();
     try {
       setUpdating(true);
       setError(null);
 
-      const response = await axios.patch(
-        `/api/admin/orders/${id}/status`,
-        statusUpdate
-      );
+      const response = await adminService.updateOrderStatus(id, statusUpdate);
 
-      if (response.data.success) {
+      if (response.success) {
         setUpdateSuccess(true);
         // Refresh order details
         fetchOrderDetails();
       } else {
-        throw new Error(
-          response.data.message || "Failed to update order status"
-        );
+        throw new Error(response.message || "Failed to update order status");
       }
     } catch (err) {
       console.error("Error updating order status:", err);
@@ -141,11 +132,38 @@ const AdminOrderDetailPage = () => {
         return "bg-light text-dark";
     }
   };
-
   // Format order status for display
   const formatStatus = (status) => {
     if (!status) return "";
     return status.charAt(0).toUpperCase() + status.slice(1).replace(/-/g, " ");
+  };
+
+  // Get available status options based on current status
+  const getAvailableStatusOptions = (currentStatus) => {
+    const allStatuses = [
+      { value: "pending", label: "Pending", order: 0 },
+      { value: "confirmed", label: "Confirmed", order: 1 },
+      { value: "processing", label: "Processing", order: 2 },
+      { value: "shipping", label: "Shipping", order: 3 },
+      { value: "delivered", label: "Delivered", order: 4 },
+      { value: "cancelled", label: "Cancelled", order: 5 },
+    ];
+
+    // If status is already cancelled or delivered, only show the current status
+    if (currentStatus === "cancelled" || currentStatus === "delivered") {
+      return allStatuses.filter((status) => status.value === currentStatus);
+    }
+
+    // Find the order of the current status
+    const currentStatusOrder =
+      allStatuses.find((status) => status.value === currentStatus)?.order || 0;
+
+    // Return current status and all statuses that come after it in the workflow
+    // plus cancelled which can be selected from any non-final state
+    return allStatuses.filter(
+      (status) =>
+        status.order >= currentStatusOrder || status.value === "cancelled"
+    );
   };
 
   if (loading) {
@@ -157,16 +175,17 @@ const AdminOrderDetailPage = () => {
       </AdminLayout>
     );
   }
-
-  if (error && !order) {
+  if (error || !order) {
     return (
       <AdminLayout>
         <div className="container-fluid py-4">
-          <Alert variant="danger">{error}</Alert>
+          <Alert variant="danger">
+            {error || "Failed to load order details. Please try again."}
+          </Alert>
           <div className="text-center mt-4">
-            <Button variant="primary" onClick={() => navigate("/admin/orders")}>
+            <Link to="/admin/orders" className="btn btn-primary">
               Back to Orders
-            </Button>
+            </Link>
           </div>
         </div>
       </AdminLayout>
@@ -174,12 +193,11 @@ const AdminOrderDetailPage = () => {
   }
 
   if (!order) return null;
-
   // Get current status
   const currentStatus =
     order.statusHistory && order.statusHistory.length > 0
       ? order.statusHistory[0]
-      : null;
+      : { status: "pending", createdAt: order.createdAt };
 
   return (
     <AdminLayout>
@@ -371,12 +389,15 @@ const AdminOrderDetailPage = () => {
                       {order.discountCode}
                     </span>
                   </div>
-                )}
-                {order.loyaltyPointsUsed > 0 && (
+                )}{" "}
+                {order.loyaltyPointsUsed && order.loyaltyPointsUsed > 0 && (
                   <div className="d-flex justify-content-between mb-2">
-                    <span>Loyalty Points:</span>
+                    <span>Loyalty Points Used:</span>
                     <span className="text-danger">
-                      -₫{formatPrice(order.loyaltyPointsUsed * 1000)}
+                      -₫
+                      {formatPrice(
+                        Math.min(order.loyaltyPointsUsed * 1000, 1000000)
+                      )}
                     </span>
                   </div>
                 )}
@@ -411,6 +432,7 @@ const AdminOrderDetailPage = () => {
                 )}
 
                 <Form onSubmit={handleStatusUpdate}>
+                  {" "}
                   <Form.Group className="mb-3">
                     <Form.Label>Status</Form.Label>
                     <Form.Select
@@ -419,15 +441,18 @@ const AdminOrderDetailPage = () => {
                       onChange={handleStatusUpdateChange}
                       required
                     >
-                      <option value="pending">Pending</option>
-                      <option value="confirmed">Confirmed</option>
-                      <option value="processing">Processing</option>
-                      <option value="shipping">Shipping</option>
-                      <option value="delivered">Delivered</option>
-                      <option value="cancelled">Cancelled</option>
+                      {getAvailableStatusOptions(
+                        currentStatus?.status || "pending"
+                      ).map((option) => (
+                        <option key={option.value} value={option.value}>
+                          {option.label}
+                        </option>
+                      ))}
                     </Form.Select>
+                    <Form.Text className="text-muted">
+                      Only forward status progression or cancellation is allowed
+                    </Form.Text>
                   </Form.Group>
-
                   <Form.Group className="mb-3">
                     <Form.Label>Note (Optional)</Form.Label>
                     <Form.Control
@@ -439,7 +464,6 @@ const AdminOrderDetailPage = () => {
                       rows={3}
                     />
                   </Form.Group>
-
                   <Button
                     variant="primary"
                     type="submit"

@@ -286,16 +286,26 @@ const AdminOrdersPage = () => {
                               <div className="small text-muted">
                                 {order.email}
                               </div>
-                            </td>
+                            </td>{" "}
                             <td>₫{formatPrice(order.total)}</td>
                             <td>
-                              <Badge
-                                className={`${getStatusBadgeClass(
-                                  order.status[0]?.status
-                                )} py-2 px-3`}
-                              >
-                                {formatStatus(order.status[0]?.status)}
-                              </Badge>
+                              {" "}
+                              {order.status &&
+                              Array.isArray(order.status) &&
+                              order.status.length > 0 &&
+                              order.status[0]?.status ? (
+                                <Badge
+                                  className={`${getStatusBadgeClass(
+                                    order.status[0].status
+                                  )} py-2 px-3`}
+                                >
+                                  {formatStatus(order.status[0].status)}
+                                </Badge>
+                              ) : (
+                                <Badge className="bg-warning text-dark py-2 px-3">
+                                  Pending
+                                </Badge>
+                              )}
                             </td>
                             <td>
                               <Link

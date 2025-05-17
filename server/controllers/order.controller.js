@@ -336,13 +336,26 @@ export const getUserOrders = async (req, res, next) => {
 
     // Only get orders for the authenticated user
     const total = await Order.countDocuments({ userId: req.user._id });
-
     const orders = await Order.find({ userId: req.user._id })
       .select("orderNumber createdAt total paymentStatus items")
       .populate("status") // Current status (virtual)
+      .populate("statusHistory") // Also populate statusHistory for consistency
       .sort({ createdAt: -1 })
       .skip(skip)
       .limit(limit);
+
+    // Ensure status consistency
+    for (const order of orders) {
+      if (
+        !order.status ||
+        (Array.isArray(order.status) && order.status.length === 0)
+      ) {
+        if (order.statusHistory && order.statusHistory.length > 0) {
+          // Use statusHistory if available
+          order.status = [{ status: order.statusHistory[0].status }];
+        }
+      }
+    }
 
     // Calculate pagination info
     const totalPages = Math.ceil(total / limit);
