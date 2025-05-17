@@ -444,8 +444,29 @@ export const getBestSellingProducts = async (req, res, next) => {
 
     // Find the best selling products by analyzing order items
     const variantSales = await Order.aggregate([
-      // Only consider completed orders
-      { $match: { status: "completed" } },
+      // Lookup the latest status for each order
+      {
+        $lookup: {
+          from: "orderstatuses", // Ensure this matches your collection name for OrderStatus
+          localField: "_id",
+          foreignField: "orderId",
+          as: "statusHistory",
+          pipeline: [{ $sort: { createdAt: -1 } }, { $limit: 1 }],
+        },
+      },
+      {
+        $addFields: {
+          currentStatus: { $arrayElemAt: ["$statusHistory.status", 0] },
+        },
+      },
+      // Consider orders with status confirmed, processing, shipping, or delivered
+      {
+        $match: {
+          currentStatus: {
+            $in: ["confirmed", "processing", "shipping", "delivered"],
+          },
+        },
+      },
       // Unwind to work with individual items
       { $unwind: "$items" },
       // Group by product variant to calculate total units sold

@@ -331,7 +331,28 @@ const OrderHistory = () => {
                         key={item._id || index} // Use item._id if available, fallback to index
                         className="d-flex align-items-center mb-2 p-2 bg-light rounded-2"
                       >
-                        {/* Image removed */}
+                        <img
+                          src={
+                            item.productImageUrl || // Prioritize direct image URL
+                            item.productVariantId?.productId?.images?.[0]
+                              ?.imageUrl || // Fallback to populated product image
+                            item.productVariantId?.images?.[0]?.imageUrl || // Fallback to populated variant image
+                            "/images/placeholders/product-placeholder.png"
+                          }
+                          alt={item.productName || "Product image"} // Use productName for alt text
+                          className="img-fluid rounded me-3 shadow-sm" // Added shadow
+                          style={{
+                            width: "50px", // Increased size
+                            height: "50px",
+                            objectFit: "cover",
+                          }}
+                          onError={(e) => {
+                            // Fallback to placeholder if image fails to load
+                            e.target.onerror = null; // Prevent infinite loop if placeholder also fails
+                            e.target.src =
+                              "/images/placeholders/product-placeholder.png";
+                          }}
+                        />
                         <div className="flex-grow-1">
                           <p
                             className="fw-medium mb-0 text-truncate"

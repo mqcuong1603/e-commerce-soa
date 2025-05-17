@@ -184,6 +184,7 @@ export const createOrder = async (req, res, next) => {
       email: req.user ? req.user.email : email,
       fullName: shippingAddress.fullName,
       shippingAddress,
+      paymentMethod: paymentMethod, // Add paymentMethod here
       items: [],
       subtotal: 0,
       shippingFee: 35000, // Default shipping fee 35,000 VND
@@ -464,6 +465,26 @@ export const getOrder = async (req, res, next) => {
     const order = await Order.findOne({
       _id: orderId,
       userId: req.user._id,
+    }).populate({
+      path: "items.productVariantId",
+      model: "ProductVariant",
+      populate: [
+        {
+          path: "productId",
+          model: "Product",
+          select: "name slug images", // Ensure slug and images are selected
+          populate: {
+            path: "images",
+            model: "ProductImage",
+            select: "imageUrl isMain",
+          },
+        },
+        {
+          path: "images", // Populate images of the variant itself
+          model: "ProductImage",
+          select: "imageUrl isMain",
+        },
+      ],
     });
 
     if (!order) {
@@ -473,7 +494,47 @@ export const getOrder = async (req, res, next) => {
     // Populate order status history
     await order.populate("statusHistory");
 
-    return res.success(order);
+    // Process items to add productImageUrl and productSlug
+    const orderObject = order.toObject ? order.toObject() : { ...order };
+    orderObject.items = orderObject.items.map((item) => {
+      let productImageUrl = null;
+      let productSlug = null;
+      const variant = item.productVariantId;
+
+      if (variant) {
+        // Get product slug
+        if (variant.productId) {
+          productSlug = variant.productId.slug;
+        }
+
+        // Check variant images
+        if (variant.images && variant.images.length > 0) {
+          const mainImage = variant.images.find((img) => img.isMain);
+          productImageUrl = mainImage
+            ? mainImage.imageUrl
+            : variant.images[0].imageUrl;
+        }
+        // If no variant image, check product images (via populated productId)
+        else if (
+          variant.productId &&
+          variant.productId.images &&
+          variant.productId.images.length > 0
+        ) {
+          const mainImage = variant.productId.images.find((img) => img.isMain);
+          productImageUrl = mainImage
+            ? mainImage.imageUrl
+            : variant.productId.images[0].imageUrl;
+        }
+      }
+      return {
+        ...item,
+        productImageUrl:
+          productImageUrl || "/images/placeholders/product-placeholder.png", // Fallback placeholder
+        productSlug: productSlug, // Add productSlug
+      };
+    });
+
+    return res.success(orderObject);
   } catch (error) {
     next(error);
   }

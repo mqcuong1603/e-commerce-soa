@@ -149,6 +149,12 @@ const OrderSchema = new Schema(
       enum: ["pending", "paid", "failed", "refunded"],
       default: "pending",
     },
+    paymentMethod: {
+      type: String,
+      required: true,
+      enum: ["cod", "paypal", "credit_card"], // Example payment methods
+      default: "cod",
+    },
   },
   {
     timestamps: true,

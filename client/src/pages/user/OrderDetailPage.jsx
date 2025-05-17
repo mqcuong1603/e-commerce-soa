@@ -291,29 +291,51 @@ const OrderDetailPage = () => {
                       <li key={index} className="list-group-item p-3">
                         <div className="d-flex">
                           <div className="flex-shrink-0">
-                            <div
-                              className="border rounded p-2"
-                              style={{ width: "80px", height: "80px" }}
+                            <Link
+                              to={
+                                item.productSlug
+                                  ? `/products/${item.productSlug}`
+                                  : `/products/${item.productId}`
+                              }
                             >
-                              {item.productImageUrl ? (
-                                <img
-                                  src={item.productImageUrl}
-                                  alt={item.productName}
-                                  className="img-fluid h-100 w-100 object-fit-contain"
-                                />
-                              ) : (
-                                <div className="d-flex align-items-center justify-content-center h-100 bg-light">
-                                  <span className="text-muted small">
-                                    No image
-                                  </span>
-                                </div>
-                              )}
-                            </div>
+                              <div
+                                className="border rounded p-2 bg-light hover-shadow-sm transition-shadow duration-300 ease-in-out"
+                                style={{ width: "100px", height: "100px" }} // Increased size
+                              >
+                                {item.productImageUrl ? (
+                                  <img
+                                    src={item.productImageUrl}
+                                    alt={item.productName}
+                                    className="img-fluid h-100 w-100 object-fit-contain"
+                                    onError={(e) => {
+                                      e.target.onerror = null; // Prevent infinite loop
+                                      e.target.src =
+                                        "/images/placeholders/product-placeholder.png";
+                                    }}
+                                  />
+                                ) : (
+                                  <div className="d-flex align-items-center justify-content-center h-100 bg-light">
+                                    <span className="text-muted small">
+                                      No image
+                                    </span>
+                                  </div>
+                                )}
+                              </div>
+                            </Link>
                           </div>
                           <div className="ms-3 flex-grow-1">
-                            <h5 className="fs-6 fw-semibold mb-1">
-                              {item.productName}
-                            </h5>
+                            <Link
+                              to={
+                                item.productSlug
+                                  ? `/products/${item.productSlug}`
+                                  : `/products/${item.productId}`
+                              }
+                              className="text-decoration-none text-dark"
+                            >
+                              <h5 className="fs-6 fw-semibold mb-1 hover-text-primary">
+                                {item.productName}
+                              </h5>
+                            </Link>
                             <p className="text-muted small mb-1">
                               {item.variantName}
                             </p>
@@ -499,58 +521,65 @@ const OrderDetailPage = () => {
               <div className="card shadow-sm border-0 mb-4">
                 {/* Price summary */}
                 <div className="card-body bg-light p-4">
-                  <ul className="list-unstyled mb-0">
-                    <li className="d-flex justify-content-between mb-2">
-                      <span className="text-muted">Subtotal</span>
-                      <span>₫{formatPrice(order.subtotal)}</span>
-                    </li>
-                    <li className="d-flex justify-content-between mb-2">
-                      <span className="text-muted">Shipping</span>
-                      <span>₫{formatPrice(order.shippingFee)}</span>
-                    </li>
+                  <dl className="row mb-0">
+                    <dt className="col-6 fw-normal text-muted">Subtotal</dt>
+                    <dd className="col-6 text-end">
+                      ₫{formatPrice(order.subtotal)}
+                    </dd>
+
+                    <dt className="col-6 fw-normal text-muted">Shipping</dt>
+                    <dd className="col-6 text-end">
+                      ₫{formatPrice(order.shippingFee)}
+                    </dd>
 
                     {order.tax > 0 && (
-                      <li className="d-flex justify-content-between mb-2">
-                        <span className="text-muted">Tax</span>
-                        <span>₫{formatPrice(order.tax)}</span>
-                      </li>
+                      <>
+                        <dt className="col-6 fw-normal text-muted">Tax</dt>
+                        <dd className="col-6 text-end">
+                          ₫{formatPrice(order.tax)}
+                        </dd>
+                      </>
                     )}
 
                     {order.discountAmount > 0 && (
-                      <li className="d-flex justify-content-between mb-2 text-success">
-                        <span>
+                      <>
+                        <dt className="col-6 fw-normal text-success">
                           Discount{" "}
                           {order.discountCode && `(${order.discountCode})`}
-                        </span>
-                        <span>-₫{formatPrice(order.discountAmount)}</span>
-                      </li>
+                        </dt>
+                        <dd className="col-6 text-end text-success">
+                          -₫{formatPrice(order.discountAmount)}
+                        </dd>
+                      </>
                     )}
 
                     {order.loyaltyPointsUsed > 0 && (
-                      <li className="d-flex justify-content-between mb-2 text-success">
-                        <span>
+                      <>
+                        <dt className="col-6 fw-normal text-success">
                           Loyalty Points ({order.loyaltyPointsUsed} points)
-                        </span>
-                        <span>
-                          -₫{formatPrice(order.loyaltyPointsUsed * 1000)}
-                        </span>
-                      </li>
+                        </dt>
+                        <dd className="col-6 text-end text-success">
+                          -₫{formatPrice(order.loyaltyPointsUsed * 1000)}{" "}
+                          {/* Assuming 1 point = 1000 VND */}
+                        </dd>
+                      </>
                     )}
-
-                    <li className="d-flex justify-content-between fw-bold pt-2 mt-2 border-top">
-                      <span>Total</span>
-                      <span>₫{formatPrice(order.total)}</span>
-                    </li>
-                  </ul>
+                  </dl>
+                  <hr />
+                  <dl className="row mb-0">
+                    <dt className="col-6 h5 fw-bold">Total</dt>
+                    <dd className="col-6 text-end h5 fw-bold text-primary">
+                      ₫{formatPrice(order.total)}
+                    </dd>
+                  </dl>
                 </div>
 
                 {/* Shipping Address */}
-                <div className="card-body border-top p-4">
-                  <h3 className="h6 fw-bold mb-3">
-                    <i className="bi bi-geo-alt me-2"></i>
-                    Shipping Address
+                <div className="card-body p-4 border-top">
+                  <h3 className="h5 fw-bold mb-3">
+                    <i className="bi bi-truck me-2"></i>Shipping Address
                   </h3>
-                  <address className="mb-0">
+                  <address className="mb-0 text-muted">
                     <strong>{order.shippingAddress.fullName}</strong>
                     <br />
                     {order.shippingAddress.phoneNumber}
@@ -563,53 +592,65 @@ const OrderDetailPage = () => {
                       </>
                     )}
                     <br />
-                    {order.shippingAddress.city}, {order.shippingAddress.state}{" "}
-                    {order.shippingAddress.postalCode}
+                    {order.shippingAddress.ward || ""}
+                    {order.shippingAddress.ward &&
+                    order.shippingAddress.district
+                      ? ", "
+                      : ""}
+                    {order.shippingAddress.district || ""}
+                    {order.shippingAddress.district &&
+                    order.shippingAddress.city
+                      ? ", "
+                      : ""}
+                    {order.shippingAddress.city}
+                    {order.shippingAddress.postalCode &&
+                      `, ${order.shippingAddress.postalCode}`}
                     <br />
                     {order.shippingAddress.country}
                   </address>
                 </div>
 
                 {/* Payment Information */}
-                <div className="card-body border-top p-4">
-                  <h3 className="h6 fw-bold mb-3">
-                    <i className="bi bi-credit-card me-2"></i>
+                <div className="card-body p-4 border-top">
+                  <h3 className="h5 fw-bold mb-3">
+                    <i className="bi bi-credit-card-2-front me-2"></i>
                     Payment Information
                   </h3>
-                  <p className="mb-0">
-                    <span className="d-block">
-                      Status:{" "}
-                      <span
-                        className={
-                          order.paymentStatus === "paid"
-                            ? "text-success fw-medium"
-                            : "text-warning fw-medium"
-                        }
-                      >
-                        {order.paymentStatus.charAt(0).toUpperCase() +
-                          order.paymentStatus.slice(1)}
-                      </span>
+                  <p className="mb-1">
+                    <span className="text-muted">Status: </span>
+                    <span
+                      className={`fw-medium ${
+                        order.paymentStatus === "paid"
+                          ? "text-success"
+                          : "text-warning" // Or text-danger if appropriate
+                      }`}
+                    >
+                      {order.paymentStatus?.charAt(0).toUpperCase() +
+                        order.paymentStatus?.slice(1)}
                     </span>
-                    <span className="d-block mt-1">
-                      Method: Cash on Delivery
+                  </p>
+                  <p className="mb-0">
+                    <span className="text-muted">Method: </span>
+                    <span className="fw-medium">
+                      {order.paymentMethod?.replace(/_/g, " ").toUpperCase() ||
+                        "N/A"}
                     </span>
                   </p>
                 </div>
 
-                {/* Loyalty Points */}
+                {/* Loyalty Points Earned */}
                 {order.loyaltyPointsEarned > 0 && (
-                  <div className="card-body border-top p-4">
-                    <h3 className="h6 fw-bold mb-3">
-                      <i className="bi bi-star me-2"></i>
-                      Loyalty Points
+                  <div className="card-body p-4 border-top">
+                    <h3 className="h5 fw-bold mb-2">
+                      <i className="bi bi-award me-2"></i>Loyalty Points Earned
                     </h3>
                     <p className="mb-0">
                       <span className="text-success fw-medium">
-                        <i className="bi bi-plus-circle me-1"></i>
-                        You earned {order.loyaltyPointsEarned} points
+                        +{order.loyaltyPointsEarned} points
                       </span>
-                      <span className="d-block text-muted small mt-1">
-                        (Worth ₫{formatPrice(order.loyaltyPointsEarned * 1000)})
+                      <span className="text-muted small ms-2">
+                        (Worth ₫{formatPrice(order.loyaltyPointsEarned * 1000)}){" "}
+                        {/* Assuming 1 point = 1000 VND */}
                       </span>
                     </p>
                   </div>
@@ -617,24 +658,31 @@ const OrderDetailPage = () => {
               </div>
 
               {/* Action Buttons */}
-              <div className="d-grid gap-2">
+              <div className="mt-4 d-grid gap-2">
                 {canBeCancelled() && !showCancelForm && (
-                  <button
-                    className="btn btn-danger"
+                  <Button
+                    variant="danger"
                     onClick={() => setShowCancelForm(true)}
+                    className="w-100"
                   >
-                    <i className="bi bi-x-circle me-2"></i>
-                    Cancel Order
-                  </button>
+                    <i className="bi bi-x-circle me-2"></i>Cancel Order
+                  </Button>
                 )}
-
-                <button
-                  className="btn btn-outline-primary"
+                <Button
+                  variant="outline-primary"
                   onClick={() => navigate("/orders")}
+                  className="w-100"
                 >
-                  <i className="bi bi-arrow-left me-2"></i>
-                  Back to Orders
-                </button>
+                  <i className="bi bi-arrow-left-short me-2"></i>Back to My
+                  Orders
+                </Button>
+                <Button
+                  variant="info"
+                  onClick={() => window.print()} // Simple print functionality
+                  className="w-100"
+                >
+                  <i className="bi bi-printer me-2"></i>Print Invoice
+                </Button>
               </div>
             </div>
           </div>
