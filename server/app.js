@@ -36,6 +36,9 @@ import {
   adminMiddleware,
 } from "./middleware/auth.middleware.js";
 
+// Import Socket.io middleware
+import { configureSocketIO } from "./middleware/socket.middleware.js";
+
 // Import passport configuration
 import passport from "passport";
 import "./config/passport.config.js";
@@ -100,6 +103,15 @@ mongoose
   })
   .catch((err) => console.error("MongoDB connection error:", err));
 
+// Configure Socket.io with our middleware
+configureSocketIO(io, console);
+
+// Add Socket.io instance to the request object
+app.use((req, res, next) => {
+  req.io = io;
+  next();
+});
+
 // API routes
 app.use("/api/auth", authRoutes);
 app.use("/api/products", productRoutes);
@@ -128,23 +140,10 @@ app.get("/health", (req, res) => {
   });
 });
 
-// Socket.io setup for real-time features
-io.on("connection", (socket) => {
-  console.log("User connected:", socket.id);
-
-  // Handle product reviews in real-time
-  socket.on("new_review", (data) => {
-    socket.broadcast.emit("review_update", data);
-  });
-
-  // Handle real-time cart updates
-  socket.on("cart_update", (data) => {
-    socket.broadcast.emit("cart_changed", data);
-  });
-
-  socket.on("disconnect", () => {
-    console.log("User disconnected:", socket.id);
-  });
+// Add Socket.io instance to the request object
+app.use((req, res, next) => {
+  req.io = io;
+  next();
 });
 
 // Configure error handlers

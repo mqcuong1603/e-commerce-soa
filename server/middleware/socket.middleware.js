@@ -4,43 +4,41 @@
  * @param {Object} logger - Logger instance
  */
 export const configureSocketIO = (io, logger) => {
-  // Add middleware to Socket.io for authentication if needed
-  // io.use((socket, next) => {
-  //   // Example: token validation middleware
-  //   const token = socket.handshake.auth.token;
-  //   // Validate token and set socket.user
-  //   next();
-  // });
-
-  // Connection handler
+  // Simple connection handler
   io.on("connection", (socket) => {
     logger.info(`User connected: ${socket.id}`);
+
+    // Join product review room
+    socket.on("join_room", (room) => {
+      socket.join(room);
+      logger.info(`Socket ${socket.id} joined room: ${room}`);
+    });
+
+    // Leave room
+    socket.on("leave_room", (room) => {
+      socket.leave(room);
+      logger.info(`Socket ${socket.id} left room: ${room}`);
+    });
 
     // Handle real-time product reviews
     socket.on("new_review", (data) => {
       try {
-        // Real-time product reviews - allows users to see new reviews immediately
-        socket.broadcast.emit("review_update", data);
-        logger.info(`New review broadcast from ${socket.id}`);
+        // Broadcast to everyone in the specific product room
+        io.to(`product_review_${data.productId}`).emit("new_review", data);
+        logger.info(`New review broadcast for product: ${data.productId}`);
       } catch (error) {
-        logger.error(`Error broadcasting review: ${error.message}`, error);
+        logger.error(`Error broadcasting review: ${error.message}`);
       }
     });
 
-    // Handle real-time cart updates
-    socket.on("cart_update", (data) => {
+    // Handle real-time rating updates
+    socket.on("rating_updated", (data) => {
       try {
-        // Real-time cart updates - keeps cart synchronized across devices/tabs
-        socket.broadcast.emit("cart_changed", data);
-        logger.info(`Cart update broadcast from ${socket.id}`);
+        io.to(`product_review_${data.productId}`).emit("rating_updated", data);
+        logger.info(`Rating update broadcast for product: ${data.productId}`);
       } catch (error) {
-        logger.error(`Error broadcasting cart update: ${error.message}`, error);
+        logger.error(`Error broadcasting rating update: ${error.message}`);
       }
-    });
-
-    // Handle Socket.io errors
-    socket.on("error", (error) => {
-      logger.error(`Socket error for ${socket.id}: ${error.message}`, error);
     });
 
     // Handle disconnection

@@ -17,18 +17,22 @@ const router = express.Router();
 // Validation middleware for reviews
 const reviewValidator = [
   body("rating")
+    .optional({ nullable: true })
     .isInt({ min: 1, max: 5 })
-    .withMessage("Rating must be between 1 and 5"),
+    .withMessage("If provided, rating must be between 1 and 5"),
   body("comment")
-    .optional()
     .isString()
-    .isLength({ max: 1000 })
-    .withMessage("Comment must be a string with a maximum of 1000 characters"),
+    .isLength({ min: 3, max: 1000 })
+    .withMessage("Comment must be a string between 3 and 1000 characters"),
   body("userName")
     .optional()
     .isString()
     .isLength({ min: 2, max: 50 })
     .withMessage("User name must be between 2 and 50 characters long"),
+  body("email")
+    .optional()
+    .isEmail()
+    .withMessage("Valid email is required for purchase verification"),
   (req, res, next) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {

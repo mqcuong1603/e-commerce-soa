@@ -19,8 +19,8 @@ const ReviewSchema = new Schema(
     },
     rating: {
       type: Number,
-      required: true,
-      min: 1,
+      default: 0, // Default to 0 for guest users (rating not provided)
+      min: 0,
       max: 5,
     },
     comment: {

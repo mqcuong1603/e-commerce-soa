@@ -127,25 +127,37 @@ ProductSchema.virtual("reviews", {
 // Update average rating and review count
 ProductSchema.methods.updateRating = async function () {
   const Review = model("Review");
+  // Count of all reviews
+  const totalReviews = await Review.countDocuments({ productId: this._id });
 
+  // Calculate average but only consider reviews with ratings > 0
   const stats = await Review.aggregate([
-    { $match: { productId: this._id } },
+    {
+      $match: {
+        productId: this._id,
+        rating: { $gt: 0 }, // Only include reviews with ratings (exclude guest comments)
+      },
+    },
     {
       $group: {
         _id: null,
         avgRating: { $avg: "$rating" },
-        count: { $sum: 1 },
+        ratingCount: { $sum: 1 },
       },
     },
   ]);
-
   if (stats.length > 0) {
+    // We have reviews with ratings
     this.averageRating = Math.round(stats[0].avgRating * 10) / 10; // Round to 1 decimal place
-    this.reviewCount = stats[0].count;
+    this.ratingCount = stats[0].ratingCount; // Number of reviews with ratings
   } else {
+    // No reviews with ratings
     this.averageRating = 0;
-    this.reviewCount = 0;
+    this.ratingCount = 0;
   }
+
+  // Total number of reviews (including those without ratings, i.e., guest comments)
+  this.reviewCount = totalReviews;
 
   return this.save();
 };

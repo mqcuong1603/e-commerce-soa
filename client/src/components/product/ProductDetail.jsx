@@ -10,6 +10,7 @@ import Rating from "../ui/Rating";
 // Import product components
 import ProductGallery from "./ProductGallery";
 import ProductVariantSelector from "./ProductVariantSelector";
+import ProductReviewSection from "./ProductReviewSection";
 
 /**
  * Product Detail component to display single product information
@@ -131,7 +132,6 @@ const ProductDetail = ({ product }) => {
           </li>
         </ol>
       </nav>
-
       <div className="row g-4 mb-5">
         {/* Product images */}
         <div className="col-lg-6">
@@ -295,7 +295,6 @@ const ProductDetail = ({ product }) => {
           )}
         </div>
       </div>
-
       {/* Product description */}
       <div className="mb-5">
         <h3 className="fw-bold mb-3">Product Description</h3>
@@ -304,55 +303,9 @@ const ProductDetail = ({ product }) => {
             <p style={{ whiteSpace: "pre-line" }}>{product.description}</p>
           </div>
         </div>
-      </div>
-
+      </div>{" "}
       {/* Reviews section */}
-      <div className="mb-5">
-        <h3 className="fw-bold mb-3">Customer Reviews</h3>
-        <div className="card">
-          <div className="card-body">
-            {product.reviews && product.reviews.length > 0 ? (
-              product.reviews.map((review) => (
-                <div key={review._id} className="border-bottom pb-3 mb-3">
-                  <div className="d-flex align-items-center mb-2">
-                    <Rating
-                      value={review.rating}
-                      size="small"
-                      readOnly={true}
-                    />
-                    <span className="fw-medium ms-2">{review.userName}</span>
-                    <span className="mx-2 text-muted">•</span>
-                    <span className="text-muted small">
-                      {new Date(review.createdAt).toLocaleDateString()}
-                    </span>
-                    {review.isVerifiedPurchase && (
-                      <span className="ms-2 badge bg-success">
-                        Verified Purchase
-                      </span>
-                    )}
-                  </div>
-                  <p className="text-muted">{review.comment}</p>
-                </div>
-              ))
-            ) : (
-              <div className="text-center py-4">
-                <p className="text-muted">
-                  No reviews yet. Be the first to review this product!
-                </p>
-                <Button
-                  variant="outlined"
-                  color="primary"
-                  as={Link}
-                  to={`/products/${product.slug}/review`}
-                  className="mt-2"
-                >
-                  Write a Review
-                </Button>
-              </div>
-            )}
-          </div>
-        </div>
-      </div>
+      <ProductReviewSection product={product} />
     </div>
   );
 };

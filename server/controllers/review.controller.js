@@ -68,15 +68,16 @@ export const addProductReview = async (req, res, next) => {
       if (!userName) {
         throw new ApiError("User name is required for guest reviews", 400);
       }
-    }
-
-    // Validate inputs
+    } // Validate inputs
     if (!productId) {
       throw new ApiError("Product ID is required", 400);
     }
 
-    if (!rating || rating < 1 || rating > 5) {
-      throw new ApiError("Rating must be between 1 and 5", 400);
+    // Only require rating for authenticated users
+    if (userId) {
+      if (!rating || rating < 1 || rating > 5) {
+        throw new ApiError("Rating must be between 1 and 5", 400);
+      }
     }
 
     // Check if product exists
@@ -92,12 +93,34 @@ export const addProductReview = async (req, res, next) => {
         throw new ApiError("You have already reviewed this product", 400);
       }
 
-      // Optionally: Check if user has purchased the product
-      const hasPurchased = await Order.exists({
-        userId,
-        "items.productId": productId,
-        "status.status": "delivered",
-      });
+      // Check if user has purchased the product
+      let hasVerifiedPurchase = false;
+
+      try {
+        // Find any completed orders by the user containing this product
+        const orders = await Order.find({
+          userId: userId,
+          "status.status": "delivered",
+        }).populate({
+          path: "items.productVariantId",
+          model: "ProductVariant",
+          select: "productId",
+        });
+
+        // Check if any order contains the product
+        hasVerifiedPurchase = orders.some((order) =>
+          order.items.some(
+            (item) =>
+              item.productVariantId &&
+              item.productVariantId.productId &&
+              item.productVariantId.productId.toString() === productId
+          )
+        );
+      } catch (err) {
+        console.error(`Error checking purchase verification: ${err.message}`);
+        // If error occurs, default to false
+        hasVerifiedPurchase = false;
+      }
 
       // Create new review with user ID
       const review = new Review({
@@ -106,24 +129,89 @@ export const addProductReview = async (req, res, next) => {
         userName, // Use the name from the user's profile
         rating,
         comment,
-        isVerifiedPurchase: hasPurchased ? true : false,
+        isVerifiedPurchase: hasVerifiedPurchase,
       });
 
       await review.save();
       await product.updateRating();
+
+      // Emit socket event for real-time updates
+      if (req.io) {
+        // Emit to the product review room
+        req.io.to(`product_review_${productId}`).emit("new_review", review);
+
+        // Also emit rating update
+        req.io.to(`product_review_${productId}`).emit("rating_updated", {
+          productId,
+          averageRating: product.averageRating,
+          reviewCount: product.reviewCount,
+        });
+      }
+
       return res.success(review, "Review added successfully");
     } else {
-      // Guest review (no user ID)
+      // Guest review (no user ID)      // Check if there's any way to verify the guest's purchase
+      // This can be done using the email and cookies for guest users
+      let hasVerifiedPurchase = false;
+
+      try {
+        // Use guest email from body to verify purchase, as guest orders are stored by email
+        const guestEmail = req.body.email;
+
+        if (guestEmail) {
+          // Find any completed orders by this email containing this product
+          const orders = await Order.find({
+            email: guestEmail,
+            userId: { $exists: false }, // Guest orders don't have userId
+            "status.status": "delivered",
+          }).populate({
+            path: "items.productVariantId",
+            model: "ProductVariant",
+            select: "productId",
+          });
+
+          // Check if any order contains the product
+          hasVerifiedPurchase = orders.some((order) =>
+            order.items.some(
+              (item) =>
+                item.productVariantId &&
+                item.productVariantId.productId &&
+                item.productVariantId.productId.toString() === productId
+            )
+          );
+        }
+      } catch (err) {
+        console.error(
+          `Error checking guest purchase verification: ${err.message}`
+        );
+        // If error occurs, default to false
+        hasVerifiedPurchase = false;
+      }
+
       const review = new Review({
         productId,
         userName,
-        rating,
+        rating: rating || 0, // Make rating optional for guests
         comment,
-        isVerifiedPurchase: false,
+        isVerifiedPurchase: hasVerifiedPurchase,
       });
 
       await review.save();
       await product.updateRating();
+
+      // Emit socket event for real-time updates
+      if (req.io) {
+        // Emit to the product review room
+        req.io.to(`product_review_${productId}`).emit("new_review", review);
+
+        // Also emit rating update
+        req.io.to(`product_review_${productId}`).emit("rating_updated", {
+          productId,
+          averageRating: product.averageRating,
+          reviewCount: product.reviewCount,
+        });
+      }
+
       return res.success(review, "Review added successfully");
     }
   } catch (error) {
