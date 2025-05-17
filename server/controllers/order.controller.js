@@ -33,9 +33,24 @@ export const createOrder = async (req, res, next) => {
       email, // Important for guest checkout
     } = req.body;
 
+    // Debug cart state
+    console.log(
+      `Creating order with cart: ${req.cart?._id}, Items count: ${
+        req.cart?.items?.length || 0
+      }`
+    );
+
     // Validate required fields
     if (!shippingAddress || !paymentMethod) {
       throw new ApiError("Missing required fields", 400);
+    }
+
+    // Validate cart has items
+    if (!req.cart || !req.cart.items || req.cart.items.length === 0) {
+      throw new ApiError(
+        "Your cart is empty. Please add items before checking out.",
+        400
+      );
     }
 
     // Ensure we have an email for guest checkout
@@ -152,7 +167,12 @@ export const createOrder = async (req, res, next) => {
       let variant = item.productVariantId;
       if (!variant.productId) {
         variant = await ProductVariant.findById(item.productVariantId)
-          .populate("productId", "name")
+          .populate({
+            path: "productId",
+            select: "name images",
+            populate: { path: "images" },
+          })
+          .populate("images")
           .exec();
       }
 
@@ -162,6 +182,26 @@ export const createOrder = async (req, res, next) => {
           `Only ${variant.inventory} units of ${variant.productId.name} - ${variant.name} available`,
           400
         );
+      } // Get the product image URL - first check variant image, then product image
+      let productImageUrl = null;
+
+      // Check variant for images
+      if (variant.images && variant.images.length > 0) {
+        // Find main image first, fallback to first image
+        const mainImage = variant.images.find((img) => img.isMain);
+        productImageUrl = mainImage
+          ? mainImage.imageUrl
+          : variant.images[0].imageUrl;
+      }
+      // If no variant image, check product images
+      else if (
+        variant.productId.images &&
+        variant.productId.images.length > 0
+      ) {
+        const mainImage = variant.productId.images.find((img) => img.isMain);
+        productImageUrl = mainImage
+          ? mainImage.imageUrl
+          : variant.productId.images[0].imageUrl;
       }
 
       // Add item to order
@@ -172,6 +212,7 @@ export const createOrder = async (req, res, next) => {
         price: item.price,
         quantity: item.quantity,
         totalPrice: item.price * item.quantity,
+        productImageUrl: productImageUrl,
       });
 
       // Add to subtotal
@@ -233,9 +274,26 @@ export const createOrder = async (req, res, next) => {
     // Calculate loyalty points earned (10% of total, rounded down)
     orderData.loyaltyPointsEarned = Math.floor((orderData.total * 0.1) / 1000);
 
+    // Debug log to check items
+    console.log("Order items before saving:", JSON.stringify(orderData.items));
+
+    // Check if items array is empty and throw clear error if it is
+    if (!orderData.items || orderData.items.length === 0) {
+      console.error("Cart has no items, cannot create order");
+      throw new ApiError(
+        "Your cart is empty. Please add items before checking out.",
+        400
+      );
+    }
+
     // Create the order
     const order = new Order(orderData);
-    await order.save();
+    try {
+      await order.save();
+    } catch (err) {
+      console.error("Error saving order:", err.message);
+      throw new ApiError(`Error creating order: ${err.message}`, 400);
+    }
 
     // Create initial order status
     const initialStatus = new OrderStatus({

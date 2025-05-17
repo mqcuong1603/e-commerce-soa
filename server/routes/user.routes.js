@@ -11,6 +11,7 @@ import {
   getOrderHistory,
   getOrderDetails,
   getLoyaltyPoints,
+  getLoyaltyPointsHistory,
   deactivateAccount,
 } from "../controllers/user.controller.js";
 import { authMiddleware } from "../middleware/auth.middleware.js";
@@ -37,6 +38,7 @@ router.get("/orders/:orderId", getOrderDetails);
 
 // Loyalty points
 router.get("/loyalty-points", getLoyaltyPoints);
+router.get("/loyalty-points/history", getLoyaltyPointsHistory);
 
 // Account deactivation
 router.put("/deactivate", deactivateAccount);

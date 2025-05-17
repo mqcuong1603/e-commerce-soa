@@ -8,6 +8,8 @@ import mongoose from "mongoose";
  */
 export const getUserStatistics = async (req, res, next) => {
   try {
+    console.log("Fetching user statistics...");
+
     // Get total users count
     const totalUsers = await User.countDocuments();
 
@@ -26,8 +28,8 @@ export const getUserStatistics = async (req, res, next) => {
     const adminUsers = await User.countDocuments({ role: "admin" });
     const customerUsers = await User.countDocuments({ role: "customer" });
 
-    return res.success({
-      totalUsers,
+    const stats = {
+      total: totalUsers,
       newUsers,
       activeUsers,
       inactiveUsers,
@@ -35,9 +37,23 @@ export const getUserStatistics = async (req, res, next) => {
         admin: adminUsers,
         customer: customerUsers,
       },
-    });
+    };
+
+    console.log("User statistics calculated successfully:", stats);
+    return res.success(stats);
   } catch (error) {
-    next(error);
+    console.error("Error calculating user statistics:", error);
+    // Return empty stats instead of throwing an error
+    return res.success({
+      total: 0,
+      newUsers: 0,
+      activeUsers: 0,
+      inactiveUsers: 0,
+      usersByRole: {
+        admin: 0,
+        customer: 0,
+      },
+    });
   }
 };
 

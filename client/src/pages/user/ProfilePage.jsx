@@ -6,13 +6,16 @@ import OrderHistory from "../../components/user/OrderHistory";
 import userService from "../../services/user.service"; // Adjust this import based on your actual service path
 
 const ProfilePage = () => {
-  const { user, logout } = useAuth();
+  const { user, logout, updatePassword } = useAuth();
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState("profile");
   const [loyaltyPoints, setLoyaltyPoints] = useState({
     loyaltyPoints: 0,
     equivalentValue: 0,
   });
+  const [pointsHistory, setPointsHistory] = useState([]);
+  const [pointsHistoryLoading, setPointsHistoryLoading] = useState(false);
+  const [pointsHistoryError, setPointsHistoryError] = useState(null);
 
   // Add state for form data
   const [profileData, setProfileData] = useState({
@@ -22,10 +25,20 @@ const ProfilePage = () => {
     phoneNumber: "",
   });
 
+  // Add password change form data
+  const [passwordData, setPasswordData] = useState({
+    currentPassword: "",
+    newPassword: "",
+    confirmPassword: "",
+  });
+
   // Add state for form submission
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isPasswordSubmitting, setIsPasswordSubmitting] = useState(false);
   const [successMessage, setSuccessMessage] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
+  const [passwordSuccessMessage, setPasswordSuccessMessage] = useState("");
+  const [passwordErrorMessage, setPasswordErrorMessage] = useState("");
 
   // Load user data when component mounts
   useEffect(() => {
@@ -51,9 +64,35 @@ const ProfilePage = () => {
           loyaltyPoints: user.loyaltyPoints || 0,
           equivalentValue: (user.loyaltyPoints || 0) * 1000, // Assuming 1 point = 1000₫
         });
+
+        // Fetch loyalty points history
+        fetchLoyaltyPointsHistory();
       }
     }
   }, [user]);
+
+  // Fetch loyalty points history
+  const fetchLoyaltyPointsHistory = async () => {
+    try {
+      setPointsHistoryLoading(true);
+      setPointsHistoryError(null);
+
+      const response = await userService.getLoyaltyPointsHistory({ limit: 5 });
+
+      if (response.success) {
+        setPointsHistory(response.data.pointsHistory);
+      } else {
+        throw new Error(
+          response.message || "Failed to fetch loyalty points history"
+        );
+      }
+    } catch (error) {
+      console.error("Error fetching loyalty points history:", error);
+      setPointsHistoryError("Could not load loyalty points history");
+    } finally {
+      setPointsHistoryLoading(false);
+    }
+  };
 
   // Handle input changes
   const handleInputChange = (e) => {
@@ -62,6 +101,17 @@ const ProfilePage = () => {
       ...prev,
       [name]: value,
     }));
+  };
+
+  // Handle password input changes
+  const handlePasswordChange = (e) => {
+    const { name, value } = e.target;
+    setPasswordData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+    // Clear error message when user starts typing
+    setPasswordErrorMessage("");
   };
 
   // Handle form submission
@@ -88,6 +138,65 @@ const ProfilePage = () => {
       setErrorMessage(error.message || "An error occurred. Please try again.");
     } finally {
       setIsSubmitting(false);
+    }
+  };
+
+  // Handle password form submission
+  const handlePasswordSubmit = async (e) => {
+    e.preventDefault();
+    setIsPasswordSubmitting(true);
+    setPasswordSuccessMessage("");
+    setPasswordErrorMessage("");
+
+    // Validate form
+    if (!passwordData.currentPassword) {
+      setPasswordErrorMessage("Current password is required");
+      setIsPasswordSubmitting(false);
+      return;
+    }
+
+    if (!passwordData.newPassword) {
+      setPasswordErrorMessage("New password is required");
+      setIsPasswordSubmitting(false);
+      return;
+    }
+
+    if (passwordData.newPassword.length < 6) {
+      setPasswordErrorMessage("New password must be at least 6 characters");
+      setIsPasswordSubmitting(false);
+      return;
+    }
+
+    if (passwordData.newPassword !== passwordData.confirmPassword) {
+      setPasswordErrorMessage("Passwords do not match");
+      setIsPasswordSubmitting(false);
+      return;
+    }
+
+    try {
+      // Call auth context function to update password
+      const response = await updatePassword(
+        passwordData.currentPassword,
+        passwordData.newPassword
+      );
+
+      if (response.success) {
+        setPasswordSuccessMessage("Password updated successfully!");
+        // Reset form
+        setPasswordData({
+          currentPassword: "",
+          newPassword: "",
+          confirmPassword: "",
+        });
+      } else {
+        throw new Error(response.message || "Failed to update password");
+      }
+    } catch (error) {
+      setPasswordErrorMessage(
+        error.message || "An error occurred. Please try again."
+      );
+    } finally {
+      setIsPasswordSubmitting(false);
     }
   };
 
@@ -460,12 +569,367 @@ const ProfilePage = () => {
 
                   {/* Rest of profile tab content remains the same */}
                   {/* Loyalty Points Section */}
-                  <div className="mt-5 pt-4 border-top">{/* ... */}</div>
+                  <div className="mt-5 pt-4 border-top">
+                    <h5 className="fw-bold d-flex align-items-center">
+                      <i className="bi bi-star-fill text-warning me-2"></i>
+                      Loyalty Points
+                    </h5>
+
+                    <div className="row g-4 mt-2">
+                      {/* Points Summary Card */}
+                      <div className="col-md-6">
+                        <div className="card h-100 border-0 shadow-sm">
+                          <div className="card-body p-4">
+                            <div className="d-flex justify-content-between align-items-center mb-3">
+                              <h6 className="card-title mb-0">
+                                Available Points
+                              </h6>
+                              <span className="badge bg-warning text-dark rounded-pill">
+                                Active
+                              </span>
+                            </div>
+
+                            <div className="d-flex align-items-center">
+                              <div className="display-4 fw-bold me-2">
+                                {user?.loyaltyPoints || 0}
+                              </div>
+                              <div className="text-muted">points</div>
+                            </div>
+
+                            <div className="text-muted mt-2">
+                              Worth ₫
+                              {formatPrice((user?.loyaltyPoints || 0) * 1000)}
+                            </div>
+
+                            <hr className="my-3" />
+
+                            <div className="d-flex justify-content-between align-items-center small">
+                              <span>Conversion Rate</span>
+                              <span className="fw-bold">1 point = ₫1,000</span>
+                            </div>
+
+                            <Link
+                              to="/cart"
+                              className="btn btn-primary mt-3 w-100"
+                            >
+                              <i className="bi bi-cart me-2"></i>
+                              Use Points on Your Next Purchase
+                            </Link>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* How It Works Card */}
+                      <div className="col-md-6">
+                        <div className="card h-100 border-0 shadow-sm bg-light">
+                          <div className="card-body p-4">
+                            <h6 className="card-title fw-bold mb-3">
+                              How Loyalty Points Work
+                            </h6>
+
+                            <ul className="list-group list-group-flush bg-transparent">
+                              <li className="list-group-item bg-transparent px-0 d-flex border-0 pb-3">
+                                <div className="me-3">
+                                  <div
+                                    className="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center"
+                                    style={{ width: "32px", height: "32px" }}
+                                  >
+                                    1
+                                  </div>
+                                </div>
+                                <div>
+                                  <strong>Earn Points</strong>
+                                  <p className="text-muted mb-0 small">
+                                    Get 10% of your purchase total in points
+                                    when your orders are delivered
+                                  </p>
+                                </div>
+                              </li>
+
+                              <li className="list-group-item bg-transparent px-0 d-flex border-0 pb-3">
+                                <div className="me-3">
+                                  <div
+                                    className="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center"
+                                    style={{ width: "32px", height: "32px" }}
+                                  >
+                                    2
+                                  </div>
+                                </div>
+                                <div>
+                                  <strong>Use Points</strong>
+                                  <p className="text-muted mb-0 small">
+                                    Apply points during checkout to reduce your
+                                    total
+                                  </p>
+                                </div>
+                              </li>
+
+                              <li className="list-group-item bg-transparent px-0 d-flex border-0">
+                                <div className="me-3">
+                                  <div
+                                    className="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center"
+                                    style={{ width: "32px", height: "32px" }}
+                                  >
+                                    3
+                                  </div>
+                                </div>
+                                <div>
+                                  <strong>Points Never Expire</strong>
+                                  <p className="text-muted mb-0 small">
+                                    Your earned points never expire, use them
+                                    anytime
+                                  </p>
+                                </div>
+                              </li>
+                            </ul>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Loyalty Points History - NEW SECTION */}
+                    <div className="mt-5 pt-4 border-top">
+                      <h5 className="fw-bold d-flex align-items-center">
+                        <i className="bi bi-clock-history text-primary me-2"></i>
+                        Loyalty Points History
+                      </h5>
+
+                      {/* Loading Spinner */}
+                      {pointsHistoryLoading && (
+                        <div className="text-center py-4">
+                          <div className="spinner-border" role="status">
+                            <span className="visually-hidden">Loading...</span>
+                          </div>
+                        </div>
+                      )}
+
+                      {/* Error Message */}
+                      {pointsHistoryError && (
+                        <div className="alert alert-danger text-center">
+                          <i className="bi bi-exclamation-triangle-fill me-2"></i>
+                          {pointsHistoryError}
+                        </div>
+                      )}
+
+                      {/* Points History Table */}
+                      {!pointsHistoryLoading && !pointsHistoryError && (
+                        <div className="table-responsive">
+                          <table className="table table-hover align-middle">
+                            <thead className="table-light">
+                              <tr>
+                                <th scope="col">Date</th>
+                                <th scope="col">Description</th>
+                                <th scope="col" className="text-end">
+                                  Points
+                                </th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              {pointsHistory.length === 0 && (
+                                <tr>
+                                  <td colSpan="3" className="text-center py-4">
+                                    No loyalty points history found.
+                                  </td>
+                                </tr>
+                              )}
+
+                              {pointsHistory.map((entry, index) => (
+                                <tr key={index}>
+                                  <td>
+                                    {new Date(entry.date).toLocaleDateString()}
+                                  </td>
+                                  <td>{entry.description}</td>
+                                  <td className="text-end">
+                                    {entry.points > 0 ? (
+                                      <span className="text-success">
+                                        +{entry.points}
+                                      </span>
+                                    ) : (
+                                      <span className="text-danger">
+                                        {entry.points}
+                                      </span>
+                                    )}
+                                  </td>
+                                </tr>
+                              ))}
+                            </tbody>
+                          </table>
+                        </div>
+                      )}
+                    </div>
+                  </div>
                 </div>
               )}
 
-              {/* Password Tab Content remains the same */}
-              {activeTab === "password" && <form>{/* ... */}</form>}
+              {/* Password Tab Content - UPDATED */}
+              {activeTab === "password" && (
+                <div className="password-tab">
+                  {/* Success message */}
+                  {passwordSuccessMessage && (
+                    <div
+                      className="alert alert-success alert-dismissible fade show"
+                      role="alert"
+                    >
+                      <i className="bi bi-check-circle-fill me-2"></i>
+                      {passwordSuccessMessage}
+                      <button
+                        type="button"
+                        className="btn-close"
+                        onClick={() => setPasswordSuccessMessage("")}
+                      ></button>
+                    </div>
+                  )}
+
+                  {/* Error message */}
+                  {passwordErrorMessage && (
+                    <div
+                      className="alert alert-danger alert-dismissible fade show"
+                      role="alert"
+                    >
+                      <i className="bi bi-exclamation-triangle-fill me-2"></i>
+                      {passwordErrorMessage}
+                      <button
+                        type="button"
+                        className="btn-close"
+                        onClick={() => setPasswordErrorMessage("")}
+                      ></button>
+                    </div>
+                  )}
+
+                  <div className="alert alert-info bg-info bg-opacity-10 border-0">
+                    <div className="d-flex">
+                      <div className="me-3">
+                        <i className="bi bi-shield-lock-fill text-info fs-4"></i>
+                      </div>
+                      <div>
+                        <h5 className="alert-heading text-info">
+                          Password Security
+                        </h5>
+                        <p className="mb-0">
+                          Choose a strong password that you don't use for other
+                          websites. Your password should be at least 6
+                          characters long.
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+
+                  <form className="mt-4" onSubmit={handlePasswordSubmit}>
+                    <div className="row">
+                      <div className="col-md-8 mx-auto">
+                        <div className="mb-4">
+                          <label
+                            className="form-label fw-bold"
+                            htmlFor="currentPassword"
+                          >
+                            Current Password
+                          </label>
+                          <div className="input-group">
+                            <span className="input-group-text bg-light border-0 text-primary">
+                              <i className="bi bi-lock"></i>
+                            </span>
+                            <input
+                              type="password"
+                              id="currentPassword"
+                              name="currentPassword"
+                              value={passwordData.currentPassword}
+                              onChange={handlePasswordChange}
+                              className="form-control form-control-lg bg-light border-0"
+                              placeholder="Enter your current password"
+                            />
+                          </div>
+                        </div>
+
+                        <div className="mb-4">
+                          <label
+                            className="form-label fw-bold"
+                            htmlFor="newPassword"
+                          >
+                            New Password
+                          </label>
+                          <div className="input-group">
+                            <span className="input-group-text bg-light border-0 text-primary">
+                              <i className="bi bi-lock"></i>
+                            </span>
+                            <input
+                              type="password"
+                              id="newPassword"
+                              name="newPassword"
+                              value={passwordData.newPassword}
+                              onChange={handlePasswordChange}
+                              className="form-control form-control-lg bg-light border-0"
+                              placeholder="Enter your new password"
+                            />
+                          </div>
+                          <div className="form-text">
+                            Password must be at least 6 characters long
+                          </div>
+                        </div>
+
+                        <div className="mb-4">
+                          <label
+                            className="form-label fw-bold"
+                            htmlFor="confirmPassword"
+                          >
+                            Confirm New Password
+                          </label>
+                          <div className="input-group">
+                            <span className="input-group-text bg-light border-0 text-primary">
+                              <i className="bi bi-lock-fill"></i>
+                            </span>
+                            <input
+                              type="password"
+                              id="confirmPassword"
+                              name="confirmPassword"
+                              value={passwordData.confirmPassword}
+                              onChange={handlePasswordChange}
+                              className="form-control form-control-lg bg-light border-0"
+                              placeholder="Confirm your new password"
+                            />
+                          </div>
+                        </div>
+
+                        <div className="d-flex flex-column align-items-center mt-5">
+                          <button
+                            type="submit"
+                            className="btn btn-lg btn-primary px-5 mb-3"
+                            disabled={isPasswordSubmitting}
+                          >
+                            {isPasswordSubmitting ? (
+                              <>
+                                <span
+                                  className="spinner-border spinner-border-sm me-2"
+                                  role="status"
+                                  aria-hidden="true"
+                                ></span>
+                                Updating Password...
+                              </>
+                            ) : (
+                              <>
+                                <i className="bi bi-check2-circle me-2"></i>
+                                Update Password
+                              </>
+                            )}
+                          </button>
+
+                          <div className="mt-4 pt-4 border-top text-center w-100">
+                            <h6 className="fw-bold text-muted">
+                              Forgot your current password?
+                            </h6>
+                            <Link
+                              to="/forgot-password"
+                              className="btn btn-outline-secondary mt-2"
+                            >
+                              <i className="bi bi-question-circle me-2"></i>
+                              Reset Password
+                            </Link>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </form>
+                </div>
+              )}
 
               {/* Orders Tab Content */}
               {activeTab === "orders" && <OrderHistory />}

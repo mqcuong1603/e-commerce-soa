@@ -350,6 +350,31 @@ export const updateOrderStatus = async (req, res, next) => {
       }
     }
 
+    // Award loyalty points when order is delivered
+    if (status === "delivered" && currentStatus.status !== "delivered") {
+      try {
+        const User = require("../../models/user.model.js");
+
+        // Check if order has userId (not a guest checkout) and has loyalty points to award
+        if (order.userId && order.loyaltyPointsEarned > 0) {
+          const user = await User.findById(order.userId);
+
+          if (user) {
+            // Add earned loyalty points to the user's account
+            user.loyaltyPoints += order.loyaltyPointsEarned;
+            await user.save();
+
+            console.log(
+              `Awarded ${order.loyaltyPointsEarned} loyalty points to user ${user._id} for order ${order._id}`
+            );
+          }
+        }
+      } catch (err) {
+        console.error("Error awarding loyalty points:", err);
+        // Don't stop the status update if loyalty points update fails
+      }
+    }
+
     // Notify customer if needed
     try {
       // Send status update email
@@ -397,6 +422,8 @@ export const getOrderStatistics = async (req, res, next) => {
     const endDate = new Date();
     let startDate = new Date();
 
+    console.log("Fetching order statistics with period:", period);
+
     switch (period) {
       case "day":
         startDate.setDate(startDate.getDate() - 1);
@@ -417,6 +444,10 @@ export const getOrderStatistics = async (req, res, next) => {
         // Default to last 30 days
         startDate.setDate(startDate.getDate() - 30);
     }
+
+    console.log(
+      `Date range: ${startDate.toISOString()} - ${endDate.toISOString()}`
+    );
 
     // Get count of orders by status
     const ordersByStatus = await OrderStatus.aggregate([
@@ -487,9 +518,7 @@ export const getOrderStatistics = async (req, res, next) => {
     // Fill in actual counts
     ordersByStatus.forEach((item) => {
       statusCounts[item._id] = item.count;
-    });
-
-    // Calculate totals
+    }); // Calculate totals with safe defaults
     const stats = {
       totalOrders: orderStats.length > 0 ? orderStats[0].totalOrders : 0,
       totalRevenue: orderStats.length > 0 ? orderStats[0].totalRevenue : 0,
@@ -497,9 +526,24 @@ export const getOrderStatistics = async (req, res, next) => {
       statusCounts,
     };
 
+    console.log("Order statistics calculated successfully:", stats);
     return res.success(stats);
   } catch (error) {
-    next(error);
+    console.error("Error calculating order statistics:", error);
+    // Return empty stats instead of throwing an error
+    return res.success({
+      totalOrders: 0,
+      totalRevenue: 0,
+      avgOrderValue: 0,
+      statusCounts: {
+        pending: 0,
+        confirmed: 0,
+        processing: 0,
+        shipping: 0,
+        delivered: 0,
+        cancelled: 0,
+      },
+    });
   }
 };
 

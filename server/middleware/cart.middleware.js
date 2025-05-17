@@ -10,11 +10,31 @@ export const cartMiddleware = async (req, res, next) => {
 
     // For logged-in users
     if (req.user && req.user._id) {
-      cart = await Cart.findOne({ userId: req.user._id });
+      cart = await Cart.findOne({ userId: req.user._id }).populate({
+        path: "items.productVariantId",
+        populate: [
+          {
+            path: "productId",
+            select: "name images",
+            populate: { path: "images" },
+          },
+          { path: "images" },
+        ],
+      });
 
       if (!cart) {
         // Look for a session cart and transfer ownership
-        const sessionCart = await Cart.findOne({ sessionId });
+        const sessionCart = await Cart.findOne({ sessionId }).populate({
+          path: "items.productVariantId",
+          populate: [
+            {
+              path: "productId",
+              select: "name images",
+              populate: { path: "images" },
+            },
+            { path: "images" },
+          ],
+        });
 
         if (sessionCart) {
           sessionCart.userId = req.user._id;
@@ -28,7 +48,17 @@ export const cartMiddleware = async (req, res, next) => {
       }
     } else {
       // Handle guest users with session
-      cart = await Cart.findOne({ sessionId });
+      cart = await Cart.findOne({ sessionId }).populate({
+        path: "items.productVariantId",
+        populate: [
+          {
+            path: "productId",
+            select: "name images",
+            populate: { path: "images" },
+          },
+          { path: "images" },
+        ],
+      });
 
       if (!cart) {
         // Create a new cart for this session
@@ -42,8 +72,28 @@ export const cartMiddleware = async (req, res, next) => {
 
     // Store cart in the request for controllers to use
     req.cart = cart;
+
+    // Debug log cart status
+    console.log(
+      `Cart status: ${req.cart._id}, Items: ${req.cart.items.length}`
+    );
+
+    // If cart is empty for a checkout request, return an error
+    if (
+      req.originalUrl === "/api/orders" &&
+      req.method === "POST" &&
+      (!req.cart.items || req.cart.items.length === 0)
+    ) {
+      console.error("Attempted checkout with empty cart");
+      return res.status(400).json({
+        success: false,
+        message: "Your cart is empty. Please add items before checking out.",
+      });
+    }
+
     next();
   } catch (error) {
+    console.error("Cart middleware error:", error);
     next(error);
   }
 };

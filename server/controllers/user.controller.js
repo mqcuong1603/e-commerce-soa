@@ -333,6 +333,67 @@ export const getLoyaltyPoints = async (req, res, next) => {
 };
 
 /**
+ * Get loyalty points history
+ * Shows orders where loyalty points were earned or used
+ */
+export const getLoyaltyPointsHistory = async (req, res, next) => {
+  try {
+    const userId = req.user._id;
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 10;
+    const skip = (page - 1) * limit;
+
+    // Find orders where loyalty points were earned or used
+    const ordersWithPoints = await Order.find({
+      userId,
+      $or: [
+        { loyaltyPointsEarned: { $gt: 0 } },
+        { loyaltyPointsUsed: { $gt: 0 } },
+      ],
+    })
+      .select(
+        "orderNumber createdAt total loyaltyPointsEarned loyaltyPointsUsed statusHistory"
+      )
+      .populate("statusHistory")
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(limit);
+
+    // Count total matching orders for pagination
+    const total = await Order.countDocuments({
+      userId,
+      $or: [
+        { loyaltyPointsEarned: { $gt: 0 } },
+        { loyaltyPointsUsed: { $gt: 0 } },
+      ],
+    });
+
+    // Calculate pagination info
+    const totalPages = Math.ceil(total / limit);
+    const hasNextPage = page < totalPages;
+    const hasPrevPage = page > 1;
+
+    // Get current user's total loyalty points
+    const user = await User.findById(userId).select("loyaltyPoints");
+
+    return res.success({
+      pointsHistory: ordersWithPoints,
+      currentPoints: user?.loyaltyPoints || 0,
+      pagination: {
+        page,
+        limit,
+        total,
+        totalPages,
+        hasNextPage,
+        hasPrevPage,
+      },
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+/**
  * Deactivate user account
  */
 export const deactivateAccount = async (req, res, next) => {

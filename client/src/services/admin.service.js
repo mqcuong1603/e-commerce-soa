@@ -3,7 +3,7 @@ import api from "./api";
 const adminService = {
   // Dashboard
   getOrderStatistics: () => api.get("/admin/orders/statistics"),
-  getBestSellingProducts: () => api.get("/admin/products/best-selling"),
+  getBestSellingProducts: () => api.get("/admin/products/stats/best-selling"),
   getUserStatistics: () => api.get("/admin/users/statistics"),
   getRevenueChartData: (timeframe) =>
     api.get(`/admin/orders/revenue-chart?timeframe=${timeframe}`),

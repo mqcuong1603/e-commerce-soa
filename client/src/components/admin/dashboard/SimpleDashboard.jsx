@@ -33,63 +33,128 @@ const SimpleDashboard = () => {
   const formatCurrency = (value) => {
     return value?.toLocaleString("en-US") || "0";
   };
-
   useEffect(() => {
     const fetchDashboardData = async () => {
       try {
         setLoading(true);
         setError(null);
 
-        // Make API calls using adminService - with better error handling
-        const statsPromise = adminService
-          .getOrderStatistics()
-          .catch((err) => ({ data: { success: false, error: err.message } }));
+        console.log("Fetching dashboard data...");
 
-        const productsPromise = adminService
-          .getBestSellingProducts()
-          .catch((err) => ({ data: { success: false, error: err.message } }));
-
-        const userStatsPromise = adminService
-          .getUserStatistics()
-          .catch((err) => ({ data: { success: false, error: err.message } }));
-
-        // Wait for all promises to resolve, even if some fail
-        const [statsResponse, productsResponse, userStatsResponse] =
-          await Promise.all([statsPromise, productsPromise, userStatsPromise]);
-
-        // Track which endpoints succeeded and failed
-        const failedEndpoints = [];
-
-        if (!statsResponse.data?.success)
-          failedEndpoints.push("Order statistics");
-        if (!productsResponse.data?.success)
-          failedEndpoints.push("Best selling products");
-        if (!userStatsResponse.data?.success)
-          failedEndpoints.push("User statistics");
-
-        // If we have some data, use what we have
-        if (statsResponse.data?.success) {
-          setStats({
-            ...statsResponse.data.data,
-            users: userStatsResponse.data?.success
-              ? userStatsResponse.data.data
-              : {},
-          });
+        // Make each API call separately for better error handling
+        let orderStats = null;
+        try {
+          const orderStatsResponse = await adminService.getOrderStatistics();
+          console.log("Order stats response:", orderStatsResponse);
+          // First check shape from axios interceptor
+          if (orderStatsResponse && orderStatsResponse.success) {
+            orderStats = orderStatsResponse.data;
+          }
+          // Fallback for direct response structure
+          else if (
+            orderStatsResponse &&
+            orderStatsResponse.data &&
+            orderStatsResponse.data.success
+          ) {
+            orderStats = orderStatsResponse.data.data;
+          }
+          console.log("Processed order stats:", orderStats);
+        } catch (err) {
+          console.error("Error fetching order stats:", err);
         }
 
-        if (productsResponse.data?.success) {
-          setBestProducts(productsResponse.data.data || []);
+        let products = [];
+        try {
+          const productsResponse = await adminService.getBestSellingProducts();
+          console.log("Best selling products response:", productsResponse);
+          // First check shape from axios interceptor
+          if (
+            productsResponse &&
+            productsResponse.success &&
+            productsResponse.data
+          ) {
+            products = Array.isArray(productsResponse.data)
+              ? productsResponse.data
+              : [];
+          }
+          // Fallback for direct response structure
+          else if (
+            productsResponse &&
+            productsResponse.data &&
+            productsResponse.data.success
+          ) {
+            products = Array.isArray(productsResponse.data.data)
+              ? productsResponse.data.data
+              : [];
+          }
+          console.log("Processed products:", products);
+        } catch (err) {
+          console.error("Error fetching best selling products:", err);
+        }
+
+        let userStats = null;
+        try {
+          const userStatsResponse = await adminService.getUserStatistics();
+          console.log("User stats response:", userStatsResponse);
+          // First check shape from axios interceptor
+          if (userStatsResponse && userStatsResponse.success) {
+            userStats = userStatsResponse.data;
+          }
+          // Fallback for direct response structure
+          else if (
+            userStatsResponse &&
+            userStatsResponse.data &&
+            userStatsResponse.data.success
+          ) {
+            userStats = userStatsResponse.data.data;
+          }
+          console.log("Processed user stats:", userStats);
+        } catch (err) {
+          console.error("Error fetching user stats:", err);
+        } // Track which endpoints succeeded and failed
+        const failedEndpoints = [];
+
+        // Process the results
+        if (orderStats) {
+          setStats({
+            ...orderStats,
+            users: userStats || {},
+          });
+        } else {
+          failedEndpoints.push("Order statistics");
+        }
+
+        // For products, accept empty array as valid result (no best sellers yet)
+        if (products !== undefined && products !== null) {
+          setBestProducts(products);
+          console.log("Best selling products set:", products);
+        } else {
+          failedEndpoints.push("Best selling products");
+        }
+
+        if (!userStats) {
+          failedEndpoints.push("User statistics");
         }
 
         // Set appropriate error message if some endpoints failed
-        if (failedEndpoints.length > 0) {
+        // But only if we couldn't get ANY data
+        if (failedEndpoints.length > 0 && failedEndpoints.length === 3) {
           setError(`Failed to load: ${failedEndpoints.join(", ")}`);
-        }
-
-        // Show full dashboard only if all endpoints succeeded
-        if (!failedEndpoints.length) {
+        } else if (failedEndpoints.length > 0) {
+          // Some endpoints failed but we have partial data
+          setError(
+            `Partial data loaded. Missing: ${failedEndpoints.join(", ")}`
+          );
+        } else {
           setError(null);
         }
+
+        console.log("Dashboard data loaded:", {
+          orderStats,
+          products,
+          userStats,
+          failedEndpoints,
+        });
       } catch (err) {
         console.error("Dashboard data fetch error:", err);
         setError("Failed to load dashboard data. Please try again.");
@@ -122,18 +187,24 @@ const SimpleDashboard = () => {
         borderWidth: 1,
       },
     ],
-  };
-
-  // Prepare product data
+  }; // Prepare product data with defensive coding
   const productData = {
     labels:
-      bestProducts
-        ?.map((p) => p.name?.slice(0, 20) || "")
+      (bestProducts || [])
+        .map((p) => {
+          // Handle any possible structure
+          const name = p?.productName || p?.name || "Product";
+          const variant = p?.variantName ? ` (${p.variantName})` : "";
+          return `${name}${variant}`.slice(0, 20);
+        })
         .map((name) => (name.length === 20 ? `${name}...` : name)) || [],
     datasets: [
       {
         label: "Units Sold",
-        data: bestProducts?.map((p) => p.unitsSold || p.quantity || 0) || [],
+        data:
+          (bestProducts || []).map(
+            (p) => p?.totalQuantity || p?.unitsSold || p?.quantity || 0
+          ) || [],
         backgroundColor: "#4e73df",
         borderColor: "#2e59d9",
         borderWidth: 1,
@@ -281,10 +352,14 @@ const SimpleDashboard = () => {
         `}</style>
       </div>
     );
-  }
-
-  // Render error state, but show partial data if available
-  if (error && (!stats || !bestProducts.length)) {
+  } // Render error state, but only if we have absolutely no data at all
+  if (
+    error &&
+    (!stats || Object.keys(stats).length === 0) &&
+    (!bestProducts || bestProducts.length === 0) &&
+    loading === false
+  ) {
+    console.log("Rendering error state - no data available");
     return (
       <div
         className="alert alert-danger d-flex align-items-center"
@@ -294,6 +369,20 @@ const SimpleDashboard = () => {
         <div>
           <h5 className="mb-1">Dashboard Error</h5>
           <p className="mb-0">{error}</p>
+          <div className="mt-2">
+            <p>Debug info:</p>
+            <pre className="small text-muted">
+              {JSON.stringify(
+                {
+                  stats: Boolean(stats),
+                  bestProducts: Boolean(bestProducts) && bestProducts.length,
+                  error,
+                },
+                null,
+                2
+              )}
+            </pre>
+          </div>
           <button
             className="btn btn-outline-danger btn-sm mt-3"
             onClick={() => window.location.reload()}
@@ -306,7 +395,7 @@ const SimpleDashboard = () => {
   }
 
   // If we have partial data, show what we have with a warning
-  if (error && (stats || bestProducts.length)) {
+  if (error && (stats || (bestProducts && bestProducts.length > 0))) {
     return (
       <div>
         <div className="alert alert-warning mb-4" role="alert">

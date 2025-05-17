@@ -75,6 +75,30 @@ const userService = {
   },
 
   /**
+   * Get user's loyalty points history
+   * @param {Object} params - Query parameters for pagination
+   * @returns {Promise<Object>} Loyalty points history with pagination
+   */
+  getLoyaltyPointsHistory: async (params = {}) => {
+    // Build query string from params
+    const queryString = Object.keys(params)
+      .filter(
+        (key) =>
+          params[key] !== undefined &&
+          params[key] !== null &&
+          params[key] !== ""
+      )
+      .map(
+        (key) => `${encodeURIComponent(key)}=${encodeURIComponent(params[key])}`
+      )
+      .join("&");
+
+    return api.get(
+      `/users/loyalty-points/history${queryString ? `?${queryString}` : ""}`
+    );
+  },
+
+  /**
    * Get user's reviews
    * @param {Object} params - Query parameters for pagination
    * @returns {Promise<Object>} User reviews with pagination

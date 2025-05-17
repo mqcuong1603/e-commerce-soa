@@ -14,6 +14,15 @@ const orderService = {
   },
 
   /**
+   * Verify a discount code
+   * @param {string} code - Discount code to verify
+   * @returns {Promise<Object>} Verification result with discount amount
+   */
+  verifyDiscount: async (code) => {
+    return api.post("/discounts/verify", { code });
+  },
+
+  /**
    * Get user's order history with pagination
    * @param {Object} params - Query parameters for pagination
    * @returns {Promise<Object>} User orders with pagination data

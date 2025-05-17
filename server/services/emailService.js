@@ -212,9 +212,7 @@ class EmailService {
             <p style="margin: 5px 0;"><strong>Order Date:</strong> ${new Date(
               order.createdAt
             ).toLocaleDateString()}</p>
-            <p style="margin: 5px 0;"><strong>Total Amount:</strong> $${order.total.toFixed(
-              2
-            )}</p>
+            <p style="margin: 5px 0;"><strong>Total Amount:</strong> ₫${order.total.toLocaleString()}</p>
           </div>
           <h3 style="margin-top: 30px;">Order Details</h3>
           <table style="width: 100%; border-collapse: collapse;">
@@ -236,9 +234,7 @@ class EmailService {
                   <td style="padding: 10px; text-align: right; border-bottom: 1px solid #ddd;">${
                     item.quantity
                   }</td>
-                  <td style="padding: 10px; text-align: right; border-bottom: 1px solid #ddd;">$${item.price.toFixed(
-                    2
-                  )}</td>
+                  <td style="padding: 10px; text-align: right; border-bottom: 1px solid #ddd;">₫${item.price.toLocaleString()}</td>
                 </tr>
               `
                 )
@@ -247,33 +243,25 @@ class EmailService {
             <tfoot>
               <tr>
                 <td colspan="2" style="padding: 10px; text-align: right;"><strong>Subtotal:</strong></td>
-                <td style="padding: 10px; text-align: right;">$${order.subtotal.toFixed(
-                  2
-                )}</td>
+                <td style="padding: 10px; text-align: right;">₫${order.subtotal.toLocaleString()}</td>
               </tr>
               <tr>
                 <td colspan="2" style="padding: 10px; text-align: right;"><strong>Shipping:</strong></td>
-                <td style="padding: 10px; text-align: right;">$${order.shippingFee.toFixed(
-                  2
-                )}</td>
+                <td style="padding: 10px; text-align: right;">₫${order.shippingFee.toLocaleString()}</td>
               </tr>
               ${
                 order.discountAmount > 0
                   ? `
                 <tr>
                   <td colspan="2" style="padding: 10px; text-align: right;"><strong>Discount:</strong></td>
-                  <td style="padding: 10px; text-align: right;">-$${order.discountAmount.toFixed(
-                    2
-                  )}</td>
+                  <td style="padding: 10px; text-align: right;">-₫${order.discountAmount.toLocaleString()}</td>
                 </tr>
               `
                   : ""
               }
               <tr>
                 <td colspan="2" style="padding: 10px; text-align: right;"><strong>Total:</strong></td>
-                <td style="padding: 10px; text-align: right; font-weight: bold;">$${order.total.toFixed(
-                  2
-                )}</td>
+                <td style="padding: 10px; text-align: right; font-weight: bold;">₫${order.total.toLocaleString()}</td>
               </tr>
             </tfoot>
           </table>
@@ -467,9 +455,7 @@ class EmailService {
             <p style="margin: 5px 0;"><strong>Order Date:</strong> ${new Date(
               order.createdAt
             ).toLocaleDateString()}</p>
-            <p style="margin: 5px 0;"><strong>Total Amount:</strong> $${order.total.toFixed(
-              2
-            )}</p>
+            <p style="margin: 5px 0;"><strong>Total Amount:</strong> ₫${order.total.toLocaleString()}</p>
           </div>
           <h3 style="margin-top: 30px;">Order Details</h3>
           <table style="width: 100%; border-collapse: collapse;">
@@ -491,9 +477,7 @@ class EmailService {
                   <td style="padding: 10px; text-align: right; border-bottom: 1px solid #ddd;">${
                     item.quantity
                   }</td>
-                  <td style="padding: 10px; text-align: right; border-bottom: 1px solid #ddd;">$${item.price.toFixed(
-                    2
-                  )}</td>
+                  <td style="padding: 10px; text-align: right; border-bottom: 1px solid #ddd;">₫${item.price.toLocaleString()}</td>
                 </tr>
               `
                 )
@@ -502,33 +486,25 @@ class EmailService {
             <tfoot>
               <tr>
                 <td colspan="2" style="padding: 10px; text-align: right;"><strong>Subtotal:</strong></td>
-                <td style="padding: 10px; text-align: right;">$${order.subtotal.toFixed(
-                  2
-                )}</td>
+                <td style="padding: 10px; text-align: right;">₫${order.subtotal.toLocaleString()}</td>
               </tr>
               <tr>
                 <td colspan="2" style="padding: 10px; text-align: right;"><strong>Shipping:</strong></td>
-                <td style="padding: 10px; text-align: right;">$${order.shippingFee.toFixed(
-                  2
-                )}</td>
+                <td style="padding: 10px; text-align: right;">₫${order.shippingFee.toLocaleString()}</td>
               </tr>
               ${
                 order.discountAmount > 0
                   ? `
                 <tr>
                   <td colspan="2" style="padding: 10px; text-align: right;"><strong>Discount:</strong></td>
-                  <td style="padding: 10px; text-align: right;">-$${order.discountAmount.toFixed(
-                    2
-                  )}</td>
+                  <td style="padding: 10px; text-align: right;">-₫${order.discountAmount.toLocaleString()}</td>
                 </tr>
               `
                   : ""
               }
               <tr>
                 <td colspan="2" style="padding: 10px; text-align: right;"><strong>Total:</strong></td>
-                <td style="padding: 10px; text-align: right; font-weight: bold;">$${order.total.toFixed(
-                  2
-                )}</td>
+                <td style="padding: 10px; text-align: right; font-weight: bold;">₫${order.total.toLocaleString()}</td>
               </tr>
             </tfoot>
           </table>

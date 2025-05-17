@@ -118,5 +118,89 @@
     "postalCode": "80202",
     "country": "USA",
     "isDefault": true
+  },
+  {
+    "userEmail": "mqcuong1603@gmail.com",
+    "fullName": "Cuong Ma",
+    "phoneNumber": "888-999-0000",
+    "addressLine1": "175 Nguyen Chi Thanh",
+    "addressLine2": "",
+    "city": "Ho Chi Minh City",
+    "state": "",
+    "postalCode": "70000",
+    "country": "Vietnam",
+    "isDefault": true
+  },
+  {
+    "userEmail": "mqcuong1603@gmail.com",
+    "fullName": "Cuong Ma",
+    "phoneNumber": "888-999-0001",
+    "addressLine1": "123 Le Loi",
+    "addressLine2": "District 1",
+    "city": "Ho Chi Minh City",
+    "state": "",
+    "postalCode": "70000",
+    "country": "Vietnam",
+    "isDefault": false
+  },
+  {
+    "userEmail": "alex.walker@example.com",
+    "fullName": "Alex Walker",
+    "phoneNumber": "555-666-7777",
+    "addressLine1": "87 Tech Boulevard",
+    "addressLine2": "",
+    "city": "Austin",
+    "state": "TX",
+    "postalCode": "78701",
+    "country": "USA",
+    "isDefault": true
+  },
+  {
+    "userEmail": "olivia.kim@example.com",
+    "fullName": "Olivia Kim",
+    "phoneNumber": "777-888-9999",
+    "addressLine1": "42 Cherry Lane",
+    "addressLine2": "Apt 305",
+    "city": "Seattle",
+    "state": "WA",
+    "postalCode": "98101",
+    "country": "USA",
+    "isDefault": true
+  },
+  {
+    "userEmail": "daniel.taylor@example.com",
+    "fullName": "Daniel Taylor",
+    "phoneNumber": "444-555-6666",
+    "addressLine1": "123 Innovation Street",
+    "addressLine2": "Floor 5",
+    "city": "Chicago",
+    "state": "IL",
+    "postalCode": "60601",
+    "country": "USA",
+    "isDefault": true
+  },
+  {
+    "userEmail": "lisa.nguyen@example.com",
+    "fullName": "Lisa Nguyen",
+    "phoneNumber": "333-444-5555",
+    "addressLine1": "57 Willow Avenue",
+    "addressLine2": "Unit 12B",
+    "city": "Portland",
+    "state": "OR",
+    "postalCode": "97209",
+    "country": "USA",
+    "isDefault": true
+  },
+  {
+    "userEmail": "lisa.nguyen@example.com",
+    "fullName": "Lisa Nguyen - Work",
+    "phoneNumber": "333-444-5556",
+    "addressLine1": "980 Business Plaza",
+    "addressLine2": "Suite 400",
+    "city": "Portland",
+    "state": "OR",
+    "postalCode": "97204",
+    "country": "USA",
+    "isDefault": false
   }
 ]

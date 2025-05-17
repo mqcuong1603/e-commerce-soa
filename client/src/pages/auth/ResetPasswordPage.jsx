@@ -123,106 +123,118 @@ const ResetPasswordPage = () => {
       setLoading(false);
     }
   };
-
   // Render loading state while validating token
   if (validatingToken) {
     return (
-      <div className="container mx-auto px-4 py-12">
-        <div className="max-w-md mx-auto">
-          <Card padding="large" className="text-center">
-            <Loader text="Validating your reset link..." />
-          </Card>
+      <div className="bg-light min-vh-100 py-5 d-flex align-items-center justify-content-center">
+        <div className="container" style={{ maxWidth: 480 }}>
+          <div className="card shadow border-0 rounded-4">
+            <div className="card-body p-5 text-center">
+              <div className="mb-4">
+                <div
+                  className="spinner-border text-primary"
+                  style={{ width: 50, height: 50 }}
+                  role="status"
+                >
+                  <span className="visually-hidden">Loading...</span>
+                </div>
+                <h3 className="fw-bold mt-4 mb-2">
+                  Validating Your Reset Link
+                </h3>
+                <p className="text-muted">
+                  Please wait while we validate your password reset link...
+                </p>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     );
   }
-
   // Render invalid token message
   if (!tokenValid) {
     return (
-      <div className="container mx-auto px-4 py-12">
-        <div className="max-w-md mx-auto">
-          <Card padding="large" className="text-center">
-            <div className="flex justify-center mb-4">
-              <svg
-                className="h-16 w-16 text-red-500"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-                />
-              </svg>
+      <div className="bg-light min-vh-100 py-5 d-flex align-items-center justify-content-center">
+        <div className="container" style={{ maxWidth: 480 }}>
+          <div className="card shadow border-0 rounded-4">
+            <div className="card-body p-5 text-center">
+              <div className="mb-4">
+                <div
+                  className="bg-danger text-white rounded-circle d-inline-flex align-items-center justify-content-center mb-3"
+                  style={{ width: 80, height: 80 }}
+                >
+                  <i className="bi bi-exclamation-triangle fs-1"></i>
+                </div>
+                <h2 className="fw-bold mt-3">Invalid or Expired Link</h2>
+                <p className="text-muted mb-4">
+                  The password reset link is invalid or has expired. Please
+                  request a new one.
+                </p>
+              </div>
+
+              <div className="d-grid gap-2">
+                <Link
+                  to="/forgot-password"
+                  className="btn btn-lg btn-primary fw-bold"
+                >
+                  <i className="bi bi-envelope me-2"></i>
+                  Request New Reset Link
+                </Link>
+                <Link to="/login" className="btn btn-lg btn-outline-secondary">
+                  <i className="bi bi-arrow-left me-2"></i>
+                  Back to Login
+                </Link>
+              </div>
             </div>
-            <h2 className="text-xl font-bold text-gray-800 mb-2">
-              Invalid or Expired Link
-            </h2>
-            <p className="text-gray-600 mb-6">
-              The password reset link is invalid or has expired. Please request
-              a new one.
-            </p>
-            <div className="flex flex-col space-y-4">
-              <Link
-                to="/forgot-password"
-                className="w-full text-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500"
-              >
-                Request New Reset Link
-              </Link>
-              <Link
-                to="/login"
-                className="w-full text-center py-2 px-4 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500"
-              >
-                Back to Login
-              </Link>
-            </div>
-          </Card>
+          </div>
         </div>
       </div>
     );
   }
-
   // Render success message
   if (resetSuccess) {
     return (
-      <div className="container mx-auto px-4 py-12">
-        <div className="max-w-md mx-auto">
-          <Card padding="large" className="text-center">
-            <div className="flex justify-center mb-4">
-              <svg
-                className="h-16 w-16 text-green-500"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+      <div className="bg-light min-vh-100 py-5 d-flex align-items-center justify-content-center">
+        <div className="container" style={{ maxWidth: 480 }}>
+          <div className="card shadow border-0 rounded-4">
+            <div className="card-body p-5 text-center">
+              <div className="mb-4">
+                <div
+                  className="bg-success text-white rounded-circle d-inline-flex align-items-center justify-content-center mb-3"
+                  style={{ width: 80, height: 80 }}
+                >
+                  <i className="bi bi-check-lg fs-1"></i>
+                </div>
+                <h2 className="fw-bold mt-3">Password Reset Successful!</h2>
+                <p className="text-muted mb-4">
+                  Your password has been successfully reset. You can now log in
+                  with your new password.
+                </p>
+              </div>
+
+              <div className="d-grid">
+                <button
+                  className="btn btn-lg btn-primary fw-bold"
+                  onClick={() => navigate("/login")}
+                >
+                  <i className="bi bi-box-arrow-in-right me-2"></i>
+                  Login with New Password
+                </button>
+              </div>
+
+              <div className="mt-4">
+                <img
+                  src="/images/placeholders/security-check.svg"
+                  alt="Security Check"
+                  className="img-fluid"
+                  style={{ maxHeight: 150, opacity: 0.8 }}
+                  onError={(e) => {
+                    e.target.style.display = "none";
+                  }}
                 />
-              </svg>
+              </div>
             </div>
-            <h2 className="text-xl font-bold text-gray-800 mb-2">
-              Password Reset Successful!
-            </h2>
-            <p className="text-gray-600 mb-6">
-              Your password has been successfully reset. You can now log in with
-              your new password.
-            </p>
-            <Button
-              variant="primary"
-              fullWidth
-              onClick={() => navigate("/login")}
-            >
-              Login with New Password
-            </Button>
-          </Card>
+          </div>
         </div>
       </div>
     );
@@ -230,125 +242,125 @@ const ResetPasswordPage = () => {
 
   // Render password reset form
   return (
-    <div className="container mx-auto px-4 py-12">
-      <div className="max-w-md mx-auto">
-        <h1 className="text-3xl font-bold text-center text-gray-900 mb-8">
-          Reset Your Password
-        </h1>
-
-        <Card padding="large">
-          {/* Form error message */}
-          {errors.form && (
-            <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-6">
-              <span className="block sm:inline">{errors.form}</span>
-            </div>
-          )}
-
-          <p className="text-gray-600 mb-6">
-            Create a new password for your account. Choose a strong password
-            that you don't use for other websites.
-          </p>
-
-          <form onSubmit={handleSubmit} className="space-y-6">
-            {/* New Password */}
-            <div>
-              <label
-                htmlFor="password"
-                className="block text-sm font-medium text-gray-700 mb-1"
+    <div className="bg-light min-vh-100 py-5 d-flex align-items-center justify-content-center">
+      <div className="container" style={{ maxWidth: 480 }}>
+        <div className="card shadow border-0 rounded-4">
+          <div className="card-body p-5">
+            <div className="text-center mb-4">
+              <div
+                className="bg-primary text-white rounded-circle d-inline-flex align-items-center justify-content-center mb-3"
+                style={{ width: 64, height: 64 }}
               >
-                New Password
-              </label>
-              <input
-                id="password"
-                name="password"
-                type="password"
-                value={password}
-                onChange={handlePasswordChange}
-                className={`w-full px-3 py-2 border rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-primary-500 focus:border-primary-500 ${
-                  errors.password ? "border-red-500" : "border-gray-300"
-                }`}
-                placeholder="••••••••"
-              />
-              {errors.password && (
-                <p className="mt-1 text-sm text-red-600">{errors.password}</p>
-              )}
-              <p className="mt-1 text-xs text-gray-500">
-                Password must be at least 6 characters
+                <i className="bi bi-shield-lock fs-1"></i>
+              </div>
+              <h2 className="fw-bold mb-1">Reset Your Password</h2>
+              <p className="text-muted mb-0">
+                Create a new password for your account.
               </p>
             </div>
 
-            {/* Confirm Password */}
-            <div>
-              <label
-                htmlFor="confirmPassword"
-                className="block text-sm font-medium text-gray-700 mb-1"
+            {/* Form error message */}
+            {errors.form && (
+              <div
+                className="alert alert-danger d-flex align-items-center mb-4"
+                role="alert"
               >
-                Confirm Password
-              </label>
-              <input
-                id="confirmPassword"
-                name="confirmPassword"
-                type="password"
-                value={confirmPassword}
-                onChange={handleConfirmPasswordChange}
-                className={`w-full px-3 py-2 border rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-primary-500 focus:border-primary-500 ${
-                  errors.confirmPassword ? "border-red-500" : "border-gray-300"
-                }`}
-                placeholder="••••••••"
-              />
-              {errors.confirmPassword && (
-                <p className="mt-1 text-sm text-red-600">
-                  {errors.confirmPassword}
-                </p>
-              )}
-            </div>
+                <i className="bi bi-exclamation-triangle-fill me-2"></i>
+                <div>{errors.form}</div>
+              </div>
+            )}
 
-            <div>
-              <Button
-                type="submit"
-                variant="primary"
-                fullWidth={true}
-                disabled={loading}
-              >
-                {loading ? (
-                  <span className="flex items-center justify-center">
-                    <svg
-                      className="animate-spin -ml-1 mr-2 h-4 w-4 text-white"
-                      xmlns="http://www.w3.org/2000/svg"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                    >
-                      <circle
-                        className="opacity-25"
-                        cx="12"
-                        cy="12"
-                        r="10"
-                        stroke="currentColor"
-                        strokeWidth="4"
-                      ></circle>
-                      <path
-                        className="opacity-75"
-                        fill="currentColor"
-                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                      ></path>
-                    </svg>
-                    Resetting...
+            <form onSubmit={handleSubmit} autoComplete="off">
+              <div className="mb-3">
+                <label htmlFor="password" className="form-label fw-bold">
+                  New Password
+                </label>
+                <div className="input-group">
+                  <span className="input-group-text bg-light border-0 text-primary">
+                    <i className="bi bi-lock"></i>
                   </span>
-                ) : (
-                  "Reset Password"
+                  <input
+                    id="password"
+                    name="password"
+                    type="password"
+                    value={password}
+                    onChange={handlePasswordChange}
+                    className={`form-control form-control-lg bg-light border-0 ${
+                      errors.password ? "is-invalid" : ""
+                    }`}
+                    placeholder="Enter new password"
+                  />
+                </div>
+                <div className="form-text">
+                  Password must be at least 6 characters
+                </div>
+                {errors.password && (
+                  <div className="invalid-feedback d-block">
+                    {errors.password}
+                  </div>
                 )}
-              </Button>
-            </div>
-          </form>
-        </Card>
+              </div>
 
-        <div className="mt-6 text-center">
-          <Link
-            to="/login"
-            className="text-sm font-medium text-primary-600 hover:text-primary-500"
-          >
-            Back to Login
-          </Link>
+              <div className="mb-3">
+                <label htmlFor="confirmPassword" className="form-label fw-bold">
+                  Confirm New Password
+                </label>
+                <div className="input-group">
+                  <span className="input-group-text bg-light border-0 text-primary">
+                    <i className="bi bi-lock-fill"></i>
+                  </span>
+                  <input
+                    id="confirmPassword"
+                    name="confirmPassword"
+                    type="password"
+                    value={confirmPassword}
+                    onChange={handleConfirmPasswordChange}
+                    className={`form-control form-control-lg bg-light border-0 ${
+                      errors.confirmPassword ? "is-invalid" : ""
+                    }`}
+                    placeholder="Confirm new password"
+                  />
+                </div>
+                {errors.confirmPassword && (
+                  <div className="invalid-feedback d-block">
+                    {errors.confirmPassword}
+                  </div>
+                )}
+              </div>
+
+              <div className="d-grid mt-4">
+                <button
+                  type="submit"
+                  className="btn btn-lg btn-primary fw-bold"
+                  disabled={loading}
+                >
+                  {loading ? (
+                    <>
+                      <span
+                        className="spinner-border spinner-border-sm me-2"
+                        role="status"
+                        aria-hidden="true"
+                      ></span>
+                      Resetting...
+                    </>
+                  ) : (
+                    <>
+                      <i className="bi bi-arrow-repeat me-2"></i>Reset Password
+                    </>
+                  )}
+                </button>
+              </div>
+            </form>
+
+            <div className="text-center mt-4">
+              <Link
+                to="/login"
+                className="text-decoration-none text-primary fw-bold"
+              >
+                <i className="bi bi-arrow-left me-1"></i>Back to Login
+              </Link>
+            </div>
+          </div>
         </div>
       </div>
     </div>

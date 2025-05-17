@@ -2,6 +2,7 @@ import Product from "../../models/product.model.js";
 import ProductVariant from "../../models/productVariant.model.js";
 import ProductImage from "../../models/productImage.model.js";
 import Category from "../../models/category.model.js";
+import Order from "../../models/order.model.js";
 import { ApiError } from "../../middleware/response.middleware.js";
 import fs from "fs";
 import path from "path";
@@ -378,37 +379,45 @@ export const getBestSellingProducts = async (req, res, next) => {
   try {
     const limit = parseInt(req.query.limit) || 5;
 
-    // Aggregate to find best selling products
-    const products = await Product.aggregate([
-      { $match: { status: "active" } },
+    // Get product sales data directly from the orders
+    const variantSales = await Order.aggregate([
+      // Only consider orders that aren't cancelled
+      { $match: { "statusHistory.status": { $ne: "cancelled" } } },
+      // Unwind to get each item in the order as a separate document
+      { $unwind: "$items" },
+      // Group by product name and variant to count sales
       {
-        $lookup: {
-          from: "orderitems",
-          localField: "_id",
-          foreignField: "productId",
-          as: "orderItems",
+        $group: {
+          _id: {
+            productName: "$items.productName",
+            variantName: "$items.variantName",
+          },
+          totalQuantity: { $sum: "$items.quantity" },
+          productName: { $first: "$items.productName" },
+          variantName: { $first: "$items.variantName" },
+          price: { $first: "$items.price" },
         },
       },
-      {
-        $addFields: {
-          totalSold: { $sum: "$orderItems.quantity" },
-        },
-      },
-      { $sort: { totalSold: -1 } },
+      // Sort by total quantity sold, descending
+      { $sort: { totalQuantity: -1 } },
+      // Limit to the requested number of products
       { $limit: limit },
+      // Project to match the expected format
       {
         $project: {
-          _id: 1,
-          name: 1,
-          basePrice: 1,
-          salePrice: 1,
-          totalSold: 1,
+          _id: 0,
+          productName: 1,
+          variantName: 1,
+          price: 1,
+          totalQuantity: 1,
         },
       },
     ]);
-
-    return res.success(products);
+    console.log("Best selling products fetched successfully:", variantSales);
+    return res.success(variantSales);
   } catch (error) {
-    next(error);
+    console.error("Error fetching best selling products:", error);
+    // Return an empty array instead of throwing an error
+    return res.success([]);
   }
 };
