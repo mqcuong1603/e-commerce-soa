@@ -255,7 +255,6 @@ const AddressForm = ({ onSubmit, initialData, savedAddresses }) => {
                   <div className="invalid-feedback">{errors.fullName}</div>
                 )}
               </div>
-
               {/* Phone Number */}
               <div className="col-12">
                 <label htmlFor="phoneNumber" className="form-label">
@@ -276,7 +275,6 @@ const AddressForm = ({ onSubmit, initialData, savedAddresses }) => {
                   <div className="invalid-feedback">{errors.phoneNumber}</div>
                 )}
               </div>
-
               {/* Address Line 1 */}
               <div className="col-12">
                 <label htmlFor="addressLine1" className="form-label">
@@ -297,7 +295,6 @@ const AddressForm = ({ onSubmit, initialData, savedAddresses }) => {
                   <div className="invalid-feedback">{errors.addressLine1}</div>
                 )}
               </div>
-
               {/* Address Line 2 */}
               <div className="col-12">
                 <label htmlFor="addressLine2" className="form-label">
@@ -313,7 +310,6 @@ const AddressForm = ({ onSubmit, initialData, savedAddresses }) => {
                   placeholder="Apartment, suite, unit, building, floor, etc."
                 />
               </div>
-
               {/* City */}
               <div className="col-md-6">
                 <label htmlFor="city" className="form-label">
@@ -332,7 +328,6 @@ const AddressForm = ({ onSubmit, initialData, savedAddresses }) => {
                   <div className="invalid-feedback">{errors.city}</div>
                 )}
               </div>
-
               {/* State/Province */}
               <div className="col-md-6">
                 <label htmlFor="state" className="form-label">
@@ -351,7 +346,6 @@ const AddressForm = ({ onSubmit, initialData, savedAddresses }) => {
                   <div className="invalid-feedback">{errors.state}</div>
                 )}
               </div>
-
               {/* Postal Code */}
               <div className="col-md-6">
                 <label htmlFor="postalCode" className="form-label">
@@ -372,7 +366,6 @@ const AddressForm = ({ onSubmit, initialData, savedAddresses }) => {
                   <div className="invalid-feedback">{errors.postalCode}</div>
                 )}
               </div>
-
               {/* Country */}
               <div className="col-md-6">
                 <label htmlFor="country" className="form-label">
@@ -399,8 +392,7 @@ const AddressForm = ({ onSubmit, initialData, savedAddresses }) => {
                 {errors.country && (
                   <div className="invalid-feedback">{errors.country}</div>
                 )}
-              </div>
-
+              </div>{" "}
               {/* Save Address Checkbox (Only for authenticated users) */}
               {isAuthenticated && (
                 <div className="col-12">
@@ -410,6 +402,9 @@ const AddressForm = ({ onSubmit, initialData, savedAddresses }) => {
                       type="checkbox"
                       id="saveAddress"
                       name="saveAddress"
+                      defaultChecked={
+                        true
+                      } /* Default to checked for better UX */
                     />
                     <label className="form-check-label" htmlFor="saveAddress">
                       Save this address for future orders

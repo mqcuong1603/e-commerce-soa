@@ -147,6 +147,10 @@ CartSchema.methods.clearCart = function () {
   return this.save();
 };
 
+CartSchema.methods.deleteCart = function () {
+  return this.constructor.findByIdAndDelete(this._id);
+};
+
 CartSchema.methods.transferCart = async function (userId) {
   this.userId = userId;
   this.sessionId = null;

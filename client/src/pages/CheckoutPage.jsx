@@ -100,124 +100,20 @@ const CheckoutPage = () => {
       </div>
     );
   }
-
   return (
     <div className="container py-5">
       <h1 className="h3 fw-bold mb-4">Checkout</h1>
-
-      <div className="row g-4">
-        {/* Main checkout form */}
-        <div className="col-lg-8">
+      <div className="row">
+        {/* Full-width checkout form */}
+        <div className="col-12">
           <CheckoutForm
             discountCode={discountCode}
             usingLoyaltyPoints={usingLoyaltyPoints}
             onOrderSuccess={handleOrderSuccess}
             isGuestCheckout={isGuestCheckout}
           />
-        </div>
 
-        {/* Order summary */}
-        <div className="col-lg-4">
-          <Card title="Order Summary">
-            {/* Cart items summary */}
-            <div className="card-body p-0">
-              <div style={{ maxHeight: "320px", overflowY: "auto" }}>
-                <ul className="list-group list-group-flush">
-                  {cart?.items?.map((item) => (
-                    <li
-                      key={item.productVariantId._id}
-                      className="list-group-item px-0"
-                    >
-                      <div className="d-flex align-items-center">
-                        <div
-                          style={{ width: "60px", height: "60px" }}
-                          className="border rounded me-3"
-                        >
-                          {item.productVariantId.images &&
-                          item.productVariantId.images.length > 0 ? (
-                            <img
-                              src={item.productVariantId.images[0].imageUrl}
-                              alt={
-                                item.productVariantId.productId?.name ||
-                                "Product"
-                              }
-                              className="img-fluid h-100 w-100 object-fit-contain p-1"
-                            />
-                          ) : (
-                            <div className="d-flex align-items-center justify-content-center h-100 bg-light">
-                              <span className="text-muted small">No image</span>
-                            </div>
-                          )}
-                        </div>
-                        <div className="flex-grow-1">
-                          <div className="fw-medium small">
-                            {item.productVariantId.productId?.name || "Product"}
-                          </div>
-                          <div className="text-muted small">
-                            {item.productVariantId?.name || "Variant"} ×{" "}
-                            {item.quantity}
-                          </div>
-                        </div>
-                        <div className="fw-medium">
-                          ₫{item.price.toLocaleString()}
-                        </div>
-                      </div>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-
-              {/* Price details */}
-              <div className="border-top pt-3 mt-3">
-                <ul className="list-group list-group-flush">
-                  <li className="list-group-item d-flex justify-content-between px-0">
-                    <span className="text-muted">Subtotal</span>
-                    <span>₫{cart?.subtotal?.toLocaleString() || "0"}</span>
-                  </li>
-                  <li className="list-group-item d-flex justify-content-between px-0">
-                    <span className="text-muted">Shipping</span>
-                    <span>₫35,000</span>
-                  </li>
-
-                  {discountCode && (
-                    <li className="list-group-item d-flex justify-content-between px-0 text-success">
-                      <span>Discount ({discountCode})</span>
-                      <span>
-                        -₫{(cart?.discountAmount || 0).toLocaleString()}
-                      </span>
-                    </li>
-                  )}
-
-                  {usingLoyaltyPoints && (
-                    <li className="list-group-item d-flex justify-content-between px-0 text-success">
-                      <span>Loyalty Points</span>
-                      <span>
-                        -₫{(cart?.loyaltyPointsValue || 0).toLocaleString()}
-                      </span>
-                    </li>
-                  )}
-
-                  <li className="list-group-item d-flex justify-content-between px-0 border-top">
-                    <span className="fw-bold">Total</span>
-                    <span className="fw-bold fs-5 text-danger">
-                      ₫{cart?.total?.toLocaleString() || "0"}
-                    </span>
-                  </li>
-                </ul>
-              </div>
-
-              <div className="mt-4">
-                <Button
-                  variant="outlined"
-                  fullWidth
-                  onClick={() => navigate("/cart")}
-                >
-                  <i className="bi bi-arrow-left me-2"></i>
-                  Return to Cart
-                </Button>
-              </div>
-            </div>
-          </Card>
+          {/* The "Return to Cart" button is already included inside the CheckoutForm component */}
         </div>
       </div>
     </div>

@@ -134,6 +134,10 @@ const OrderSchema = new Schema(
       type: Number,
       default: 0,
     },
+    loyaltyPointsAwarded: {
+      type: Boolean,
+      default: false,
+    },
     total: {
       type: Number,
       required: true,

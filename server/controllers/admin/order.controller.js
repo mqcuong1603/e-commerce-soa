@@ -329,9 +329,7 @@ export const updateOrderStatus = async (req, res, next) => {
       updatedBy: req.user._id,
     });
 
-    await orderStatus.save();
-
-    // If status is 'cancelled', return inventory
+    await orderStatus.save(); // If status is 'cancelled', return inventory
     if (status === "cancelled" && currentStatus.status !== "cancelled") {
       // Handle inventory return process
       // This is done in a try/catch to ensure status is saved even if inventory fails
@@ -344,19 +342,58 @@ export const updateOrderStatus = async (req, res, next) => {
             await variant.increaseInventory(item.quantity);
           }
         }
+
+        // If we're cancelling an order that was delivered and had loyalty points awarded,
+        // we should deduct those points from the user (if possible)
+        if (
+          currentStatus.status === "delivered" &&
+          order.loyaltyPointsAwarded
+        ) {
+          try {
+            const User = require("../../models/user.model.js");
+
+            if (order.userId && order.loyaltyPointsEarned > 0) {
+              const user = await User.findById(order.userId);
+
+              if (user) {
+                // Only deduct points if the user has enough, otherwise set to 0
+                if (user.loyaltyPoints >= order.loyaltyPointsEarned) {
+                  user.loyaltyPoints -= order.loyaltyPointsEarned;
+                } else {
+                  user.loyaltyPoints = 0;
+                }
+
+                await user.save();
+
+                // Mark points as not awarded
+                order.loyaltyPointsAwarded = false;
+                await order.save();
+
+                console.log(
+                  `Deducted ${order.loyaltyPointsEarned} loyalty points from user ${user._id} for cancelled order ${order._id}`
+                );
+              }
+            }
+          } catch (pointsErr) {
+            console.error("Error deducting loyalty points:", pointsErr);
+          }
+        }
       } catch (err) {
         console.error("Error returning inventory:", err);
         // Don't stop the status update if inventory update fails
       }
-    }
-
-    // Award loyalty points when order is delivered
+    } // Award loyalty points when order is delivered
     if (status === "delivered" && currentStatus.status !== "delivered") {
       try {
         const User = require("../../models/user.model.js");
 
-        // Check if order has userId (not a guest checkout) and has loyalty points to award
-        if (order.userId && order.loyaltyPointsEarned > 0) {
+        // Check if order has userId (not a guest checkout), has loyalty points to award,
+        // and hasn't already been awarded points
+        if (
+          order.userId &&
+          order.loyaltyPointsEarned > 0 &&
+          !order.loyaltyPointsAwarded
+        ) {
           const user = await User.findById(order.userId);
 
           if (user) {
@@ -364,10 +401,18 @@ export const updateOrderStatus = async (req, res, next) => {
             user.loyaltyPoints += order.loyaltyPointsEarned;
             await user.save();
 
+            // Mark points as awarded to prevent duplicate awards
+            order.loyaltyPointsAwarded = true;
+            await order.save();
+
             console.log(
               `Awarded ${order.loyaltyPointsEarned} loyalty points to user ${user._id} for order ${order._id}`
             );
           }
+        } else if (order.loyaltyPointsAwarded) {
+          console.log(
+            `Loyalty points already awarded for order ${order._id}, skipping`
+          );
         }
       } catch (err) {
         console.error("Error awarding loyalty points:", err);

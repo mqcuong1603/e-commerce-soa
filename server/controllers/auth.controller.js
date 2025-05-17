@@ -107,13 +107,84 @@ export const login = async (req, res, next) => {
 
     // Update last login
     user.lastLogin = new Date();
-    await user.save();
-
-    // Transfer session cart to user if exists
+    await user.save(); // Transfer session cart to user if exists
     if (req.session.id) {
+      console.log(
+        `Login: Checking for carts to transfer for session ${req.session.id}`
+      );
+
+      // Find any existing carts for the session
       const sessionCart = await Cart.findOne({ sessionId: req.session.id });
-      if (sessionCart) {
+
+      // Find user carts
+      const userCarts = await Cart.find({ userId: user._id });
+      console.log(
+        `Login: Found ${userCarts.length} existing user carts and ${
+          sessionCart ? 1 : 0
+        } session carts`
+      );
+
+      // If user has carts and session has cart, need to merge or decide priority
+      if (userCarts.length > 0 && sessionCart) {
+        // If session cart has items, transfer them to the user's cart
+        if (sessionCart.items && sessionCart.items.length > 0) {
+          const userCartWithItems = userCarts.find(
+            (c) => c.items && c.items.length > 0
+          );
+
+          if (userCartWithItems) {
+            // Merge items from session cart to user cart
+            for (const item of sessionCart.items) {
+              await userCartWithItems.addItem(
+                item.productVariantId,
+                item.quantity,
+                item.price
+              );
+            }
+            console.log(
+              `Login: Transferred ${sessionCart.items.length} items from session cart to user cart`
+            );
+
+            // Remove the session cart
+            await Cart.findByIdAndDelete(sessionCart._id);
+
+            // Also store in session
+            req.session.cartId = userCartWithItems._id.toString();
+          } else {
+            // Transfer session cart ownership to user
+            await sessionCart.transferCart(user._id);
+            req.session.cartId = sessionCart._id.toString();
+          }
+        } else {
+          // Session cart is empty, can be removed
+          await Cart.findByIdAndDelete(sessionCart._id);
+
+          // Find the user's cart with items or newest
+          const cartToUse =
+            userCarts.find((c) => c.items && c.items.length > 0) ||
+            userCarts.sort((a, b) => b.createdAt - a.createdAt)[0];
+
+          if (cartToUse) {
+            req.session.cartId = cartToUse._id.toString();
+          }
+        }
+      } else if (sessionCart) {
+        // No user carts, but session has cart - transfer ownership
         await sessionCart.transferCart(user._id);
+        req.session.cartId = sessionCart._id.toString();
+        console.log(
+          `Login: Transferred session cart ${sessionCart._id} to user ${user._id}`
+        );
+      } else if (userCarts.length > 0) {
+        // No session cart, but user has carts - use the one with items or newest
+        const cartToUse =
+          userCarts.find((c) => c.items && c.items.length > 0) ||
+          userCarts.sort((a, b) => b.createdAt - a.createdAt)[0];
+
+        if (cartToUse) {
+          req.session.cartId = cartToUse._id.toString();
+          console.log(`Login: Using existing user cart ${cartToUse._id}`);
+        }
       }
     }
 

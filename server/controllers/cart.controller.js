@@ -64,6 +64,7 @@ export const addItemToCart = async (req, res, next) => {
   try {
     const { productVariantId, quantity } = req.body;
     console.log(`Session ID in addItemToCart: ${req.session.id}`);
+    console.log(`Cart being used: ${req.cart._id}`);
 
     if (!productVariantId || !quantity || quantity < 1) {
       throw new ApiError("Invalid product or quantity", 400);
@@ -87,6 +88,29 @@ export const addItemToCart = async (req, res, next) => {
     // Add item to cart
     await req.cart.addItem(productVariantId, quantity, price);
 
+    // Refresh cart from database to ensure consistency
+    const updatedCart = await Cart.findById(req.cart._id).populate({
+      path: "items.productVariantId",
+      model: "ProductVariant",
+      populate: [
+        {
+          path: "productId",
+          model: "Product",
+          select: "name slug brand images",
+          populate: {
+            path: "images",
+            model: "ProductImage",
+            select: "imageUrl isMain alt",
+          },
+        },
+        {
+          path: "images",
+          model: "ProductImage",
+        },
+      ],
+    });
+    req.cart = updatedCart;
+
     // Ensure session is saved before sending response
     req.session.save((err) => {
       if (err) {
@@ -108,6 +132,7 @@ export const updateCartItem = async (req, res, next) => {
     const { productVariantId } = req.params;
     const { quantity } = req.body;
     console.log(`Session ID in updateCartItem: ${req.session.id}`);
+    console.log(`Cart being used: ${req.cart._id}`);
 
     if (!quantity || quantity < 1) {
       throw new ApiError("Invalid quantity", 400);
@@ -127,6 +152,29 @@ export const updateCartItem = async (req, res, next) => {
 
     // Update the cart item
     await req.cart.updateItem(productVariantId, quantity);
+
+    // Refresh cart from database to ensure consistency
+    const updatedCart = await Cart.findById(req.cart._id).populate({
+      path: "items.productVariantId",
+      model: "ProductVariant",
+      populate: [
+        {
+          path: "productId",
+          model: "Product",
+          select: "name slug brand images",
+          populate: {
+            path: "images",
+            model: "ProductImage",
+            select: "imageUrl isMain alt",
+          },
+        },
+        {
+          path: "images",
+          model: "ProductImage",
+        },
+      ],
+    });
+    req.cart = updatedCart;
 
     // Ensure session is saved before sending response
     req.session.save((err) => {
@@ -148,9 +196,33 @@ export const removeCartItem = async (req, res, next) => {
   try {
     const { productVariantId } = req.params;
     console.log(`Session ID in removeCartItem: ${req.session.id}`);
+    console.log(`Cart being used: ${req.cart._id}`);
 
     // Remove item from cart
     await req.cart.removeItem(productVariantId);
+
+    // Refresh cart from database to ensure consistency
+    const updatedCart = await Cart.findById(req.cart._id).populate({
+      path: "items.productVariantId",
+      model: "ProductVariant",
+      populate: [
+        {
+          path: "productId",
+          model: "Product",
+          select: "name slug brand images",
+          populate: {
+            path: "images",
+            model: "ProductImage",
+            select: "imageUrl isMain alt",
+          },
+        },
+        {
+          path: "images",
+          model: "ProductImage",
+        },
+      ],
+    });
+    req.cart = updatedCart;
 
     // Ensure session is saved before sending response
     req.session.save((err) => {
@@ -171,17 +243,61 @@ export const removeCartItem = async (req, res, next) => {
 export const clearCart = async (req, res, next) => {
   try {
     console.log(`Session ID in clearCart: ${req.session.id}`);
-    await req.cart.clearCart();
+    console.log(`Cart being used: ${req.cart._id}`);
 
-    // Ensure session is saved before sending response
-    req.session.save((err) => {
-      if (err) {
-        return next(err);
+    // Check if this is an API request or from order completion
+    const isDirectApiCall =
+      req.originalUrl.includes("/api/cart") && req.method === "DELETE";
+
+    if (isDirectApiCall) {
+      // Clear items but keep the cart for API calls
+      await req.cart.clearCart();
+
+      // Refresh cart from database to ensure consistency
+      const updatedCart = await Cart.findById(req.cart._id).populate({
+        path: "items.productVariantId",
+        model: "ProductVariant",
+        populate: [
+          {
+            path: "productId",
+            model: "Product",
+            select: "name slug brand images",
+            populate: {
+              path: "images",
+              model: "ProductImage",
+              select: "imageUrl isMain alt",
+            },
+          },
+          {
+            path: "images",
+            model: "ProductImage",
+          },
+        ],
+      });
+      req.cart = updatedCart;
+
+      // Ensure session is saved before sending response
+      req.session.save((err) => {
+        if (err) {
+          return next(err);
+        }
+        return res.success(req.cart, "Cart cleared");
+      });
+    } else {
+      // For internal calls, delete the cart completely
+      // This shouldn't be reached since we're now using deleteCart() in order controller
+      await req.cart.deleteCart();
+      delete req.session.cartId;
+
+      // If we need to send a response
+      if (res.success) {
+        return res.success(null, "Cart deleted");
+      } else {
+        next();
       }
-
-      return res.success(req.cart, "Cart cleared");
-    });
+    }
   } catch (error) {
+    console.error("Error in clearCart:", error);
     next(error);
   }
 };

@@ -5,6 +5,7 @@ import DiscountCode from "../models/discountCode.model.js";
 import User from "../models/user.model.js";
 import ProductVariant from "../models/productVariant.model.js";
 import Address from "../models/address.model.js";
+import Cart from "../models/cart.model.js";
 import { ApiError } from "../middleware/response.middleware.js";
 import emailService from "../services/emailService.js";
 import crypto from "crypto";
@@ -32,6 +33,39 @@ export const createOrder = async (req, res, next) => {
       paymentMethod,
       email, // Important for guest checkout
     } = req.body;
+
+    // Double check that we're using the correct cart from the session
+    const sessionCartId = req.session.cartId;
+    console.log(
+      `Cart ID from session: ${sessionCartId}, Current cart: ${req.cart?._id}`
+    );
+
+    // If there's a mismatch, fetch the correct cart
+    if (sessionCartId && sessionCartId !== req.cart?._id?.toString()) {
+      console.log(
+        "Cart mismatch detected, fetching the correct cart from session"
+      );
+      const sessionCart = await Cart.findById(sessionCartId).populate({
+        path: "items.productVariantId",
+        populate: [
+          {
+            path: "productId",
+            select: "name images",
+            populate: { path: "images" },
+          },
+          { path: "images" },
+        ],
+      });
+
+      if (sessionCart && sessionCart.items.length > 0) {
+        console.log(
+          `Using session cart with ${
+            sessionCart.items.length
+          } items instead of cart with ${req.cart?.items?.length || 0} items`
+        );
+        req.cart = sessionCart;
+      }
+    }
 
     // Debug cart state
     console.log(
@@ -240,9 +274,7 @@ export const createOrder = async (req, res, next) => {
 
       // Increment discount usage
       await discount.use();
-    }
-
-    // Apply loyalty points if authenticated user
+    } // Apply loyalty points if authenticated user
     if (req.user && loyaltyPointsUsed > 0) {
       // Verify user has enough points
       if (req.user.loyaltyPoints < loyaltyPointsUsed) {
@@ -252,6 +284,8 @@ export const createOrder = async (req, res, next) => {
         );
       }
 
+      console.log(`Applying ${loyaltyPointsUsed} loyalty points for order`);
+
       // Convert points to VND (1 point = 1,000 VND)
       const pointsValue = loyaltyPointsUsed * 1000;
 
@@ -260,7 +294,16 @@ export const createOrder = async (req, res, next) => {
       const appliedValue = Math.min(pointsValue, maxApplicable);
       const actualPointsUsed = Math.floor(appliedValue / 1000);
 
-      orderData.loyaltyPointsUsed = actualPointsUsed;
+      // Only apply points if the actual value is greater than zero
+      if (actualPointsUsed > 0) {
+        orderData.loyaltyPointsUsed = actualPointsUsed;
+        console.log(
+          `Applied ${actualPointsUsed} loyalty points (${appliedValue} VND) to order`
+        );
+      } else {
+        console.log(`No loyalty points applied - value too small`);
+        orderData.loyaltyPointsUsed = 0;
+      }
     }
 
     // Calculate total
@@ -269,10 +312,46 @@ export const createOrder = async (req, res, next) => {
       orderData.shippingFee +
       orderData.tax -
       orderData.discountAmount -
-      orderData.loyaltyPointsUsed * 1000;
-
-    // Calculate loyalty points earned (10% of total, rounded down)
+      orderData.loyaltyPointsUsed * 1000; // Calculate loyalty points earned (10% of total, rounded down)
     orderData.loyaltyPointsEarned = Math.floor((orderData.total * 0.1) / 1000);
+
+    // Save address for future orders if requested and user is authenticated
+    if (req.user && shippingAddress.saveAddress) {
+      try {
+        // Check if the address already exists
+        const existingAddress = await Address.findOne({
+          userId: req.user._id,
+          addressLine1: shippingAddress.addressLine1,
+          city: shippingAddress.city,
+          state: shippingAddress.state,
+          postalCode: shippingAddress.postalCode,
+        });
+
+        if (!existingAddress) {
+          // Create new address
+          const newAddress = new Address({
+            userId: req.user._id,
+            fullName: shippingAddress.fullName,
+            phoneNumber: shippingAddress.phoneNumber,
+            addressLine1: shippingAddress.addressLine1,
+            addressLine2: shippingAddress.addressLine2 || "",
+            city: shippingAddress.city,
+            state: shippingAddress.state,
+            postalCode: shippingAddress.postalCode,
+            country: shippingAddress.country,
+            isDefault: false, // Don't make it default automatically
+          });
+
+          await newAddress.save();
+          console.log(`Saved new address for user ${req.user._id}`);
+        } else {
+          console.log(`Address already exists for user ${req.user._id}`);
+        }
+      } catch (error) {
+        console.error("Error saving address:", error);
+        // Don't fail the order if saving address fails
+      }
+    }
 
     // Debug log to check items
     console.log("Order items before saving:", JSON.stringify(orderData.items));
@@ -308,16 +387,33 @@ export const createOrder = async (req, res, next) => {
       req.user.loyaltyPoints -= orderData.loyaltyPointsUsed;
       req.user.loyaltyPoints += orderData.loyaltyPointsEarned;
       await req.user.save();
-    }
-
-    // Update inventory
+    } // Update inventory
     for (const item of order.items) {
       const variant = await ProductVariant.findById(item.productVariantId);
       await variant.decreaseInventory(item.quantity);
     }
 
-    // Clear the cart
-    await req.cart.clearCart();
+    // Track cart ID for new users before we delete it
+    const cartIdBeforeDelete = req.cart._id.toString();
+
+    // Delete the cart completely instead of just clearing it
+    await req.cart.deleteCart();
+
+    // Remove the cartId from session
+    delete req.session.cartId;
+
+    // If a new account was created from guest checkout, create a new empty cart for them
+    // This will ensure they have a cart when they log in later
+    if (accountCreated && guestUser) {
+      const newUserCart = new Cart({
+        userId: guestUser._id,
+        sessionId: req.session.id,
+      });
+      await newUserCart.save();
+      console.log(
+        `Created new empty cart ${newUserCart._id} for new user ${guestUser._id} after order completion`
+      );
+    }
 
     // Send order confirmation email
     try {

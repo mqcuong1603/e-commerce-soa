@@ -135,17 +135,26 @@ const CartSummary = ({
       setLoyaltyPointsEffect(null);
     }
   };
-
   // Apply loyalty points to see effect
   const handleApplyLoyaltyPoints = async () => {
-    if (!isAuthenticated || !usingLoyaltyPoints || pointsToUse <= 0) {
+    if (!isAuthenticated || !usingLoyaltyPoints) {
       setLoyaltyPointsEffect(null);
+      return;
+    }
+
+    // If pointsToUse is 0, don't waste time with API call
+    if (pointsToUse <= 0) {
+      setLoyaltyPointsEffect({
+        pointsApplied: 0,
+        pointsValue: 0,
+      });
       return;
     }
 
     setApplyingPoints(true);
 
     try {
+      console.log(`Applying ${pointsToUse} loyalty points...`);
       const result = await applyLoyaltyPoints(pointsToUse);
 
       if (result.success) {
@@ -171,9 +180,7 @@ const CartSummary = ({
 
       return () => clearTimeout(delayDebounceFn);
     }
-  }, [pointsToUse, usingLoyaltyPoints, discountAmount]);
-
-  // Handle proceed to checkout
+  }, [pointsToUse, usingLoyaltyPoints, discountAmount]); // Handle proceed to checkout
   const handleCheckout = () => {
     // If cart is empty, prevent checkout
     if (!cart.items || cart.items.length === 0) {
@@ -181,13 +188,35 @@ const CartSummary = ({
       return;
     }
 
-    // Redirect to checkout page with applied discount and loyalty points
+    // Calculate the actual loyalty points value that should be used
+    // Only use loyalty points if the toggle is on AND we have a positive points effect
+    const shouldUsePoints =
+      usingLoyaltyPoints &&
+      loyaltyPointsEffect &&
+      loyaltyPointsEffect.pointsValue > 0;
+
+    const finalPointsValue = shouldUsePoints
+      ? loyaltyPointsEffect.pointsValue
+      : 0;
+    const finalPointsToUse = shouldUsePoints ? pointsToUse : 0;
+
+    // Only pass usingLoyaltyPoints flag if we actually have points to use
+    const finalUsingLoyaltyPoints = shouldUsePoints;
+
+    console.log("Proceeding to checkout with:", {
+      discountCode,
+      discountAmount,
+      usingLoyaltyPoints: finalUsingLoyaltyPoints,
+      loyaltyPoints: finalPointsToUse,
+      pointsValue: finalPointsValue,
+    }); // Redirect to checkout page with applied discount and loyalty points
     navigate("/checkout", {
       state: {
         discountCode: discountCode,
         discountAmount: discountAmount,
-        usingLoyaltyPoints: usingLoyaltyPoints,
-        loyaltyPoints: usingLoyaltyPoints ? pointsToUse : 0,
+        usingLoyaltyPoints: finalUsingLoyaltyPoints,
+        loyaltyPoints: finalPointsToUse,
+        pointsValue: finalPointsValue,
       },
     });
   };
