@@ -1,7 +1,6 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react"; // Added useCallback
 import { Link, useNavigate } from "react-router-dom";
 import orderService from "../../services/order.service";
-import Button from "../ui/Button";
 
 /**
  * Component to display user's order history
@@ -12,47 +11,115 @@ const OrderHistory = () => {
   const [error, setError] = useState(null);
   const [pagination, setPagination] = useState({
     page: 1,
-    limit: 10,
+    limit: 5,
     total: 0,
     totalPages: 0,
   });
   const navigate = useNavigate();
 
-  // Fetch orders on component mount and when pagination changes
-  useEffect(() => {
-    fetchOrders(pagination.page, pagination.limit);
-  }, [pagination.page, pagination.limit]);
+  // Filters State
+  const [filterStatus, setFilterStatus] = useState(""); // e.g., "pending", "delivered"
+  const [filterStartDate, setFilterStartDate] = useState("");
+  const [filterEndDate, setFilterEndDate] = useState("");
 
-  // Fetch orders from API
-  const fetchOrders = async (page, limit) => {
-    try {
-      setLoading(true);
-      setError(null);
+  // Debounce timer for date filters
+  const [debounceTimeout, setDebounceTimeout] = useState(null);
 
-      const response = await orderService.getUserOrders({
-        page,
-        limit,
-      });
+  // Fetch orders from API - wrapped in useCallback to prevent re-creation on every render
+  const fetchOrders = useCallback(
+    async (page, limit, status, startDate, endDate) => {
+      try {
+        setLoading(true);
+        setError(null);
 
-      if (response.success) {
-        setOrders(response.data.orders || []);
-        setPagination(response.data.pagination || pagination);
-      } else {
-        throw new Error(response.message || "Failed to fetch orders");
+        const params = { page, limit };
+        if (status) params.status = status;
+        if (startDate) params.startDate = startDate;
+        if (endDate) params.endDate = endDate;
+
+        const response = await orderService.getUserOrders(params);
+
+        if (response.success) {
+          setOrders(response.data.orders || []);
+          setPagination(
+            response.data.pagination || {
+              page: 1,
+              limit: 5,
+              total: 0,
+              totalPages: 0,
+            }
+          );
+        } else {
+          throw new Error(response.message || "Failed to fetch orders");
+        }
+      } catch (err) {
+        console.error("Error fetching orders:", err);
+        setError("Failed to load orders. Please try again.");
+        setOrders([]); // Clear orders on error
+        setPagination({ page: 1, limit: 5, total: 0, totalPages: 0 }); // Reset pagination
+      } finally {
+        setLoading(false);
       }
-    } catch (err) {
-      console.error("Error fetching orders:", err);
-      setError("Failed to load orders. Please try again.");
-    } finally {
-      setLoading(false);
-    }
-  };
+    },
+    []
+  ); // Empty dependency array as it doesn't depend on props/state from this component directly
+
+  // Effect for initial load and when filters/pagination change
+  useEffect(() => {
+    fetchOrders(
+      pagination.page,
+      pagination.limit,
+      filterStatus,
+      filterStartDate,
+      filterEndDate
+    );
+  }, [
+    pagination.page,
+    pagination.limit,
+    filterStatus,
+    filterStartDate,
+    filterEndDate,
+    fetchOrders,
+  ]);
 
   // Handle page change
   const handlePageChange = (newPage) => {
     if (newPage >= 1 && newPage <= pagination.totalPages) {
-      setPagination({ ...pagination, page: newPage });
+      setPagination((prev) => ({ ...prev, page: newPage }));
     }
+  };
+
+  // Handle status filter change
+  const handleStatusChange = (e) => {
+    setFilterStatus(e.target.value);
+    setPagination((prev) => ({ ...prev, page: 1 })); // Reset to page 1 on filter change
+  };
+
+  // Handle date filter changes with debounce
+  const handleDateChange = (e, dateType) => {
+    const value = e.target.value;
+    if (dateType === "start") {
+      setFilterStartDate(value);
+    } else {
+      setFilterEndDate(value);
+    }
+
+    if (debounceTimeout) {
+      clearTimeout(debounceTimeout);
+    }
+
+    setDebounceTimeout(
+      setTimeout(() => {
+        setPagination((prev) => ({ ...prev, page: 1 })); // Reset to page 1
+      }, 1000) // 1 second debounce
+    );
+  };
+
+  const clearFilters = () => {
+    setFilterStatus("");
+    setFilterStartDate("");
+    setFilterEndDate("");
+    setPagination((prev) => ({ ...prev, page: 1 }));
   };
 
   // Format order status for display
@@ -66,301 +133,343 @@ const OrderHistory = () => {
   const formatDate = (dateString) => {
     if (!dateString) return "";
     const date = new Date(dateString);
-    return new Intl.DateTimeFormat("en-US", {
+    return new Intl.DateTimeFormat("en-GB", {
       year: "numeric",
       month: "short",
-      day: "numeric",
+      day: "2-digit", // Changed to 2-digit for day
     }).format(date);
   };
 
-  // Format price with comma for thousands
+  // Format price with comma for thousands and currency symbol
   const formatPrice = (price) => {
-    return price?.toLocaleString("en-US") || "0";
+    return (
+      price?.toLocaleString("vi-VN", { style: "currency", currency: "VND" }) ||
+      "0 đ"
+    );
   };
 
-  // Get appropriate status badge color based on status
-  const getStatusColor = (status) => {
-    switch (status) {
+  // Get appropriate status badge color based on status (Bootstrap theme)
+  const getStatusBadge = (status) => {
+    let badgeClass = "badge fs-7 "; // Added fs-7 for slightly smaller badge text
+    switch (status?.toLowerCase()) {
       case "pending":
-        return "bg-yellow-100 text-yellow-800";
+        badgeClass += "bg-warning text-dark";
+        break;
       case "confirmed":
-        return "bg-blue-100 text-blue-800";
+        badgeClass += "bg-info text-dark";
+        break;
       case "processing":
-        return "bg-indigo-100 text-indigo-800";
+        badgeClass += "bg-primary";
+        break;
       case "shipping":
-        return "bg-purple-100 text-purple-800";
+        badgeClass += "bg-secondary";
+        break;
       case "delivered":
-        return "bg-green-100 text-green-800";
+        badgeClass += "bg-success";
+        break;
       case "cancelled":
-        return "bg-red-100 text-red-800";
+        badgeClass += "bg-danger";
+        break;
       default:
-        return "bg-gray-100 text-gray-800";
+        badgeClass += "bg-light text-dark";
     }
+    return <span className={badgeClass}>{formatStatus(status)}</span>;
   };
 
   // Render loading state
   if (loading && orders.length === 0) {
     return (
-      <div className="flex justify-center items-center h-48">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary-600"></div>
+      <div
+        className="d-flex justify-content-center align-items-center"
+        style={{ minHeight: "300px" }}
+      >
+        <div className="spinner-border text-primary" role="status">
+          <span className="visually-hidden">Loading...</span>
+        </div>
       </div>
     );
   }
 
+  const orderStatusOptions = [
+    { value: "", label: "All Statuses" },
+    { value: "pending", label: "Pending" },
+    { value: "confirmed", label: "Confirmed" },
+    { value: "processing", label: "Processing" },
+    { value: "shipping", label: "Shipping" },
+    { value: "delivered", label: "Delivered" },
+    { value: "cancelled", label: "Cancelled" },
+  ];
+
   return (
-    <div className="bg-white rounded-lg shadow-md p-6">
-      <h2 className="text-xl font-bold mb-6">Order History</h2>
+    <div className="order-history-container">
+      {/* Filter Section */}
+      <div className="card shadow-sm border-0 rounded-4 mb-4">
+        <div className="card-body p-4">
+          <h5 className="card-title fw-bold text-primary mb-3">
+            <i className="bi bi-funnel-fill me-2"></i>Filter Orders
+          </h5>
+          <div className="row g-3 align-items-end">
+            <div className="col-md-4">
+              <label
+                htmlFor="statusFilter"
+                className="form-label small fw-medium"
+              >
+                Status
+              </label>
+              <select
+                id="statusFilter"
+                className="form-select form-select-sm"
+                value={filterStatus}
+                onChange={handleStatusChange}
+              >
+                {orderStatusOptions.map((opt) => (
+                  <option key={opt.value} value={opt.value}>
+                    {opt.label}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div className="col-md-3">
+              <label
+                htmlFor="startDateFilter"
+                className="form-label small fw-medium"
+              >
+                From Date
+              </label>
+              <input
+                type="date"
+                id="startDateFilter"
+                className="form-control form-control-sm"
+                value={filterStartDate}
+                onChange={(e) => handleDateChange(e, "start")}
+                max={filterEndDate || new Date().toISOString().split("T")[0]} // Prevent start date after end date
+              />
+            </div>
+            <div className="col-md-3">
+              <label
+                htmlFor="endDateFilter"
+                className="form-label small fw-medium"
+              >
+                To Date
+              </label>
+              <input
+                type="date"
+                id="endDateFilter"
+                className="form-control form-control-sm"
+                value={filterEndDate}
+                onChange={(e) => handleDateChange(e, "end")}
+                min={filterStartDate} // Prevent end date before start date
+                max={new Date().toISOString().split("T")[0]} // Prevent future dates
+              />
+            </div>
+            <div className="col-md-2 d-flex align-items-end">
+              <button
+                className="btn btn-sm btn-outline-secondary w-100"
+                onClick={clearFilters}
+                title="Clear all filters"
+              >
+                <i className="bi bi-x-lg me-1"></i> Clear
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
 
       {/* Error message */}
       {error && (
-        <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
-          {error}
+        <div
+          className="alert alert-danger d-flex align-items-center"
+          role="alert"
+        >
+          <i className="bi bi-exclamation-triangle-fill me-2"></i>
+          <div>{error}</div>
         </div>
       )}
 
-      {/* Order list */}
+      {/* Order list as cards */}
       {orders.length > 0 ? (
-        <div className="overflow-x-auto">
-          <table className="min-w-full divide-y divide-gray-200">
-            <thead className="bg-gray-50">
-              <tr>
-                <th
-                  scope="col"
-                  className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+        <div className="row row-cols-1 g-4">
+          {orders.map((order) => (
+            <div key={order._id} className="col">
+              <div className="card h-100 shadow-sm border-0 rounded-4 overflow-hidden hover-lift">
+                <div
+                  className={`card-header bg-light border-bottom-0 p-3 d-flex justify-content-between align-items-center`}
                 >
-                  Order
-                </th>
-                <th
-                  scope="col"
-                  className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                >
-                  Date
-                </th>
-                <th
-                  scope="col"
-                  className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                >
-                  Status
-                </th>
-                <th
-                  scope="col"
-                  className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                >
-                  Total
-                </th>
-                <th
-                  scope="col"
-                  className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                >
-                  Items
-                </th>
-                <th
-                  scope="col"
-                  className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider"
-                >
-                  Actions
-                </th>
-              </tr>
-            </thead>
-            <tbody className="bg-white divide-y divide-gray-200">
-              {orders.map((order) => (
-                <tr key={order._id} className="hover:bg-gray-50">
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="text-sm font-medium text-gray-900">
-                      #{order.orderNumber}
+                  <h5 className="mb-0 fw-bold text-primary">
+                    Order #{order.orderNumber}
+                  </h5>
+                  {getStatusBadge(
+                    Array.isArray(order.status) && order.status.length > 0
+                      ? order.status[0]?.status
+                      : "pending"
+                  )}
+                </div>
+                <div className="card-body p-4">
+                  <div className="row g-3">
+                    <div className="col-md-6">
+                      <p className="mb-1 text-muted small">Order Date</p>
+                      <p className="fw-medium mb-0">
+                        <i className="bi bi-calendar-event me-2"></i>
+                        {formatDate(order.createdAt)}
+                      </p>
                     </div>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="text-sm text-gray-500">
-                      {formatDate(order.createdAt)}
+                    <div className="col-md-6">
+                      <p className="mb-1 text-muted small">Order Total</p>
+                      <p className="fw-bold fs-5 mb-0 text-success">
+                        <i className="bi bi-credit-card me-2"></i>
+                        {formatPrice(order.total)}
+                      </p>
                     </div>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    {" "}
-                    <span
-                      className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getStatusColor(
-                        Array.isArray(order.status) && order.status.length > 0
-                          ? order.status[0]?.status
-                          : "pending"
-                      )}`}
-                    >
-                      {formatStatus(
-                        Array.isArray(order.status) && order.status.length > 0
-                          ? order.status[0]?.status
-                          : "pending"
-                      )}
-                    </span>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                    ₫{formatPrice(order.total)}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="text-sm text-gray-500">
-                      {order.items.length}{" "}
-                      {order.items.length === 1 ? "item" : "items"}
-                    </div>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-right text-sm">
+                  </div>
+
+                  <hr className="my-3" />
+
+                  <p className="mb-1 text-muted small">Items</p>
+                  <ul className="list-unstyled mb-3">
+                    {order.items.slice(0, 2).map((item, index) => (
+                      <li
+                        key={item._id || index} // Use item._id if available, fallback to index
+                        className="d-flex align-items-center mb-2 p-2 bg-light rounded-2"
+                      >
+                        {/* Image removed */}
+                        <div className="flex-grow-1">
+                          <p
+                            className="fw-medium mb-0 text-truncate"
+                            title={item.productName || "N/A"} // Use productName for title
+                          >
+                            {item.productName || "N/A"}{" "}
+                            {/* Use productName for display */}
+                          </p>
+                          <p className="text-muted small mb-0">
+                            Qty: {item.quantity} -{" "}
+                            {formatPrice(item.totalPrice)}{" "}
+                            {/* Use item.totalPrice */}
+                          </p>
+                        </div>
+                      </li>
+                    ))}
+                    {order.items.length > 2 && (
+                      <li className="text-muted small mt-1">
+                        + {order.items.length - 2} more item(s)
+                      </li>
+                    )}
+                  </ul>
+
+                  <div className="d-flex justify-content-end">
                     <Link
                       to={`/orders/${order._id}`}
-                      className="inline-flex items-center px-3 py-1.5 border border-transparent text-xs font-medium rounded-md text-primary-700 bg-primary-100 hover:bg-primary-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500"
+                      className="btn btn-primary rounded-pill px-4 py-2 d-inline-flex align-items-center shadow-sm"
                     >
-                      View Details
+                      <i className="bi bi-eye-fill me-2"></i>View Details
                     </Link>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+                  </div>
+                </div>
+                {order.shippingAddress && (
+                  <div className="card-footer bg-light-subtle border-top-0 p-3">
+                    <p className="mb-1 text-muted small">Shipping To</p>
+                    <p className="mb-0 fw-medium small text-truncate">
+                      <i className="bi bi-truck me-2"></i>
+                      {order.shippingAddress.address},{" "}
+                      {order.shippingAddress.city}
+                    </p>
+                  </div>
+                )}
+              </div>
+            </div>
+          ))}
         </div>
       ) : (
-        <div className="text-center py-8 bg-gray-50 rounded-lg">
-          <p className="text-gray-500 mb-4">You don't have any orders yet.</p>
-          <Link to="/products">
-            <Button variant="primary">Start Shopping</Button>
-          </Link>
-        </div>
+        !loading && (
+          <div className="text-center py-5 bg-light rounded-4 shadow-sm">
+            <i className="bi bi-emoji-frown display-1 text-muted mb-3"></i>
+            <h4 className="fw-bold text-secondary">No Orders Found</h4>
+            <p className="text-muted mb-4">
+              It looks like you haven't placed any orders yet.
+            </p>
+            <Link
+              to="/products"
+              className="btn btn-primary btn-lg rounded-pill px-5"
+            >
+              <i className="bi bi-cart-plus-fill me-2"></i>Start Shopping Now
+            </Link>
+          </div>
+        )
       )}
 
-      {/* Pagination */}
+      {/* Pagination - Bootstrap Styled */}
       {pagination && pagination.totalPages > 1 && (
-        <div className="flex items-center justify-between border-t border-gray-200 bg-white px-4 py-3 sm:px-6 mt-4">
-          <div className="flex flex-1 justify-between sm:hidden">
-            <Button
-              variant="outlined"
-              size="small"
-              onClick={() => handlePageChange(pagination.page - 1)}
-              disabled={!pagination.hasPrevPage}
+        <nav
+          aria-label="Order history pagination"
+          className="mt-5 d-flex justify-content-center"
+        >
+          <ul className="pagination pagination-lg shadow-sm">
+            <li
+              className={`page-item ${
+                !pagination.hasPrevPage ? "disabled" : ""
+              }`}
             >
-              Previous
-            </Button>
-            <Button
-              variant="outlined"
-              size="small"
-              onClick={() => handlePageChange(pagination.page + 1)}
-              disabled={!pagination.hasNextPage}
-            >
-              Next
-            </Button>
-          </div>
-          <div className="hidden sm:flex sm:flex-1 sm:items-center sm:justify-between">
-            <div>
-              <p className="text-sm text-gray-700">
-                Showing{" "}
-                <span className="font-medium">
-                  {(pagination.page - 1) * pagination.limit + 1}
-                </span>{" "}
-                to{" "}
-                <span className="font-medium">
-                  {Math.min(
-                    pagination.page * pagination.limit,
-                    pagination.total
-                  )}
-                </span>{" "}
-                of <span className="font-medium">{pagination.total}</span>{" "}
-                results
-              </p>
-            </div>
-            <div>
-              <nav
-                className="isolate inline-flex -space-x-px rounded-md shadow-sm"
-                aria-label="Pagination"
+              <button
+                className="page-link"
+                onClick={() => handlePageChange(pagination.page - 1)}
+                disabled={!pagination.hasPrevPage}
               >
-                <button
-                  onClick={() => handlePageChange(pagination.page - 1)}
-                  disabled={!pagination.hasPrevPage}
-                  className={`relative inline-flex items-center rounded-l-md px-2 py-2 text-gray-400 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0 ${
-                    !pagination.hasPrevPage
-                      ? "opacity-50 cursor-not-allowed"
-                      : ""
-                  }`}
-                >
-                  <span className="sr-only">Previous</span>
-                  <svg
-                    className="h-5 w-5"
-                    viewBox="0 0 20 20"
-                    fill="currentColor"
-                    aria-hidden="true"
+                <i className="bi bi-chevron-left"></i>
+                <span className="visually-hidden">Previous</span>
+              </button>
+            </li>
+
+            {[...Array(pagination.totalPages)].map((_, index) => {
+              const pageNumber = index + 1;
+              const isCurrentPage = pageNumber === pagination.page;
+              if (
+                pageNumber === 1 ||
+                pageNumber === pagination.totalPages ||
+                (pageNumber >= pagination.page - 2 &&
+                  pageNumber <= pagination.page + 2) // Show more pages around current
+              ) {
+                return (
+                  <li
+                    key={pageNumber}
+                    className={`page-item ${isCurrentPage ? "active" : ""}`}
                   >
-                    <path
-                      fillRule="evenodd"
-                      d="M12.79 5.23a.75.75 0 01-.02 1.06L8.832 10l3.938 3.71a.75.75 0 11-1.04 1.08l-4.5-4.25a.75.75 0 010-1.08l4.5-4.25a.75.75 0 011.06.02z"
-                      clipRule="evenodd"
-                    />
-                  </svg>
-                </button>
+                    <button
+                      className="page-link"
+                      onClick={() => handlePageChange(pageNumber)}
+                    >
+                      {pageNumber}
+                    </button>
+                  </li>
+                );
+              } else if (
+                (pageNumber === 2 && pagination.page > 4) ||
+                (pageNumber === pagination.totalPages - 1 &&
+                  pagination.page < pagination.totalPages - 3)
+              ) {
+                return (
+                  <li key={pageNumber} className="page-item disabled">
+                    <span className="page-link">...</span>
+                  </li>
+                );
+              }
+              return null;
+            })}
 
-                {/* Page numbers */}
-                {[...Array(pagination.totalPages)].map((_, index) => {
-                  const pageNumber = index + 1;
-                  const isCurrentPage = pageNumber === pagination.page;
-
-                  // Show current page, first page, last page, and pages around current page
-                  if (
-                    pageNumber === 1 ||
-                    pageNumber === pagination.totalPages ||
-                    (pageNumber >= pagination.page - 1 &&
-                      pageNumber <= pagination.page + 1)
-                  ) {
-                    return (
-                      <button
-                        key={pageNumber}
-                        onClick={() => handlePageChange(pageNumber)}
-                        className={`relative inline-flex items-center px-4 py-2 text-sm font-semibold ${
-                          isCurrentPage
-                            ? "z-10 bg-primary-600 text-white focus:z-20 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-600"
-                            : "text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0"
-                        }`}
-                      >
-                        {pageNumber}
-                      </button>
-                    );
-                  } else if (
-                    (pageNumber === 2 && pagination.page > 3) ||
-                    (pageNumber === pagination.totalPages - 1 &&
-                      pagination.page < pagination.totalPages - 2)
-                  ) {
-                    // Show ellipsis
-                    return (
-                      <span
-                        key={pageNumber}
-                        className="relative inline-flex items-center px-4 py-2 text-sm font-semibold text-gray-700 ring-1 ring-inset ring-gray-300 focus:outline-offset-0"
-                      >
-                        ...
-                      </span>
-                    );
-                  }
-
-                  return null;
-                })}
-
-                <button
-                  onClick={() => handlePageChange(pagination.page + 1)}
-                  disabled={!pagination.hasNextPage}
-                  className={`relative inline-flex items-center rounded-r-md px-2 py-2 text-gray-400 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0 ${
-                    !pagination.hasNextPage
-                      ? "opacity-50 cursor-not-allowed"
-                      : ""
-                  }`}
-                >
-                  <span className="sr-only">Next</span>
-                  <svg
-                    className="h-5 w-5"
-                    viewBox="0 0 20 20"
-                    fill="currentColor"
-                    aria-hidden="true"
-                  >
-                    <path
-                      fillRule="evenodd"
-                      d="M7.21 14.77a.75.75 0 01.02-1.06L11.168 10 7.23 6.29a.75.75 0 01.02-1.06L7.23 6.29a.75.75 0 111.06-1.06l4.5 4.25a.75.75 0 010 1.08l-4.5 4.25a.75.75 0 01-1.06-.02z"
-                      clipRule="evenodd"
-                    />
-                  </svg>
-                </button>
-              </nav>
-            </div>
-          </div>
-        </div>
+            <li
+              className={`page-item ${
+                !pagination.hasNextPage ? "disabled" : ""
+              }`}
+            >
+              <button
+                className="page-link"
+                onClick={() => handlePageChange(pagination.page + 1)}
+                disabled={!pagination.hasNextPage}
+              >
+                <i className="bi bi-chevron-right"></i>
+                <span className="visually-hidden">Next</span>
+              </button>
+            </li>
+          </ul>
+        </nav>
       )}
     </div>
   );

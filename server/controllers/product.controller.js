@@ -403,146 +403,196 @@ export const getProductsByCategory = async (req, res, next) => {
     const sortField = req.query.sortBy || "createdAt";
     const sortOrder = req.query.order === "asc" ? 1 : -1;
 
-    // Changed from const to let
-    let sortOptions = {};
-    sortOptions[sortField] = sortOrder;
-
-    // Initialize products variable
-    let products = [];
+    const brandsQuery = req.query.brands; // e.g., "Dell,HP"
+    const minPrice = req.query.minPrice ? parseFloat(req.query.minPrice) : 0;
+    const maxPrice = req.query.maxPrice
+      ? parseFloat(req.query.maxPrice)
+      : Number.MAX_SAFE_INTEGER;
 
     // Find category by slug
     const category = await Category.findOne({ slug });
-
     if (!category) {
       throw new ApiError("Category not found", 404);
     }
 
     // Find all child categories (if any)
     const childCategories = await Category.find({ parentId: category._id });
-
-    // Create array of category IDs including the parent and children
     const categoryIds = [category._id, ...childCategories.map((c) => c._id)];
 
-    // Query products in this category and all its children
-    const query = {
+    // Initial match stage
+    const initialMatch = {
       categories: { $in: categoryIds },
       isActive: true,
     };
 
-    // Count total products in category
-    const total = await Product.countDocuments(query);
-
-    // Custom sorting logic for prices to handle both regular and sale prices
-    if (sortField === "price") {
-      if (sortOrder === 1) {
-        // ascending
-        products = await Product.aggregate([
-          { $match: query },
-          {
-            $addFields: {
-              effectivePrice: {
-                $cond: [
-                  {
-                    $and: [
-                      { $ne: ["$salePrice", null] },
-                      { $gt: ["$salePrice", 0] },
-                    ],
-                  },
-                  "$salePrice",
-                  "$basePrice",
-                ],
-              },
-            },
-          },
-          { $sort: { effectivePrice: 1 } },
-          { $skip: skip },
-          { $limit: limit },
-        ]);
-
-        // Populate necessary fields
-        await Product.populate(products, {
-          path: "variants",
-          match: { isActive: true },
-        });
-
-        await Product.populate(products, {
-          path: "images",
-          match: { isMain: true },
-          options: { limit: 1 },
-        });
-      } else {
-        // descending
-        products = await Product.aggregate([
-          { $match: query },
-          {
-            $addFields: {
-              effectivePrice: {
-                $cond: [
-                  {
-                    $and: [
-                      { $ne: ["$salePrice", null] },
-                      { $gt: ["$salePrice", 0] },
-                    ],
-                  },
-                  "$salePrice",
-                  "$basePrice",
-                ],
-              },
-            },
-          },
-          { $sort: { effectivePrice: -1 } },
-          { $skip: skip },
-          { $limit: limit },
-        ]);
-
-        // Same population code as above
-        await Product.populate(products, {
-          path: "variants",
-          match: { isActive: true },
-        });
-
-        await Product.populate(products, {
-          path: "images",
-          match: { isMain: true },
-          options: { limit: 1 },
-        });
+    if (brandsQuery) {
+      const brandNames = brandsQuery
+        .split(",")
+        .map((b) => b.trim())
+        .filter((b) => b.length > 0);
+      if (brandNames.length > 0) {
+        initialMatch.brand = {
+          $in: brandNames.map((name) => new RegExp(`^${name}$`, "i")),
+        };
       }
-    } else {
-      // For non-price sorting, use the standard approach
-      sortOptions[sortField] = sortOrder;
-      products = await Product.find(query)
-        .populate({
-          path: "variants",
-          match: { isActive: true },
-        })
-        .populate({
-          path: "images",
-          match: { isMain: true },
-          options: { limit: 1 },
-        })
-        .sort(sortOptions)
-        .skip(skip)
-        .limit(limit);
     }
+
+    const pipeline = [];
+    pipeline.push({ $match: initialMatch });
+
+    // Add stages for price filtering if minPrice or maxPrice is present
+    if (req.query.minPrice || req.query.maxPrice) {
+      pipeline.push(
+        {
+          $lookup: {
+            from: "productvariants",
+            let: { productId: "$_id" },
+            pipeline: [
+              {
+                $match: {
+                  $expr: { $eq: ["$productId", "$$productId"] },
+                  isActive: true,
+                },
+              },
+            ],
+            as: "allVariants",
+          },
+        },
+        {
+          $addFields: {
+            effectivePrice: {
+              // Product's own effective price
+              $cond: [
+                {
+                  $and: [
+                    { $ne: ["$salePrice", null] },
+                    { $gt: ["$salePrice", 0] },
+                  ],
+                },
+                "$salePrice",
+                "$basePrice",
+              ],
+            },
+            hasMatchingVariantPrice: {
+              // Check if any variant price matches
+              $gt: [
+                {
+                  $size: {
+                    $filter: {
+                      input: "$allVariants",
+                      as: "variant",
+                      cond: {
+                        $and: [
+                          {
+                            $gte: [
+                              {
+                                // Variant's effective price
+                                $cond: [
+                                  {
+                                    $and: [
+                                      { $ne: ["$$variant.salePrice", null] },
+                                      { $gt: ["$$variant.salePrice", 0] },
+                                    ],
+                                  },
+                                  "$$variant.salePrice",
+                                  "$$variant.price",
+                                ],
+                              },
+                              minPrice,
+                            ],
+                          },
+                          {
+                            $lte: [
+                              {
+                                // Variant's effective price
+                                $cond: [
+                                  {
+                                    $and: [
+                                      { $ne: ["$$variant.salePrice", null] },
+                                      { $gt: ["$$variant.salePrice", 0] },
+                                    ],
+                                  },
+                                  "$$variant.salePrice",
+                                  "$$variant.price",
+                                ],
+                              },
+                              maxPrice,
+                            ],
+                          },
+                        ],
+                      },
+                    },
+                  },
+                },
+                0,
+              ],
+            },
+          },
+        },
+        {
+          $match: {
+            $or: [
+              // Product's own price is within range
+              { effectivePrice: { $gte: minPrice, $lte: maxPrice } },
+              // Or any of its variants' price is within range
+              { hasMatchingVariantPrice: true },
+            ],
+          },
+        }
+      );
+    } else {
+      // If no price filter, still add effectivePrice for potential sorting
+      pipeline.push({
+        $addFields: {
+          effectivePrice: {
+            $cond: [
+              {
+                $and: [
+                  { $ne: ["$salePrice", null] },
+                  { $gt: ["$salePrice", 0] },
+                ],
+              },
+              "$salePrice",
+              "$basePrice",
+            ],
+          },
+        },
+      });
+    }
+
+    // Count total matching documents
+    const countPipeline = [...pipeline, { $count: "total" }];
+    const countResult = await Product.aggregate(countPipeline);
+    const total = countResult.length > 0 ? countResult[0].total : 0;
+
+    // Add sorting, skip, and limit for fetching actual products
+    const sortOptions = {};
+    if (sortField === "price") {
+      sortOptions.effectivePrice = sortOrder;
+    } else {
+      sortOptions[sortField] = sortOrder;
+    }
+    pipeline.push({ $sort: sortOptions });
+    pipeline.push({ $skip: skip });
+    pipeline.push({ $limit: limit });
+
+    let products = await Product.aggregate(pipeline);
+
+    // Populate variants and images
+    products = await Product.populate(products, [
+      { path: "variants", match: { isActive: true } },
+      { path: "images", match: { isMain: true }, options: { limit: 1 } },
+    ]);
 
     // Add variant count to each product
     for (const product of products) {
-      // Count total variants for this product (without loading them all)
       const variantCount = await ProductVariant.countDocuments({
         productId: product._id,
         isActive: true,
       });
-
-      // Handle both Mongoose documents and aggregation results
-      if (product._doc) {
-        product._doc.variantCount = variantCount;
-      } else {
-        // For aggregation results (from price sorting), add directly to product object
-        product.variantCount = variantCount;
-      }
+      product.variantCount = variantCount; // Assign directly as aggregation results don't have _doc
     }
 
-    // Calculate pagination info
     const totalPages = Math.ceil(total / limit);
     const hasNextPage = page < totalPages;
     const hasPrevPage = page > 1;

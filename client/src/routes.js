@@ -29,6 +29,7 @@ import NotFoundPage from "./pages/NotFoundPage";
 import OrderSuccessPage from "./pages/OrderSuccessPage";
 import AdminDiscountPage from "./pages/admin/DiscountPage";
 import UserManagement from "./pages/admin/UserManagement";
+import AboutPage from "./pages/AboutPage"; // Add this line
 
 // Auth guards
 import ProtectedRoute from "./components/auth/ProtectedRoute";
@@ -64,6 +65,10 @@ const routes = [
       {
         path: "category/:slug",
         element: <CategoryPage />,
+      },
+      {
+        path: "about", // Add this route block
+        element: <AboutPage />,
       },
       {
         path: "cart",

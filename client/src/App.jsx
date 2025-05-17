@@ -34,6 +34,7 @@ import OrderDetailPage from "./pages/user/OrderDetailPage";
 import NotFoundPage from "./pages/NotFoundPage";
 import AuthCallback from "./pages/auth/AuthCallback";
 import OrderSuccessPage from "./pages/OrderSuccessPage";
+import AboutPage from "./pages/AboutPage"; // Add this import
 
 // Admin Pages
 import AdminDashboard from "./pages/admin/Dashboard";
@@ -99,9 +100,10 @@ const App = () => {
               <Route path="products" element={<ProductsPage />} />
               <Route path="products/:slug" element={<ProductDetailPage />} />
               <Route path="category/:slug" element={<CategoryPage />} />
+              <Route path="about" element={<AboutPage />} />{" "}
+              {/* Add this route */}
               <Route path="cart" element={<CartPage />} />
               <Route path="order-success" element={<OrderSuccessPage />} />
-
               {/* Auth Routes */}
               <Route path="login" element={<LoginPage />} />
               <Route path="register" element={<RegisterPage />} />
@@ -110,7 +112,6 @@ const App = () => {
                 path="reset-password/:token"
                 element={<ResetPasswordPage />}
               />
-
               {/* Protected Routes */}
               <Route path="checkout" element={<CheckoutPage />} />
               <Route
@@ -137,7 +138,6 @@ const App = () => {
                   </ProtectedRoute>
                 }
               />
-
               {/* 404 Not Found */}
               <Route path="*" element={<NotFoundPage />} />
             </Route>

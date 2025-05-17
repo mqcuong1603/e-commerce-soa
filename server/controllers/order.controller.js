@@ -487,44 +487,118 @@ export const getUserOrders = async (req, res, next) => {
     const page = parseInt(req.query.page) || 1;
     const limit = parseInt(req.query.limit) || 10;
     const skip = (page - 1) * limit;
+    const { status, startDate, endDate } = req.query;
 
-    // Only get orders for the authenticated user
-    const total = await Order.countDocuments({ userId: req.user._id });
-    const orders = await Order.find({ userId: req.user._id })
-      .select("orderNumber createdAt total paymentStatus items")
-      .populate("status") // Current status (virtual)
-      .populate("statusHistory") // Also populate statusHistory for consistency
+    const queryConditions = { userId: req.user._id };
+
+    if (startDate && endDate) {
+      queryConditions.createdAt = {
+        $gte: new Date(startDate),
+        $lte: new Date(
+          new Date(endDate).setDate(new Date(endDate).getDate() + 1)
+        ),
+      };
+    } else if (startDate) {
+      queryConditions.createdAt = { $gte: new Date(startDate) };
+    } else if (endDate) {
+      queryConditions.createdAt = {
+        $lte: new Date(
+          new Date(endDate).setDate(new Date(endDate).getDate() + 1)
+        ),
+      };
+    }
+
+    let ordersQuery = Order.find(queryConditions)
+      .populate({
+        path: "items.productVariantId",
+        model: "ProductVariant",
+        populate: [
+          {
+            path: "productId",
+            model: "Product",
+            select: "name slug images", // Ensure 'images' is selected for product
+            populate: {
+              path: "images",
+              model: "ProductImage",
+              select: "imageUrl isMain",
+            },
+          },
+          {
+            path: "images", // Populate images of the variant itself
+            model: "ProductImage",
+            select: "imageUrl isMain",
+          },
+        ],
+      })
+      .populate("statusHistory")
       .sort({ createdAt: -1 })
       .skip(skip)
       .limit(limit);
 
-    // Ensure status consistency
-    for (const order of orders) {
-      if (
-        !order.status ||
-        (Array.isArray(order.status) && order.status.length === 0)
-      ) {
-        if (order.statusHistory && order.statusHistory.length > 0) {
-          // Use statusHistory if available
-          order.status = [{ status: order.statusHistory[0].status }];
+    const ordersFromDB = await ordersQuery.exec();
+    const totalOrders = await Order.countDocuments(queryConditions);
+
+    let processedOrders = ordersFromDB.map((order) => {
+      const orderObject = order.toObject ? order.toObject() : { ...order };
+      orderObject.items = orderObject.items.map((item) => {
+        let productImageUrl = null;
+        const variant = item.productVariantId;
+
+        if (variant) {
+          // Check variant images
+          if (variant.images && variant.images.length > 0) {
+            const mainImage = variant.images.find((img) => img.isMain);
+            productImageUrl = mainImage
+              ? mainImage.imageUrl
+              : variant.images[0].imageUrl;
+          }
+          // If no variant image, check product images (via populated productId)
+          else if (
+            variant.productId &&
+            variant.productId.images &&
+            variant.productId.images.length > 0
+          ) {
+            const mainImage = variant.productId.images.find(
+              (img) => img.isMain
+            );
+            productImageUrl = mainImage
+              ? mainImage.imageUrl
+              : variant.productId.images[0].imageUrl;
+          }
         }
-      }
+        return {
+          ...item,
+          productImageUrl:
+            productImageUrl || "/images/placeholders/product-placeholder.png", // Fallback placeholder
+        };
+      });
+      return orderObject;
+    });
+
+    let filteredOrders = processedOrders;
+    if (status) {
+      filteredOrders = processedOrders.filter((order) => {
+        if (order.statusHistory && order.statusHistory.length > 0) {
+          const currentStatusEntry = order.statusHistory.sort(
+            (a, b) => new Date(b.updatedAt) - new Date(a.updatedAt)
+          )[0];
+          return currentStatusEntry && currentStatusEntry.status === status;
+        }
+        return false;
+      });
     }
 
-    // Calculate pagination info
-    const totalPages = Math.ceil(total / limit);
-    const hasNextPage = page < totalPages;
-    const hasPrevPage = page > 1;
+    const finalTotal = status ? filteredOrders.length : totalOrders;
 
-    return res.success({
-      orders,
+    res.success({
+      orders: filteredOrders,
       pagination: {
         page,
         limit,
-        total,
-        totalPages,
-        hasNextPage,
-        hasPrevPage,
+        total: finalTotal,
+        totalPages: Math.ceil(finalTotal / limit),
+        hasNextPage: page * limit < finalTotal,
+        hasPrevPage: page > 1,
       },
     });
   } catch (error) {
