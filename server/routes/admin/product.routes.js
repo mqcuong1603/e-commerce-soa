@@ -45,4 +45,16 @@ router.delete(
   productController.deleteProductImage
 );
 
+// Update product image
+router.put(
+  "/:productId/images/:imageId",
+  productController.updateProductImage
+);
+
+// Product Variant Routes
+router.get("/:productId/variants", productController.getProductVariants);
+router.post("/:productId/variants", productController.createProductVariant);
+router.put("/:productId/variants/:variantId", productController.updateProductVariant);
+router.delete("/:productId/variants/:variantId", productController.deleteProductVariant);
+
 export default router;
