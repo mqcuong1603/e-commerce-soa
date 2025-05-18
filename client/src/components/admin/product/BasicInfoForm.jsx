@@ -9,6 +9,9 @@ import {
   Spinner,
   Button,
   Alert,
+  FloatingLabel,
+  OverlayTrigger,
+  Tooltip,
 } from "react-bootstrap";
 import adminService from "../../../services/admin.service";
 
@@ -217,32 +220,39 @@ const BasicInfoForm = ({ data, onChange }) => {
 
   return (
     <div>
-      <Card className="shadow-sm border-0 mb-4">
-        <Card.Header className="bg-light">
-          <h5 className="mb-0">General Information</h5>
+      <Card className="shadow border-0 mb-4">
+        <Card.Header className="bg-white border-bottom border-light py-3">
+          <h5 className="mb-0 fw-semibold">
+            <i className="bi bi-info-circle-fill text-primary me-2"></i>
+            General Information
+          </h5>
         </Card.Header>
-        <Card.Body>
+        <Card.Body className="p-4">
           <Form.Group className="mb-4">
-            <Form.Label>Product Name*</Form.Label>
-            <Form.Control
-              type="text"
-              name="name"
-              value={data.name || ""}
-              onChange={handleChange}
-              required
-              placeholder="Enter product name"
-              className="form-control-lg"
-              isInvalid={!!formErrors.name}
-            />
-            <Form.Control.Feedback type="invalid">
-              {formErrors.name}
-            </Form.Control.Feedback>
+            <FloatingLabel controlId="productName" label="Product Name*">
+              <Form.Control
+                size="lg"
+                type="text"
+                name="name"
+                value={data.name || ""}
+                onChange={handleChange}
+                required
+                placeholder="Enter product name"
+                isInvalid={!!formErrors.name}
+                className="border-0 border-bottom rounded-0"
+              />
+              <Form.Control.Feedback type="invalid">
+                {formErrors.name}
+              </Form.Control.Feedback>
+            </FloatingLabel>
           </Form.Group>
 
           <Row className="mb-4">
             <Col md={6}>
               <Form.Group>
-                <Form.Label>Brand*</Form.Label>
+                <Form.Label className="fw-semibold text-secondary">
+                  Brand*
+                </Form.Label>
                 <Form.Control
                   type="text"
                   name="brand"
@@ -251,6 +261,7 @@ const BasicInfoForm = ({ data, onChange }) => {
                   required
                   placeholder="Enter brand name"
                   isInvalid={!!formErrors.brand}
+                  className="py-2"
                 />
                 <Form.Control.Feedback type="invalid">
                   {formErrors.brand}
@@ -259,7 +270,9 @@ const BasicInfoForm = ({ data, onChange }) => {
             </Col>
             <Col md={6}>
               <Form.Group>
-                <Form.Label>Categories*</Form.Label>
+                <Form.Label className="fw-semibold text-secondary">
+                  Categories*
+                </Form.Label>
                 <Form.Select
                   multiple
                   name="categories"
@@ -268,6 +281,7 @@ const BasicInfoForm = ({ data, onChange }) => {
                   disabled={loading}
                   style={{ height: "120px" }}
                   isInvalid={!!formErrors.categories}
+                  className="py-2 border-1"
                 >
                   {loading ? (
                     <option disabled>Loading categories...</option>
@@ -284,7 +298,8 @@ const BasicInfoForm = ({ data, onChange }) => {
                 <Form.Control.Feedback type="invalid">
                   {formErrors.categories}
                 </Form.Control.Feedback>
-                <Form.Text className="text-muted">
+                <Form.Text className="text-muted mt-2">
+                  <i className="bi bi-info-circle me-1"></i>
                   Hold Ctrl (or Cmd) to select multiple categories
                 </Form.Text>
               </Form.Group>
@@ -292,43 +307,59 @@ const BasicInfoForm = ({ data, onChange }) => {
           </Row>
 
           <Form.Group className="mb-4">
-            <Form.Label>Tags</Form.Label>
+            <Form.Label className="fw-semibold text-secondary">Tags</Form.Label>
             <InputGroup className="mb-2">
               <Form.Control
                 value={tagInput}
                 onChange={handleTagInputChange}
                 onKeyDown={handleTagInputKeyDown}
                 placeholder="Add tag and press Enter"
+                className="py-2"
               />
               <Button
-                variant="outline-secondary"
+                variant="outline-primary"
                 onClick={() => addTag(tagInput.trim())}
                 disabled={!tagInput.trim()}
               >
-                Add
+                <i className="bi bi-plus-lg me-1"></i> Add
               </Button>
             </InputGroup>
-            <div className="d-flex flex-wrap gap-2 mt-2">
+            <div className="d-flex flex-wrap gap-2 mt-3">
               {tags.map((tag, index) => (
-                <Badge bg="light" text="dark" className="py-2 px-3" key={index}>
+                <Badge
+                  bg="light"
+                  text="dark"
+                  className="py-2 px-3 rounded-pill"
+                  key={index}
+                >
                   {tag}
                   <button
                     type="button"
                     className="btn-close ms-2"
-                    style={{ fontSize: "0.5rem" }}
+                    style={{ fontSize: "0.6rem" }}
                     onClick={() => removeTag(tag)}
                     aria-label="Remove tag"
                   ></button>
                 </Badge>
               ))}
             </div>
-            <Form.Text className="text-muted">
+            <Form.Text className="text-muted mt-2">
+              <i className="bi bi-tag me-1"></i>
               Tags help customers find your product (e.g., storage, hdd, ssd)
             </Form.Text>
           </Form.Group>
 
           <Form.Group className="mb-4">
-            <Form.Label>Short Description*</Form.Label>
+            <Form.Label className="fw-semibold text-secondary d-flex justify-content-between">
+              <span>Short Description*</span>
+              <span
+                className={`small ${
+                  shortDescRemaining < 20 ? "text-danger" : "text-muted"
+                }`}
+              >
+                {shortDescLength}/{shortDescMaxLength} characters
+              </span>
+            </Form.Label>
             <Form.Control
               as="textarea"
               name="shortDescription"
@@ -338,38 +369,16 @@ const BasicInfoForm = ({ data, onChange }) => {
               style={{ height: "80px" }}
               maxLength={shortDescMaxLength}
               isInvalid={!!formErrors.shortDescription}
+              className="py-2"
             />
-            <div className="d-flex justify-content-between mt-1">
-              <Form.Control.Feedback type="invalid">
-                {formErrors.shortDescription}
-              </Form.Control.Feedback>
-              <span
-                className={`small ${
-                  shortDescRemaining < 20 ? "text-danger" : "text-muted"
-                }`}
-              >
-                {shortDescLength}/{shortDescMaxLength} characters
-              </span>
-            </div>
+            <Form.Control.Feedback type="invalid">
+              {formErrors.shortDescription}
+            </Form.Control.Feedback>
           </Form.Group>
 
-          <Form.Group className="mb-4">
-            <Form.Label>Full Description*</Form.Label>
-            <Form.Control
-              as="textarea"
-              name="description"
-              value={data.description || ""}
-              onChange={handleChange}
-              required
-              placeholder="Detailed product description (minimum 100 characters)"
-              style={{ height: "200px" }}
-              minLength={descMinLength}
-              isInvalid={!!formErrors.description}
-            />
-            <div className="d-flex justify-content-between mt-1">
-              <Form.Control.Feedback type="invalid">
-                {formErrors.description}
-              </Form.Control.Feedback>
+          <Form.Group className="mb-2">
+            <Form.Label className="fw-semibold text-secondary d-flex justify-content-between">
+              <span>Full Description*</span>
               <span
                 className={`small ${
                   descLength < descMinLength ? "text-danger" : "text-success"
@@ -380,76 +389,113 @@ const BasicInfoForm = ({ data, onChange }) => {
                   ? `(${descMinLength - descLength} more needed)`
                   : ""}
               </span>
-            </div>
+            </Form.Label>
+            <Form.Control
+              as="textarea"
+              name="description"
+              value={data.description || ""}
+              onChange={handleChange}
+              required
+              placeholder="Detailed product description (minimum 100 characters)"
+              style={{ height: "200px" }}
+              minLength={descMinLength}
+              isInvalid={!!formErrors.description}
+              className="py-2"
+            />
+            <Form.Control.Feedback type="invalid">
+              {formErrors.description}
+            </Form.Control.Feedback>
           </Form.Group>
         </Card.Body>
       </Card>
 
-      <Card className="shadow-sm border-0 mb-4">
-        <Card.Header className="bg-light">
-          <h5 className="mb-0">Product Status & Visibility</h5>
+      <Card className="shadow border-0 mb-4">
+        <Card.Header className="bg-white border-bottom border-light py-3">
+          <h5 className="mb-0 fw-semibold">
+            <i className="bi bi-toggle-on text-primary me-2"></i>
+            Product Status & Visibility
+          </h5>
         </Card.Header>
-        <Card.Body>
-          <Row className="gy-3">
-            <Col md={6}>
-              <Form.Check
-                type="switch"
-                id="isActive"
-                name="isActive"
-                label="Active Product"
-                checked={data.isActive || false}
-                onChange={handleChange}
-                className="mb-2"
-              />
-              <Form.Text className="text-muted d-block ms-4">
-                When active, the product will be visible to customers
-              </Form.Text>
+        <Card.Body className="p-4">
+          <Row className="g-4">
+            <Col md={6} className="d-flex">
+              <div className="p-3 flex-grow-1 border rounded-3 bg-light">
+                <Form.Check
+                  type="switch"
+                  id="isActive"
+                  name="isActive"
+                  label={<span className="fw-medium">Active Product</span>}
+                  checked={data.isActive || false}
+                  onChange={handleChange}
+                  className="mb-2 form-switch-lg"
+                />
+                <Form.Text className="text-muted d-block ms-4">
+                  When active, the product will be visible to customers
+                </Form.Text>
+              </div>
             </Col>
-            <Col md={6}>
-              <Form.Check
-                type="switch"
-                id="isFeatured"
-                name="isFeatured"
-                label="Featured Product"
-                checked={data.isFeatured || false}
-                onChange={handleChange}
-                className="mb-2"
-              />
-              <Form.Text className="text-muted d-block ms-4">
-                Highlight this product in featured sections of your store
-              </Form.Text>
+
+            <Col md={6} className="d-flex">
+              <div className="p-3 flex-grow-1 border rounded-3 bg-light">
+                <Form.Check
+                  type="switch"
+                  id="isFeatured"
+                  name="isFeatured"
+                  label={<span className="fw-medium">Featured Product</span>}
+                  checked={data.isFeatured || false}
+                  onChange={handleChange}
+                  className="mb-2 form-switch-lg"
+                />
+                <Form.Text className="text-muted d-block ms-4">
+                  Highlight this product in featured sections of your store
+                </Form.Text>
+              </div>
             </Col>
-            <Col md={6}>
-              <Form.Check
-                type="switch"
-                id="isNewProduct"
-                name="isNewProduct"
-                label="New Product"
-                checked={data.isNewProduct || false}
-                onChange={handleChange}
-                className="mb-2"
-              />
-              <Form.Text className="text-muted d-block ms-4">
-                Mark as a new arrival in your store
-              </Form.Text>
+
+            <Col md={6} className="d-flex">
+              <div className="p-3 flex-grow-1 border rounded-3 bg-light">
+                <Form.Check
+                  type="switch"
+                  id="isNewProduct"
+                  name="isNewProduct"
+                  label={<span className="fw-medium">New Product</span>}
+                  checked={data.isNewProduct || false}
+                  onChange={handleChange}
+                  className="mb-2 form-switch-lg"
+                />
+                <Form.Text className="text-muted d-block ms-4">
+                  Mark as a new arrival in your store
+                </Form.Text>
+              </div>
             </Col>
-            <Col md={6}>
-              <Form.Check
-                type="switch"
-                id="isBestSeller"
-                name="isBestSeller"
-                label="Best Seller"
-                checked={data.isBestSeller || false}
-                onChange={handleChange}
-                className="mb-2"
-              />
-              <Form.Text className="text-muted d-block ms-4">
-                Mark as a best-selling product
-              </Form.Text>
+
+            <Col md={6} className="d-flex">
+              <div className="p-3 flex-grow-1 border rounded-3 bg-light">
+                <Form.Check
+                  type="switch"
+                  id="isBestSeller"
+                  name="isBestSeller"
+                  label={<span className="fw-medium">Best Seller</span>}
+                  checked={data.isBestSeller || false}
+                  onChange={handleChange}
+                  className="mb-2 form-switch-lg"
+                />
+                <Form.Text className="text-muted d-block ms-4">
+                  Mark as a best-selling product
+                </Form.Text>
+              </div>
             </Col>
           </Row>
         </Card.Body>
       </Card>
+
+      <style jsx>{`
+        .form-switch-lg .form-check-input {
+          width: 3em;
+          height: 1.5em;
+          margin-top: 0.1em;
+        }
+      `}</style>
     </div>
   );
 };

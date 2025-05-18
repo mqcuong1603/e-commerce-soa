@@ -12,6 +12,8 @@ import {
   Tooltip,
   OverlayTrigger,
   Alert,
+  Dropdown,
+  Spinner,
 } from "react-bootstrap";
 import adminService from "../../../services/admin.service";
 import { toast } from "react-toastify";
@@ -32,6 +34,7 @@ const VariantsManager = ({ productId, variants, onChange }) => {
   const [formErrors, setFormErrors] = useState({});
   const [attributeSuggestions, setAttributeSuggestions] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [confirmDelete, setConfirmDelete] = useState(null);
 
   // Get unique attribute keys across all variants
   const attributeKeys = [
@@ -288,23 +291,26 @@ const VariantsManager = ({ productId, variants, onChange }) => {
     }
   };
 
-  const handleDeleteVariant = async (variant) => {
-    if (
-      !window.confirm(
-        `Are you sure you want to delete the variant "${variant.name}"?`
-      )
-    ) {
-      return;
-    }
+  const openDeleteConfirmation = (variant) => {
+    setConfirmDelete(variant);
+  };
+
+  const closeDeleteConfirmation = () => {
+    setConfirmDelete(null);
+  };
+
+  const handleDeleteVariant = async () => {
+    if (!confirmDelete) return;
 
     try {
       const result = await adminService.deleteProductVariant(
         productId,
-        variant._id
+        confirmDelete._id
       );
       if (result.success) {
-        onChange(variants.filter((v) => v._id !== variant._id));
+        onChange(variants.filter((v) => v._id !== confirmDelete._id));
         toast.success("Variant deleted successfully");
+        closeDeleteConfirmation();
       }
     } catch (error) {
       console.error("Error deleting variant:", error);
@@ -319,150 +325,199 @@ const VariantsManager = ({ productId, variants, onChange }) => {
 
   return (
     <div>
-      <div className="d-flex justify-content-between mb-4">
-        <h5 className="mb-0">Product Variants</h5>
-        <Button variant="primary" size="sm" onClick={() => handleOpenModal()}>
-          <i className="bi bi-plus-lg me-1"></i> Add Variant
-        </Button>
-      </div>
-
-      {variants.length === 0 ? (
-        <Card className="bg-light text-center p-5">
-          <div className="py-5">
-            <div className="mb-3">
-              <i
-                className="bi bi-boxes text-secondary"
-                style={{ fontSize: "48px" }}
-              ></i>
-            </div>
-            <h5 className="fw-bold mb-2">No Variants</h5>
-            <p className="text-muted mb-4">
-              This product doesn't have any variants yet. Each product requires
-              at least one variant to manage inventory and pricing.
-            </p>
-            <Button variant="primary" onClick={() => handleOpenModal()}>
-              Add First Variant
+      <Card className="shadow border-0 mb-4">
+        <Card.Header className="bg-white border-bottom border-light py-3">
+          <div className="d-flex justify-content-between align-items-center">
+            <h5 className="mb-0 fw-semibold">
+              <i className="bi bi-boxes text-primary me-2"></i>
+              Product Variants
+            </h5>
+            <Button
+              variant="primary"
+              size="sm"
+              className="d-flex align-items-center"
+              onClick={() => handleOpenModal()}
+            >
+              <i className="bi bi-plus-lg me-1"></i> Add Variant
             </Button>
           </div>
-        </Card>
-      ) : (
-        <div className="table-responsive">
-          <Table hover className="align-middle">
-            <thead className="bg-light">
-              <tr>
-                <th>Name</th>
-                <th>SKU</th>
-                <th>Attributes</th>
-                <th>Price</th>
-                <th>Inventory</th>
-                <th>Status</th>
-                <th className="text-end">Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {variants.map((variant) => (
-                <tr key={variant._id}>
-                  <td>
-                    <div className="fw-medium">{variant.name}</div>
-                  </td>
-                  <td>
-                    <span className="text-muted small">{variant.sku}</span>
-                  </td>
-                  <td>
-                    {variant.attributes &&
-                      Object.entries(variant.attributes).map(([key, value]) => (
-                        <Badge
-                          bg="light"
-                          text="dark"
-                          className="me-1 mb-1 py-2 px-2"
-                          key={key}
-                        >
-                          <span className="text-muted small me-1">{key}:</span>{" "}
-                          {value}
-                        </Badge>
-                      ))}
-                  </td>
-                  <td>
-                    {variant.salePrice ? (
-                      <div>
-                        <div className="fw-bold text-success">
-                          ₫{variant.salePrice?.toLocaleString()}
-                        </div>
-                        <div className="small">
-                          <s className="text-muted me-1">
-                            ₫{variant.price?.toLocaleString()}
-                          </s>
-                          <span className="text-danger">
-                            -
-                            {getDiscountPercentage(
-                              variant.price,
-                              variant.salePrice
+        </Card.Header>
+        <Card.Body className="p-4">
+          {variants.length === 0 ? (
+            <Card className="bg-light text-center p-5 border-dashed">
+              <div className="py-5">
+                <div className="mb-4">
+                  <i
+                    className="bi bi-boxes text-secondary"
+                    style={{ fontSize: "64px" }}
+                  ></i>
+                </div>
+                <h5 className="fw-bold mb-3">No Variants</h5>
+                <p className="text-muted mb-4">
+                  This product doesn't have any variants yet. Each product
+                  requires at least one variant to manage inventory and pricing.
+                </p>
+                <Button
+                  variant="primary"
+                  onClick={() => handleOpenModal()}
+                  size="lg"
+                  className="px-4"
+                >
+                  <i className="bi bi-plus-lg me-2"></i>
+                  Add First Variant
+                </Button>
+              </div>
+            </Card>
+          ) : (
+            <div className="table-responsive">
+              <Table hover className="align-middle table-borderless">
+                <thead className="bg-light">
+                  <tr>
+                    <th className="fw-semibold py-3">Name</th>
+                    <th className="fw-semibold py-3">SKU</th>
+                    <th className="fw-semibold py-3">Attributes</th>
+                    <th className="fw-semibold py-3">Price</th>
+                    <th className="fw-semibold py-3">Inventory</th>
+                    <th className="fw-semibold py-3">Status</th>
+                    <th className="text-end fw-semibold py-3">Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {variants.map((variant) => (
+                    <tr key={variant._id} className="border-bottom">
+                      <td className="py-3">
+                        <div className="fw-medium">{variant.name}</div>
+                      </td>
+                      <td className="py-3">
+                        <span className="text-muted small">{variant.sku}</span>
+                      </td>
+                      <td className="py-3">
+                        <div className="d-flex flex-wrap gap-1">
+                          {variant.attributes &&
+                            Object.entries(variant.attributes).map(
+                              ([key, value]) => (
+                                <Badge
+                                  bg="light"
+                                  text="dark"
+                                  className="me-1 mb-1 py-1 px-2 rounded-pill"
+                                  key={key}
+                                >
+                                  <span className="text-muted small me-1">
+                                    {key}:
+                                  </span>{" "}
+                                  <span className="fw-medium">{value}</span>
+                                </Badge>
+                              )
                             )}
-                            %
-                          </span>
                         </div>
-                      </div>
-                    ) : (
-                      <div className="fw-medium">
-                        ₫{variant.price?.toLocaleString()}
-                      </div>
-                    )}
-                  </td>
-                  <td>
-                    <OverlayTrigger
-                      placement="top"
-                      overlay={
-                        <Tooltip>
-                          {variant.inventory > 0 ? "In stock" : "Out of stock"}
-                        </Tooltip>
-                      }
-                    >
-                      <span
-                        className={`badge ${
-                          variant.inventory > 0
-                            ? "bg-success-subtle text-success"
-                            : "bg-danger-subtle text-danger"
-                        } px-2 py-1`}
-                      >
-                        {variant.inventory}
-                      </span>
-                    </OverlayTrigger>
-                  </td>
-                  <td>
-                    <Badge
-                      bg={
-                        variant.isActive ? "success-subtle" : "secondary-subtle"
-                      }
-                      text={variant.isActive ? "success" : "secondary"}
-                      className="px-2 py-1"
-                    >
-                      {variant.isActive ? "Active" : "Inactive"}
-                    </Badge>
-                  </td>
-                  <td>
-                    <div className="d-flex gap-2 justify-content-end">
-                      <Button
-                        variant="outline-primary"
-                        size="sm"
-                        onClick={() => handleOpenModal(variant)}
-                      >
-                        <i className="bi bi-pencil"></i>
-                      </Button>
-                      <Button
-                        variant="outline-danger"
-                        size="sm"
-                        onClick={() => handleDeleteVariant(variant)}
-                      >
-                        <i className="bi bi-trash"></i>
-                      </Button>
-                    </div>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </Table>
-        </div>
-      )}
+                      </td>
+                      <td className="py-3">
+                        {variant.salePrice ? (
+                          <div>
+                            <div className="fw-bold text-success">
+                              ₫{variant.salePrice?.toLocaleString()}
+                            </div>
+                            <div className="small d-flex align-items-center mt-1">
+                              <s className="text-muted me-2">
+                                ₫{variant.price?.toLocaleString()}
+                              </s>
+                              <Badge
+                                bg="danger-subtle"
+                                text="danger"
+                                className="px-2 py-1 rounded-pill"
+                              >
+                                -
+                                {getDiscountPercentage(
+                                  variant.price,
+                                  variant.salePrice
+                                )}
+                                %
+                              </Badge>
+                            </div>
+                          </div>
+                        ) : (
+                          <div className="fw-medium">
+                            ₫{variant.price?.toLocaleString()}
+                          </div>
+                        )}
+                      </td>
+                      <td className="py-3">
+                        <OverlayTrigger
+                          placement="top"
+                          overlay={
+                            <Tooltip>
+                              {variant.inventory > 0
+                                ? "In stock"
+                                : "Out of stock"}
+                            </Tooltip>
+                          }
+                        >
+                          <Badge
+                            bg={
+                              variant.inventory > 0
+                                ? "success-subtle"
+                                : "danger-subtle"
+                            }
+                            text={variant.inventory > 0 ? "success" : "danger"}
+                            className="px-3 py-2 rounded-pill"
+                          >
+                            <i
+                              className={`bi bi-${
+                                variant.inventory > 0
+                                  ? "check-circle"
+                                  : "x-circle"
+                              } me-1`}
+                            ></i>
+                            {variant.inventory}
+                          </Badge>
+                        </OverlayTrigger>
+                      </td>
+                      <td className="py-3">
+                        <Badge
+                          bg={
+                            variant.isActive
+                              ? "success-subtle"
+                              : "secondary-subtle"
+                          }
+                          text={variant.isActive ? "success" : "secondary"}
+                          className="px-3 py-2 rounded-pill"
+                        >
+                          <i
+                            className={`bi bi-${
+                              variant.isActive ? "check-circle" : "dash-circle"
+                            } me-1`}
+                          ></i>
+                          {variant.isActive ? "Active" : "Inactive"}
+                        </Badge>
+                      </td>
+                      <td className="py-3">
+                        <div className="d-flex gap-2 justify-content-end">
+                          <Button
+                            variant="outline-primary"
+                            size="sm"
+                            onClick={() => handleOpenModal(variant)}
+                            className="btn-icon"
+                          >
+                            <i className="bi bi-pencil"></i>
+                          </Button>
+                          <Button
+                            variant="outline-danger"
+                            size="sm"
+                            onClick={() => openDeleteConfirmation(variant)}
+                            className="btn-icon"
+                          >
+                            <i className="bi bi-trash"></i>
+                          </Button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </Table>
+            </div>
+          )}
+        </Card.Body>
+      </Card>
 
       {/* Variant Edit Modal */}
       <Modal
@@ -472,17 +527,24 @@ const VariantsManager = ({ productId, variants, onChange }) => {
         backdrop="static"
         className="variant-edit-modal"
       >
-        <Modal.Header closeButton>
-          <Modal.Title>
+        <Modal.Header closeButton className="border-0 pb-0">
+          <Modal.Title className="fw-bold">
+            <i
+              className={`bi bi-${
+                editingVariant ? "pencil" : "plus-lg"
+              } text-primary me-2`}
+            ></i>
             {editingVariant ? "Edit Variant" : "Add New Variant"}
           </Modal.Title>
         </Modal.Header>
-        <Modal.Body>
+        <Modal.Body className="pt-3">
           <Form>
-            <Row className="mb-3">
+            <Row className="mb-4">
               <Col md={6}>
                 <Form.Group className="mb-3">
-                  <Form.Label>Variant Name*</Form.Label>
+                  <Form.Label className="fw-semibold text-secondary">
+                    Variant Name*
+                  </Form.Label>
                   <Form.Control
                     type="text"
                     name="name"
@@ -490,41 +552,76 @@ const VariantsManager = ({ productId, variants, onChange }) => {
                     onChange={handleVariantInputChange}
                     placeholder="e.g., 2TB, 4TB, 8TB"
                     isInvalid={!!formErrors.name}
+                    className="py-2"
                   />
                   <Form.Control.Feedback type="invalid">
                     {formErrors.name}
                   </Form.Control.Feedback>
-                  <Form.Text className="text-muted">
-                    A descriptive name for this variant (e.g., capacity, color)
+                  <Form.Text className="text-muted mt-1">
+                    <i className="bi bi-info-circle me-1"></i>A descriptive name
+                    for this variant (e.g., capacity, color)
                   </Form.Text>
                 </Form.Group>
               </Col>
               <Col md={6}>
                 <Form.Group className="mb-3">
-                  <Form.Label>SKU*</Form.Label>
-                  <Form.Control
-                    type="text"
-                    name="sku"
-                    value={variantForm.sku}
-                    onChange={handleVariantInputChange}
-                    isInvalid={!!formErrors.sku}
-                  />
-                  <Form.Control.Feedback type="invalid">
-                    {formErrors.sku}
-                  </Form.Control.Feedback>
-                  <Form.Text className="text-muted">
+                  <Form.Label className="fw-semibold text-secondary">
+                    SKU*
+                  </Form.Label>
+                  <InputGroup hasValidation>
+                    <Form.Control
+                      type="text"
+                      name="sku"
+                      value={variantForm.sku}
+                      onChange={handleVariantInputChange}
+                      isInvalid={!!formErrors.sku}
+                      className="py-2"
+                    />
+                    <OverlayTrigger
+                      placement="top"
+                      overlay={<Tooltip>Generate new SKU</Tooltip>}
+                    >
+                      <Button
+                        variant="outline-secondary"
+                        onClick={() => {
+                          const baseSkuPrefix = productId
+                            .slice(-4)
+                            .toUpperCase();
+                          const variantNumber = variants.length + 1;
+                          const generatedSku = `PROD-${baseSkuPrefix}-V${variantNumber
+                            .toString()
+                            .padStart(2, "0")}`;
+                          setVariantForm({
+                            ...variantForm,
+                            sku: generatedSku,
+                          });
+                        }}
+                      >
+                        <i className="bi bi-arrow-repeat"></i>
+                      </Button>
+                    </OverlayTrigger>
+                    <Form.Control.Feedback type="invalid">
+                      {formErrors.sku}
+                    </Form.Control.Feedback>
+                  </InputGroup>
+                  <Form.Text className="text-muted mt-1">
+                    <i className="bi bi-tag me-1"></i>
                     Stock Keeping Unit - a unique identifier for this variant
                   </Form.Text>
                 </Form.Group>
               </Col>
             </Row>
 
-            <Row>
+            <Row className="mb-4">
               <Col md={4}>
                 <Form.Group className="mb-3">
-                  <Form.Label>Price*</Form.Label>
+                  <Form.Label className="fw-semibold text-secondary">
+                    Price*
+                  </Form.Label>
                   <InputGroup hasValidation>
-                    <InputGroup.Text>₫</InputGroup.Text>
+                    <InputGroup.Text className="bg-light border-0">
+                      ₫
+                    </InputGroup.Text>
                     <Form.Control
                       type="number"
                       name="price"
@@ -532,6 +629,7 @@ const VariantsManager = ({ productId, variants, onChange }) => {
                       onChange={handleVariantInputChange}
                       min="0"
                       isInvalid={!!formErrors.price}
+                      className="py-2"
                     />
                     <Form.Control.Feedback type="invalid">
                       {formErrors.price}
@@ -541,9 +639,13 @@ const VariantsManager = ({ productId, variants, onChange }) => {
               </Col>
               <Col md={4}>
                 <Form.Group className="mb-3">
-                  <Form.Label>Sale Price</Form.Label>
+                  <Form.Label className="fw-semibold text-secondary">
+                    Sale Price
+                  </Form.Label>
                   <InputGroup hasValidation>
-                    <InputGroup.Text>₫</InputGroup.Text>
+                    <InputGroup.Text className="bg-light border-0">
+                      ₫
+                    </InputGroup.Text>
                     <Form.Control
                       type="number"
                       name="salePrice"
@@ -551,6 +653,7 @@ const VariantsManager = ({ productId, variants, onChange }) => {
                       onChange={handleVariantInputChange}
                       min="0"
                       isInvalid={!!formErrors.salePrice}
+                      className="py-2"
                     />
                     <Form.Control.Feedback type="invalid">
                       {formErrors.salePrice}
@@ -561,68 +664,100 @@ const VariantsManager = ({ productId, variants, onChange }) => {
                     parseFloat(variantForm.salePrice) > 0 &&
                     parseFloat(variantForm.salePrice) <
                       parseFloat(variantForm.price) && (
-                      <Form.Text className="text-success">
+                      <Badge
+                        bg="danger-subtle"
+                        text="danger"
+                        className="mt-2 px-2 py-1"
+                      >
+                        <i className="bi bi-tag-fill me-1"></i>
                         {getDiscountPercentage(
                           parseFloat(variantForm.price),
                           parseFloat(variantForm.salePrice)
                         )}
                         % discount
-                      </Form.Text>
+                      </Badge>
                     )}
                 </Form.Group>
               </Col>
               <Col md={4}>
                 <Form.Group className="mb-3">
-                  <Form.Label>Inventory*</Form.Label>
-                  <Form.Control
-                    type="number"
-                    name="inventory"
-                    value={variantForm.inventory}
-                    onChange={handleVariantInputChange}
-                    min="0"
-                    isInvalid={!!formErrors.inventory}
-                  />
-                  <Form.Control.Feedback type="invalid">
-                    {formErrors.inventory}
-                  </Form.Control.Feedback>
+                  <Form.Label className="fw-semibold text-secondary">
+                    Inventory*
+                  </Form.Label>
+                  <InputGroup hasValidation>
+                    <Form.Control
+                      type="number"
+                      name="inventory"
+                      value={variantForm.inventory}
+                      onChange={handleVariantInputChange}
+                      min="0"
+                      isInvalid={!!formErrors.inventory}
+                      className="py-2"
+                    />
+                    <Form.Control.Feedback type="invalid">
+                      {formErrors.inventory}
+                    </Form.Control.Feedback>
+                  </InputGroup>
                 </Form.Group>
               </Col>
             </Row>
 
-            <Form.Group className="mb-3">
-              <Form.Check
-                type="switch"
-                name="isActive"
-                id="variant-active-switch"
-                checked={variantForm.isActive}
-                onChange={handleVariantInputChange}
-                label="Variant is active"
-              />
+            <Form.Group className="mb-4">
+              <div className="p-3 border rounded-3 bg-light">
+                <Form.Check
+                  type="switch"
+                  name="isActive"
+                  id="variant-active-switch"
+                  checked={variantForm.isActive}
+                  onChange={handleVariantInputChange}
+                  label={<span className="fw-medium">Variant is active</span>}
+                  className="form-switch-lg"
+                />
+                <Form.Text className="text-muted d-block ms-4">
+                  When enabled, this variant will be visible to customers for
+                  purchase
+                </Form.Text>
+              </div>
             </Form.Group>
 
             <Card className="mt-4 mb-3 border-0 shadow-sm">
               <Card.Header className="d-flex justify-content-between align-items-center bg-light">
-                <h6 className="mb-0 fw-bold">Variant Attributes</h6>
+                <h6 className="mb-0 fw-bold">
+                  <i className="bi bi-tags text-primary me-2"></i>
+                  Variant Attributes
+                </h6>
                 <Button
                   variant="outline-primary"
                   size="sm"
                   onClick={handleAddAttribute}
+                  className="d-flex align-items-center"
                 >
                   <i className="bi bi-plus-circle me-1"></i> Add Attribute
                 </Button>
               </Card.Header>
               <Card.Body>
                 {Object.keys(variantForm.attributes || {}).length === 0 ? (
-                  <p className="text-center text-muted my-3">
-                    No attributes defined
-                  </p>
+                  <Alert variant="info" className="d-flex align-items-center">
+                    <i className="bi bi-info-circle-fill fs-5 me-3 text-info"></i>
+                    <div className="text-center w-100 my-3">
+                      <p className="mb-2">No attributes defined</p>
+                      <Button
+                        variant="outline-primary"
+                        size="sm"
+                        onClick={handleAddAttribute}
+                      >
+                        <i className="bi bi-plus-circle me-1"></i> Add an
+                        Attribute
+                      </Button>
+                    </div>
+                  </Alert>
                 ) : (
-                  <Row>
+                  <Row className="g-3">
                     {Object.entries(variantForm.attributes).map(
                       ([key, value]) => (
-                        <Col md={6} key={key} className="mb-3">
+                        <Col md={6} key={key}>
                           <Form.Group>
-                            <Form.Label className="small fw-medium">
+                            <Form.Label className="small fw-medium text-secondary">
                               {key}*
                             </Form.Label>
                             <InputGroup hasValidation>
@@ -634,6 +769,7 @@ const VariantsManager = ({ productId, variants, onChange }) => {
                                     handleAttributeChange(key, e.target.value)
                                   }
                                   isInvalid={!!formErrors[`attribute_${key}`]}
+                                  className="py-2"
                                 >
                                   <option value="">Select {key}</option>
                                   {attributeTemplates[key].map((val, idx) => (
@@ -650,13 +786,15 @@ const VariantsManager = ({ productId, variants, onChange }) => {
                                   }
                                   placeholder={`Value for ${key}`}
                                   isInvalid={!!formErrors[`attribute_${key}`]}
+                                  className="py-2"
                                 />
                               )}
                               <Button
                                 variant="outline-danger"
                                 onClick={() => handleDeleteAttribute(key)}
+                                className="px-3"
                               >
-                                <i className="bi bi-x"></i>
+                                <i className="bi bi-x-lg"></i>
                               </Button>
                               <Form.Control.Feedback type="invalid">
                                 {formErrors[`attribute_${key}`]}
@@ -672,7 +810,7 @@ const VariantsManager = ({ productId, variants, onChange }) => {
             </Card>
           </Form>
         </Modal.Body>
-        <Modal.Footer>
+        <Modal.Footer className="border-0 pt-0">
           <Button
             variant="outline-secondary"
             onClick={handleCloseModal}
@@ -687,21 +825,87 @@ const VariantsManager = ({ productId, variants, onChange }) => {
           >
             {isSubmitting ? (
               <>
-                <span
-                  className="spinner-border spinner-border-sm me-2"
-                  role="status"
-                  aria-hidden="true"
-                ></span>
+                <Spinner animation="border" size="sm" className="me-2" />
                 Saving...
               </>
             ) : editingVariant ? (
-              "Update Variant"
+              <>
+                <i className="bi bi-check-lg me-1"></i>
+                Update Variant
+              </>
             ) : (
-              "Add Variant"
+              <>
+                <i className="bi bi-plus-lg me-1"></i>
+                Add Variant
+              </>
             )}
           </Button>
         </Modal.Footer>
       </Modal>
+
+      {/* Delete Confirmation Modal */}
+      <Modal
+        show={confirmDelete !== null}
+        onHide={closeDeleteConfirmation}
+        centered
+      >
+        <Modal.Header closeButton className="border-0 pb-0">
+          <Modal.Title className="text-danger">
+            <i className="bi bi-exclamation-triangle-fill me-2"></i>
+            Delete Variant
+          </Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <p>
+            Are you sure you want to delete the variant{" "}
+            <strong>"{confirmDelete?.name}"</strong>? This action cannot be
+            undone.
+          </p>
+          {confirmDelete && (
+            <Alert variant="warning">
+              <div className="d-flex align-items-center">
+                <i className="bi bi-exclamation-circle me-2"></i>
+                <div>
+                  <strong className="d-block mb-1">Warning!</strong>
+                  <p className="mb-0">
+                    Deleting this variant will also affect any associated
+                    inventory, orders, and images.
+                  </p>
+                </div>
+              </div>
+            </Alert>
+          )}
+        </Modal.Body>
+        <Modal.Footer className="border-0">
+          <Button variant="outline-secondary" onClick={closeDeleteConfirmation}>
+            Cancel
+          </Button>
+          <Button variant="danger" onClick={handleDeleteVariant}>
+            <i className="bi bi-trash me-1"></i>
+            Delete Variant
+          </Button>
+        </Modal.Footer>
+      </Modal>
+
+      <style jsx>{`
+        .form-switch-lg .form-check-input {
+          width: 3em;
+          height: 1.5em;
+          margin-top: 0.1em;
+        }
+        .btn-icon {
+          width: 35px;
+          height: 35px;
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          padding: 0;
+          border-radius: 50%;
+        }
+        .border-dashed {
+          border: 2px dashed #dee2e6 !important;
+        }
+      `}</style>
     </div>
   );
 };

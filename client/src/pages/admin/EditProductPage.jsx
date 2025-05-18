@@ -9,6 +9,11 @@ import {
   Spinner,
   Badge,
   Breadcrumb,
+  Container,
+  ProgressBar,
+  OverlayTrigger,
+  Tooltip,
+  Modal,
 } from "react-bootstrap";
 import AdminLayout from "../../components/admin/AdminLayout";
 import BasicInfoForm from "../../components/admin/product/BasicInfoForm";
@@ -28,6 +33,7 @@ const EditProductPage = () => {
   const [activeTab, setActiveTab] = useState("basic");
   const [error, setError] = useState(null);
   const [unsavedChanges, setUnsavedChanges] = useState(false);
+  const [showExitConfirm, setShowExitConfirm] = useState(false);
 
   // Form state
   const [basicInfo, setBasicInfo] = useState({});
@@ -35,16 +41,40 @@ const EditProductPage = () => {
   const [images, setImages] = useState([]);
   const [variants, setVariants] = useState([]);
 
+  // Form completion status
+  const [completionStatus, setCompletionStatus] = useState({
+    basic: false,
+    pricing: false,
+    images: false,
+    variants: false,
+  });
+
   // Handle form changes and track unsaved changes
   const handleBasicInfoChange = (data) => {
     setBasicInfo(data);
     setUnsavedChanges(true);
+
+    // Update completion status
+    const isComplete =
+      data.name &&
+      data.brand &&
+      data.categories?.length > 0 &&
+      data.shortDescription &&
+      data.description;
+
+    setCompletionStatus((prev) => ({ ...prev, basic: isComplete }));
   };
 
   const handlePricingChange = (data) => {
     setPricing(data);
     setUnsavedChanges(true);
+
+    // Update completion status
+    const isComplete =
+      data.basePrice && (!data.hasVariants || variants.length > 0);
+    setCompletionStatus((prev) => ({ ...prev, pricing: isComplete }));
   };
+
   const handleImagesChange = (data) => {
     // Validate that we have at least one main product image
     const hasMainProductImage = data.some(
@@ -109,8 +139,14 @@ const EditProductPage = () => {
     });
 
     setImages(data);
+
+    // Update completion status
+    const isComplete = data.length > 0 && data.some((img) => img.isMain);
+    setCompletionStatus((prev) => ({ ...prev, images: isComplete }));
+
     // Images are saved immediately so no need to track changes
   };
+
   const handleVariantsChange = (data) => {
     // Check if any variants were deleted (to clean up images)
     const deletedVariantIds = variants
@@ -137,7 +173,19 @@ const EditProductPage = () => {
     }
 
     setVariants(data);
+
+    // Update completion status
+    const isComplete = !pricing.hasVariants || data.length > 0;
+    setCompletionStatus((prev) => ({ ...prev, variants: isComplete }));
+
     // Variants are saved immediately so no need to track changes
+  };
+
+  // Calculate overall completion percentage
+  const calculateCompletion = () => {
+    const fields = Object.values(completionStatus);
+    const completed = fields.filter(Boolean).length;
+    return Math.round((completed / fields.length) * 100);
   };
 
   // Fetch product data
@@ -152,7 +200,7 @@ const EditProductPage = () => {
           setProduct(productData);
 
           // Initialize form state
-          setBasicInfo({
+          const initialBasicInfo = {
             name: productData.name,
             brand: productData.brand,
             description: productData.description,
@@ -163,16 +211,40 @@ const EditProductPage = () => {
             isFeatured: productData.isFeatured,
             isNewProduct: productData.isNewProduct,
             isBestSeller: productData.isBestSeller,
-          });
+          };
 
-          setPricing({
+          setBasicInfo(initialBasicInfo);
+
+          const initialPricing = {
             basePrice: productData.basePrice,
             hasVariants:
               productData.variants && productData.variants.length > 0,
-          });
+          };
 
-          setImages(productData.images || []);
-          setVariants(productData.variants || []);
+          setPricing(initialPricing);
+
+          const productImages = productData.images || [];
+          setImages(productImages);
+
+          const productVariants = productData.variants || [];
+          setVariants(productVariants);
+
+          // Set initial completion status
+          setCompletionStatus({
+            basic:
+              !!initialBasicInfo.name &&
+              !!initialBasicInfo.brand &&
+              initialBasicInfo.categories?.length > 0 &&
+              !!initialBasicInfo.description &&
+              !!initialBasicInfo.shortDescription,
+            pricing:
+              !!initialPricing.basePrice &&
+              (!initialPricing.hasVariants || productVariants.length > 0),
+            images:
+              productImages.length > 0 &&
+              productImages.some((img) => img.isMain),
+            variants: !initialPricing.hasVariants || productVariants.length > 0,
+          });
         }
       } catch (error) {
         setError("Failed to load product data");
@@ -184,6 +256,7 @@ const EditProductPage = () => {
 
     fetchProduct();
   }, [id]);
+
   // Handle save all changes
   const handleSave = async () => {
     try {
@@ -236,26 +309,32 @@ const EditProductPage = () => {
   // Navigate to product list with confirmation if unsaved changes
   const handleNavigateBack = () => {
     if (unsavedChanges) {
-      if (
-        window.confirm(
-          "You have unsaved changes. Are you sure you want to leave?"
-        )
-      ) {
-        navigate("/admin/products");
-      }
+      setShowExitConfirm(true);
     } else {
       navigate("/admin/products");
     }
+  };
+
+  const confirmExit = () => {
+    setShowExitConfirm(false);
+    navigate("/admin/products");
   };
 
   // Show loading spinner while fetching data
   if (loading) {
     return (
       <AdminLayout>
-        <div className="d-flex justify-content-center my-5">
-          <Spinner animation="border" variant="primary" />
-          <span className="ms-2">Loading product data...</span>
-        </div>
+        <Container fluid className="py-4">
+          <div className="d-flex flex-column align-items-center my-5 py-5">
+            <Spinner
+              animation="border"
+              variant="primary"
+              className="mb-3"
+              size="lg"
+            />
+            <h5 className="text-primary mb-0">Loading product data...</h5>
+          </div>
+        </Container>
       </AdminLayout>
     );
   }
@@ -264,7 +343,22 @@ const EditProductPage = () => {
   if (error) {
     return (
       <AdminLayout>
-        <Alert variant="danger">{error}</Alert>
+        <Container fluid className="py-4">
+          <Alert variant="danger" className="d-flex align-items-center">
+            <i className="bi bi-exclamation-triangle-fill fs-4 me-3"></i>
+            <div>
+              <strong className="d-block mb-1">Error Loading Product</strong>
+              <p className="mb-0">{error}</p>
+            </div>
+            <Button
+              variant="outline-danger"
+              className="ms-auto"
+              onClick={() => navigate("/admin/products")}
+            >
+              Return to Products
+            </Button>
+          </Alert>
+        </Container>
       </AdminLayout>
     );
   }
@@ -275,52 +369,93 @@ const EditProductPage = () => {
   // Check if a required variant exists when needed
   const needsVariant = !hasVariants && pricing.hasVariants;
 
+  // Get completion percentage
+  const completionPercentage = calculateCompletion();
+
   return (
     <AdminLayout>
-      <div className="container-fluid py-4">
+      <Container fluid className="py-4">
         {/* Breadcrumb Navigation */}
         <Breadcrumb className="mb-4">
-          <Breadcrumb.Item onClick={() => navigate("/admin/dashboard")}>
-            Dashboard
+          <Breadcrumb.Item
+            onClick={() => navigate("/admin/dashboard")}
+            className="cursor-pointer"
+          >
+            <i className="bi bi-speedometer2 me-1"></i> Dashboard
           </Breadcrumb.Item>
-          <Breadcrumb.Item onClick={() => navigate("/admin/products")}>
-            Products
+          <Breadcrumb.Item
+            onClick={() => navigate("/admin/products")}
+            className="cursor-pointer"
+          >
+            <i className="bi bi-box me-1"></i> Products
           </Breadcrumb.Item>
-          <Breadcrumb.Item active>Edit: {product?.name}</Breadcrumb.Item>
+          <Breadcrumb.Item active>
+            <i className="bi bi-pencil-square me-1"></i> Edit: {product?.name}
+          </Breadcrumb.Item>
         </Breadcrumb>
 
         {/* Header with Status Badge */}
-        <div className="d-flex justify-content-between align-items-center mb-4">
+        <div className="d-flex flex-wrap justify-content-between align-items-center mb-4">
           <div>
-            <h1 className="h3 mb-1">{product?.name}</h1>
-            <div>
-              <Badge
-                bg={product?.isActive ? "success" : "secondary"}
-                className="me-2"
-              >
-                {product?.isActive ? "Active" : "Inactive"}
-              </Badge>
+            <h1 className="h3 mb-2 d-flex align-items-center">
+              {product?.name}
+              {product?.isActive ? (
+                <Badge bg="success" pill className="ms-2 px-3 py-2">
+                  <i className="bi bi-check-circle me-1"></i> Active
+                </Badge>
+              ) : (
+                <Badge bg="secondary" pill className="ms-2 px-3 py-2">
+                  <i className="bi bi-dash-circle me-1"></i> Inactive
+                </Badge>
+              )}
+            </h1>
+            <div className="d-flex flex-wrap gap-2 mt-2">
               {product?.isFeatured && (
-                <Badge bg="primary" className="me-2">
-                  Featured
+                <Badge bg="primary" pill className="px-3 py-2">
+                  <i className="bi bi-star-fill me-1"></i> Featured
                 </Badge>
               )}
               {product?.isNewProduct && (
-                <Badge bg="info" className="me-2">
-                  New
+                <Badge bg="info" pill className="px-3 py-2">
+                  <i className="bi bi-patch-check-fill me-1"></i> New
                 </Badge>
               )}
-              {product?.isBestSeller && <Badge bg="warning">Best Seller</Badge>}
+              {product?.isBestSeller && (
+                <Badge bg="warning" pill className="px-3 py-2">
+                  <i className="bi bi-trophy-fill me-1"></i> Best Seller
+                </Badge>
+              )}
             </div>
           </div>
-          <div className="d-flex gap-2">
-            <Button variant="outline-secondary" onClick={handleNavigateBack}>
-              Cancel
+          <div className="d-flex flex-wrap gap-2 align-items-center mt-3 mt-md-0">
+            <div className="completion-indicator me-2 d-flex flex-column">
+              <div className="d-flex justify-content-between align-items-center mb-1">
+                <span className="small text-muted">Completion</span>
+                <Badge
+                  bg={completionPercentage === 100 ? "success" : "secondary"}
+                  pill
+                >
+                  {completionPercentage}%
+                </Badge>
+              </div>
+              <ProgressBar
+                now={completionPercentage}
+                variant={completionPercentage === 100 ? "success" : "primary"}
+                style={{ height: "8px", width: "150px" }}
+              />
+            </div>
+            <Button
+              variant="outline-secondary"
+              onClick={handleNavigateBack}
+              className="d-flex align-items-center"
+            >
+              <i className="bi bi-arrow-left me-1"></i> Back
             </Button>
             <Button
-              variant="primary"
+              variant={unsavedChanges ? "primary" : "success"}
               onClick={handleSave}
               disabled={saving || !unsavedChanges}
+              className="d-flex align-items-center"
             >
               {saving ? (
                 <>
@@ -328,9 +463,13 @@ const EditProductPage = () => {
                   Saving...
                 </>
               ) : unsavedChanges ? (
-                "Save Changes"
+                <>
+                  <i className="bi bi-save me-1"></i> Save Changes
+                </>
               ) : (
-                "Saved"
+                <>
+                  <i className="bi bi-check-circle me-1"></i> Saved
+                </>
               )}
             </Button>
           </div>
@@ -338,42 +477,48 @@ const EditProductPage = () => {
 
         {/* Warning for missing variants */}
         {needsVariant && (
-          <Alert variant="warning" className="mb-4">
-            <div className="d-flex align-items-center">
-              <i className="bi bi-exclamation-triangle-fill fs-4 me-3"></i>
-              <div>
-                <h5 className="mb-1">Product requires variants</h5>
-                <p className="mb-0">
-                  This product is set to use variants but no variants have been
-                  created yet. Please add at least one variant in the Variants
-                  tab.
-                </p>
-              </div>
-              <Button
-                variant="warning"
-                className="ms-auto"
-                onClick={() => setActiveTab("variants")}
-              >
-                Add Variants
-              </Button>
+          <Alert variant="warning" className="mb-4 d-flex align-items-center">
+            <i className="bi bi-exclamation-triangle-fill fs-4 me-3 text-warning"></i>
+            <div>
+              <h5 className="mb-1">Product requires variants</h5>
+              <p className="mb-0">
+                This product is set to use variants but no variants have been
+                created yet. Please add at least one variant in the Variants
+                tab.
+              </p>
             </div>
+            <Button
+              variant="warning"
+              className="ms-auto"
+              onClick={() => setActiveTab("variants")}
+            >
+              <i className="bi bi-plus-lg me-1"></i> Add Variants
+            </Button>
           </Alert>
         )}
 
-        <Card className="shadow-sm border-0">
+        <Card className="shadow border-0">
           <Card.Body className="p-0">
             <Tabs
               activeKey={activeTab}
               onSelect={(k) => setActiveTab(k)}
-              className="mb-0"
+              className="mb-0 product-tabs"
               fill
             >
               <Tab
                 eventKey="basic"
                 title={
-                  <div className="py-2">
+                  <div className="d-flex align-items-center py-2 px-1">
+                    <div
+                      className={`status-indicator ${
+                        completionStatus.basic ? "complete" : "incomplete"
+                      } me-2`}
+                    ></div>
                     <i className="bi bi-info-circle me-2"></i>
-                    Basic Information
+                    <span className="d-none d-sm-inline">
+                      Basic Information
+                    </span>
+                    <span className="d-sm-none">Basic</span>
                   </div>
                 }
               >
@@ -387,9 +532,17 @@ const EditProductPage = () => {
               <Tab
                 eventKey="pricing"
                 title={
-                  <div className="py-2">
+                  <div className="d-flex align-items-center py-2 px-1">
+                    <div
+                      className={`status-indicator ${
+                        completionStatus.pricing ? "complete" : "incomplete"
+                      } me-2`}
+                    ></div>
                     <i className="bi bi-tag me-2"></i>
-                    Pricing & Variants
+                    <span className="d-none d-sm-inline">
+                      Pricing & Variants
+                    </span>
+                    <span className="d-sm-none">Pricing</span>
                   </div>
                 }
               >
@@ -400,18 +553,33 @@ const EditProductPage = () => {
                     hasVariants={variants.length > 0}
                   />
                 </div>
-              </Tab>{" "}
+              </Tab>
               <Tab
                 eventKey="images"
                 title={
-                  <div className="py-2">
+                  <div className="d-flex align-items-center py-2 px-1">
+                    <div
+                      className={`status-indicator ${
+                        completionStatus.images ? "complete" : "incomplete"
+                      } me-2`}
+                    ></div>
                     <i className="bi bi-images me-2"></i>
-                    Images <Badge bg="secondary">{images.length}</Badge>
-                    {images.filter((img) => img.variantId).length > 0 && (
-                      <Badge bg="info" className="ms-1" pill>
-                        {images.filter((img) => img.variantId).length} Variant
+                    <span className="d-none d-sm-inline">Images</span>
+                    <div className="d-flex align-items-center">
+                      <Badge bg="secondary" pill className="ms-1">
+                        {images.length}
                       </Badge>
-                    )}
+                      {images.filter((img) => img.variantId).length > 0 && (
+                        <OverlayTrigger
+                          placement="top"
+                          overlay={<Tooltip>Variant-specific images</Tooltip>}
+                        >
+                          <Badge bg="info" pill className="ms-1">
+                            {images.filter((img) => img.variantId).length}
+                          </Badge>
+                        </OverlayTrigger>
+                      )}
+                    </div>
                   </div>
                 }
               >
@@ -427,10 +595,25 @@ const EditProductPage = () => {
               <Tab
                 eventKey="variants"
                 title={
-                  <div className="py-2">
+                  <div className="d-flex align-items-center py-2 px-1">
+                    <div
+                      className={`status-indicator ${
+                        completionStatus.variants ? "complete" : "incomplete"
+                      } me-2`}
+                    ></div>
                     <i className="bi bi-boxes me-2"></i>
-                    Variants{" "}
-                    <Badge bg={hasVariants ? "secondary" : "warning"}>
+                    <span className="d-none d-sm-inline">Variants</span>
+                    <Badge
+                      bg={
+                        hasVariants
+                          ? "secondary"
+                          : pricing.hasVariants
+                          ? "warning"
+                          : "secondary"
+                      }
+                      pill
+                      className="ms-1"
+                    >
                       {variants.length}
                     </Badge>
                   </div>
@@ -447,7 +630,70 @@ const EditProductPage = () => {
             </Tabs>
           </Card.Body>
         </Card>
-      </div>
+
+        {/* Exit Confirmation Modal */}
+        <Modal
+          show={showExitConfirm}
+          onHide={() => setShowExitConfirm(false)}
+          centered
+        >
+          <Modal.Header closeButton className="border-0 pb-0">
+            <Modal.Title className="text-warning">
+              <i className="bi bi-exclamation-triangle-fill me-2"></i>
+              Unsaved Changes
+            </Modal.Title>
+          </Modal.Header>
+          <Modal.Body>
+            <p>
+              You have unsaved changes. Are you sure you want to leave? All
+              unsaved changes will be lost.
+            </p>
+          </Modal.Body>
+          <Modal.Footer className="border-0 pt-0">
+            <Button
+              variant="outline-secondary"
+              onClick={() => setShowExitConfirm(false)}
+            >
+              Stay on Page
+            </Button>
+            <Button variant="warning" onClick={confirmExit}>
+              Leave Without Saving
+            </Button>
+          </Modal.Footer>
+        </Modal>
+      </Container>
+
+      <style jsx>{`
+        .cursor-pointer {
+          cursor: pointer;
+        }
+        .status-indicator {
+          width: 8px;
+          height: 8px;
+          border-radius: 50%;
+        }
+        .status-indicator.complete {
+          background-color: #28a745;
+        }
+        .status-indicator.incomplete {
+          background-color: #dee2e6;
+        }
+        .product-tabs .nav-link {
+          border: none;
+          border-bottom: 3px solid transparent;
+          color: #6c757d;
+          transition: all 0.2s ease;
+        }
+        .product-tabs .nav-link.active {
+          color: #0d6efd;
+          border-bottom-color: #0d6efd;
+          background-color: rgba(13, 110, 253, 0.05);
+        }
+        .product-tabs .nav-link:hover:not(.active) {
+          border-bottom-color: #dee2e6;
+          background-color: rgba(108, 117, 125, 0.05);
+        }
+      `}</style>
     </AdminLayout>
   );
 };
