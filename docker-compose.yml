@@ -1,59 +1,47 @@
 services:
-  # Frontend service with hot reloading
-  client:
+  nginx:
     build:
       context: .
-      dockerfile: docker/Dockerfile.client.dev
-    container_name: ecommerce-client-dev
+      dockerfile: docker/Dockerfile.client
+    container_name: ecommerce-nginx-prod
     restart: always
-    volumes:
-      - ./client:/app
-      - /app/node_modules
-    environment:
-      - CHOKIDAR_USEPOLLING=true
-      - WDS_SOCKET_PORT=0
     ports:
-      - "8080:3000"
+      - "80:80"
     depends_on:
       - server
     networks:
       - app-network
-    command: npm start
 
-  # Backend service with hot reloading
+  # Backend server
   server:
     build:
       context: .
-      dockerfile: docker/Dockerfile.server.dev
-    container_name: ecommerce-server-dev
+      dockerfile: docker/Dockerfile.server
+    container_name: ecommerce-server-prod
     restart: always
-    volumes:
-      - ./server:/app
-      - /app/node_modules
-    ports:
-      - "3000:3000"
     env_file:
       - ./.env
+    environment:
+      - NODE_ENV=production
     depends_on:
       mongo:
         condition: service_healthy
     networks:
       - app-network
-    command: npm run dev
 
   # MongoDB service
   mongo:
     image: mongo:latest
-    container_name: ecommerce-mongo-dev
+    container_name: ecommerce-mongo-prod
     restart: always
     environment:
       - MONGO_INITDB_ROOT_USERNAME=admin
       - MONGO_INITDB_ROOT_PASSWORD=password123
       - MONGO_INITDB_DATABASE=ecommerce
     ports:
-      - "27017:27017"
+      - "27018:27017"
     volumes:
-      - mongo-data:/data/db
+      - mongo-prod-data:/data/db
     networks:
       - app-network
     healthcheck:
@@ -63,12 +51,10 @@ services:
       retries: 5
       start_period: 30s
 
-# Define networks
 networks:
   app-network:
     driver: bridge
 
-# Define volumes
 volumes:
-  mongo-data:
+  mongo-prod-data:
     driver: local

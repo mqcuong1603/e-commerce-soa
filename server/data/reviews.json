@@ -124,5 +124,86 @@
     "comment": "Excellent monitor for both gaming and work. The HDR implementation is good, though not as bright as some other options. Still, great value for the price.",
     "isVerifiedPurchase": false,
     "createdAt": "2025-05-17T16:40:00.000Z"
+  },
+  {
+    "productName": "NVIDIA GeForce RTX 3080",
+    "userEmail": "alex.walker@example.com",
+    "userName": "Alex Walker",
+    "rating": 5,
+    "comment": "This GPU is absolutely incredible! I'm able to play all the latest games at 4K with ray tracing enabled and still maintain high frame rates. The DLSS feature is a game-changer for performance.",
+    "isVerifiedPurchase": true,
+    "createdAt": "2025-05-10T11:15:00.000Z"
+  },
+  {
+    "productName": "BenQ SW321C",
+    "userEmail": "olivia.kim@example.com",
+    "userName": "Olivia Kim",
+    "rating": 5,
+    "comment": "As a professional photographer, color accuracy is crucial for my work. This monitor delivers exceptional color fidelity and the built-in shading hood is perfect for eliminating glare. Worth every penny!",
+    "isVerifiedPurchase": true,
+    "createdAt": "2025-05-12T14:30:00.000Z"
+  },
+  {
+    "productName": "Samsung T7 Touch",
+    "userEmail": "olivia.kim@example.com",
+    "userName": "Olivia Kim",
+    "rating": 4,
+    "comment": "Love the speed and fingerprint security of this SSD. Transfers are lightning fast and the compact size makes it perfect for on-the-go work. Only giving 4 stars because the fingerprint reader occasionally needs multiple attempts.",
+    "isVerifiedPurchase": true,
+    "createdAt": "2025-05-12T14:45:00.000Z"
+  },
+  {
+    "productName": "ASUS ROG Strix X570-E Gaming",
+    "userEmail": "daniel.taylor@example.com",
+    "userName": "Daniel Taylor",
+    "rating": 5,
+    "comment": "Amazing motherboard with tons of features. The build quality is excellent and the BIOS is intuitive and easy to navigate. Wi-Fi 6 and 2.5G Ethernet are blazing fast. Highly recommended for any high-end AMD build.",
+    "isVerifiedPurchase": true,
+    "createdAt": "2025-05-14T10:20:00.000Z"
+  },
+  {
+    "productName": "Microsoft Surface Pro 8",
+    "userEmail": "lisa.nguyen@example.com",
+    "userName": "Lisa Nguyen",
+    "rating": 4,
+    "comment": "The Surface Pro 8 is perfect for my work needs with its versatility. The screen is gorgeous and the pen experience is very responsive. Battery life is good but not great, and I wish the keyboard was included instead of being a separate purchase.",
+    "isVerifiedPurchase": true,
+    "createdAt": "2025-05-15T09:30:00.000Z"
+  },
+  {
+    "productName": "AMD Ryzen 9 5950X",
+    "userEmail": "daniel.taylor@example.com",
+    "userName": "Daniel Taylor",
+    "rating": 5,
+    "comment": "Absolute beast of a CPU. Handles everything I throw at it from gaming to video editing and 3D rendering. Runs a bit hot under load, so make sure you have good cooling, but the performance is unmatched for the price.",
+    "isVerifiedPurchase": false,
+    "createdAt": "2025-05-16T18:25:00.000Z"
+  },
+  {
+    "productName": "HP Spectre x360",
+    "userEmail": "jennifer.park@example.com",
+    "userName": "Jennifer Park",
+    "rating": 4,
+    "comment": "Beautiful design and excellent performance. The OLED display is stunning with vibrant colors. The battery life is good but not as advertised. The 2-in-1 functionality is perfect for both work and entertainment.",
+    "isVerifiedPurchase": false,
+    "createdAt": "2025-05-17T11:10:00.000Z"
+  },
+  {
+    "productName": "Corsair Vengeance RGB Pro",
+    "userEmail": "alex.walker@example.com",
+    "userName": "Alex Walker",
+    "rating": 5,
+    "comment": "Rock-solid RAM with beautiful RGB lighting. Works flawlessly at advertised speeds with XMP enabled. The iCUE software makes it easy to customize lighting effects to match your build theme.",
+    "isVerifiedPurchase": false,
+    "createdAt": "2025-05-17T13:45:00.000Z"
+  },
+  {
+    "productName": "Samsung Odyssey G7",
+    "userEmail": "robert.williams@example.com",
+    "userName": "Robert Williams",
+    "rating": 4,
+    "comment": "The 1000R curve seemed extreme at first, but now I can't imagine gaming without it. The 240Hz refresh rate and 1ms response time make gameplay incredibly smooth. Only minor complaint is some backlight bleeding in dark scenes.",
+    "isVerifiedPurchase": false,
+    "createdAt": "2025-05-18T09:15:00.000Z"
   }
 ]

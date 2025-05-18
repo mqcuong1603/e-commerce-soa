@@ -6,7 +6,7 @@
     "role": "admin",
     "status": "active",
     "loyaltyPoints": 0,
-    "createdAt": "2025-01-01T09:30:00.000Z"
+    "createdAt": "2024-01-01T09:30:00.000Z"
   },
   {
     "email": "john.doe@example.com",
@@ -114,7 +114,7 @@
     "role": "customer",
     "status": "active",
     "loyaltyPoints": 60000,
-    "createdAt": "2025-05-01T09:20:00.000Z"
+    "createdAt": "2025-04-01T09:20:00.000Z"
   },
   {
     "email": "lisa.nguyen@example.com",

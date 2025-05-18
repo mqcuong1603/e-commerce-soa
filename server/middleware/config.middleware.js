@@ -23,6 +23,7 @@ export const configureMiddleware = (app, config, logger) => {
       methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
       allowedHeaders: ["Content-Type", "Authorization"],
       optionsSuccessStatus: 200,
+      trustProxy: true,
     })
   );
 

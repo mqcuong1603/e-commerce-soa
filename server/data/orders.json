@@ -382,5 +382,236 @@
         "createdAt": "2025-05-10T15:30:00.000Z"
       }
     ]
+  },
+  {
+    "userEmail": "alex.walker@example.com",
+    "fullName": "Alex Walker",
+    "orderNumber": "ORD-20240505-P7Q8",
+    "subtotal": 14949770,
+    "shippingFee": 35000,
+    "tax": 0,
+    "discountCode": "WELCM",
+    "discountAmount": 2242466,
+    "loyaltyPointsUsed": 50000,
+    "loyaltyPointsEarned": 58,
+    "total": 12692304,
+    "paymentStatus": "paid",
+    "createdAt": "2025-05-05T13:45:00.000Z",
+    "shippingAddress": {
+      "fullName": "Alex Walker",
+      "phoneNumber": "555-666-7777",
+      "addressLine1": "87 Tech Boulevard",
+      "addressLine2": "",
+      "city": "Austin",
+      "state": "TX",
+      "postalCode": "78701",
+      "country": "USA"
+    },
+    "items": [
+      {
+        "productName": "NVIDIA GeForce RTX 3080",
+        "variantName": "10GB GDDR6X",
+        "price": 14949770,
+        "quantity": 1,
+        "totalPrice": 14949770,
+        "sku": "NV-RTX3080-10G"
+      }
+    ],
+    "statusHistory": [
+      {
+        "status": "pending",
+        "note": "Order placed successfully",
+        "createdAt": "2025-05-05T13:45:00.000Z"
+      },
+      {
+        "status": "confirmed",
+        "note": "Payment confirmed",
+        "createdAt": "2025-05-05T13:47:00.000Z"
+      },
+      {
+        "status": "processing",
+        "note": "Order is being processed",
+        "createdAt": "2025-05-05T14:30:00.000Z"
+      },
+      {
+        "status": "shipping",
+        "note": "Order has been shipped via DHL, tracking number: DHL87654321",
+        "createdAt": "2025-05-06T10:15:00.000Z"
+      },
+      {
+        "status": "delivered",
+        "note": "Order has been delivered",
+        "createdAt": "2025-05-08T16:20:00.000Z"
+      }
+    ]
+  },
+  {
+    "userEmail": "olivia.kim@example.com",
+    "fullName": "Olivia Kim",
+    "orderNumber": "ORD-20240508-R9S0",
+    "subtotal": 31199040,
+    "shippingFee": 35000,
+    "tax": 0,
+    "discountCode": "SUM25",
+    "discountAmount": 7799760,
+    "loyaltyPointsUsed": 0,
+    "loyaltyPointsEarned": 139,
+    "total": 23434280,
+    "paymentStatus": "paid",
+    "createdAt": "2025-05-08T09:30:00.000Z",
+    "shippingAddress": {
+      "fullName": "Olivia Kim",
+      "phoneNumber": "777-888-9999",
+      "addressLine1": "42 Cherry Lane",
+      "addressLine2": "Apt 305",
+      "city": "Seattle",
+      "state": "WA",
+      "postalCode": "98101",
+      "country": "USA"
+    },
+    "items": [
+      {
+        "productName": "BenQ SW321C",
+        "variantName": "Standard",
+        "price": 26399040,
+        "quantity": 1,
+        "totalPrice": 26399040,
+        "sku": "BENQ-SW321C"
+      },
+      {
+        "productName": "Samsung T7 Touch",
+        "variantName": "500GB",
+        "price": 4800000,
+        "quantity": 1,
+        "totalPrice": 4800000,
+        "sku": "SAM-T7T-500GB"
+      }
+    ],
+    "statusHistory": [
+      {
+        "status": "pending",
+        "note": "Order placed successfully",
+        "createdAt": "2025-05-08T09:30:00.000Z"
+      },
+      {
+        "status": "confirmed",
+        "note": "Payment confirmed",
+        "createdAt": "2025-05-08T09:33:00.000Z"
+      },
+      {
+        "status": "processing",
+        "note": "Order is being processed",
+        "createdAt": "2025-05-08T10:45:00.000Z"
+      }
+    ]
+  },
+  {
+    "userEmail": "daniel.taylor@example.com",
+    "fullName": "Daniel Taylor",
+    "orderNumber": "ORD-20240510-T1U2",
+    "subtotal": 7919760,
+    "shippingFee": 35000,
+    "tax": 0,
+    "discountCode": "FIX50",
+    "discountAmount": 50000,
+    "loyaltyPointsUsed": 25000,
+    "loyaltyPointsEarned": 36,
+    "total": 7879760,
+    "paymentStatus": "paid",
+    "createdAt": "2025-05-10T11:20:00.000Z",
+    "shippingAddress": {
+      "fullName": "Daniel Taylor",
+      "phoneNumber": "444-555-6666",
+      "addressLine1": "123 Innovation Street",
+      "addressLine2": "Floor 5",
+      "city": "Chicago",
+      "state": "IL",
+      "postalCode": "60601",
+      "country": "USA"
+    },
+    "items": [
+      {
+        "productName": "ASUS ROG Strix X570-E Gaming",
+        "variantName": "Standard",
+        "price": 7919760,
+        "quantity": 1,
+        "totalPrice": 7919760,
+        "sku": "ASUS-X570E-GAMING"
+      }
+    ],
+    "statusHistory": [
+      {
+        "status": "pending",
+        "note": "Order placed successfully",
+        "createdAt": "2025-05-10T11:20:00.000Z"
+      },
+      {
+        "status": "confirmed",
+        "note": "Payment confirmed",
+        "createdAt": "2025-05-10T11:23:00.000Z"
+      },
+      {
+        "status": "processing",
+        "note": "Order is being processed",
+        "createdAt": "2025-05-10T13:10:00.000Z"
+      },
+      {
+        "status": "shipping",
+        "note": "Order has been shipped via FedEx, tracking number: FDX56789012",
+        "createdAt": "2025-05-11T09:45:00.000Z"
+      }
+    ]
+  },
+  {
+    "userEmail": "lisa.nguyen@example.com",
+    "fullName": "Lisa Nguyen",
+    "orderNumber": "ORD-20240511-V3W4",
+    "subtotal": 22999770,
+    "shippingFee": 35000,
+    "tax": 0,
+    "discountCode": null,
+    "discountAmount": 0,
+    "loyaltyPointsUsed": 100000,
+    "loyaltyPointsEarned": 94,
+    "total": 22934770,
+    "paymentStatus": "paid",
+    "createdAt": "2025-05-11T16:15:00.000Z",
+    "shippingAddress": {
+      "fullName": "Lisa Nguyen - Work",
+      "phoneNumber": "333-444-5556",
+      "addressLine1": "980 Business Plaza",
+      "addressLine2": "Suite 400",
+      "city": "Portland",
+      "state": "OR",
+      "postalCode": "97204",
+      "country": "USA"
+    },
+    "items": [
+      {
+        "productName": "Microsoft Surface Pro 8",
+        "variantName": "Core i5 / 8GB / 128GB",
+        "price": 22999770,
+        "quantity": 1,
+        "totalPrice": 22999770,
+        "sku": "SURFACE-PRO8-I5-8-128"
+      }
+    ],
+    "statusHistory": [
+      {
+        "status": "pending",
+        "note": "Order placed successfully",
+        "createdAt": "2025-05-11T16:15:00.000Z"
+      },
+      {
+        "status": "confirmed",
+        "note": "Payment confirmed",
+        "createdAt": "2025-05-11T16:18:00.000Z"
+      },
+      {
+        "status": "processing",
+        "note": "Order is being processed",
+        "createdAt": "2025-05-11T17:30:00.000Z"
+      }
+    ]
   }
 ]

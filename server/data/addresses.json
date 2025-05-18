@@ -120,30 +120,6 @@
     "isDefault": true
   },
   {
-    "userEmail": "mqcuong1603@gmail.com",
-    "fullName": "Cuong Ma",
-    "phoneNumber": "888-999-0000",
-    "addressLine1": "175 Nguyen Chi Thanh",
-    "addressLine2": "",
-    "city": "Ho Chi Minh City",
-    "state": "",
-    "postalCode": "70000",
-    "country": "Vietnam",
-    "isDefault": true
-  },
-  {
-    "userEmail": "mqcuong1603@gmail.com",
-    "fullName": "Cuong Ma",
-    "phoneNumber": "888-999-0001",
-    "addressLine1": "123 Le Loi",
-    "addressLine2": "District 1",
-    "city": "Ho Chi Minh City",
-    "state": "",
-    "postalCode": "70000",
-    "country": "Vietnam",
-    "isDefault": false
-  },
-  {
     "userEmail": "alex.walker@example.com",
     "fullName": "Alex Walker",
     "phoneNumber": "555-666-7777",

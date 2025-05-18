@@ -109,6 +109,7 @@ const AdvancedDashboard = () => {
         borderColor: "rgba(54, 162, 235, 1)",
         backgroundColor: "rgba(54, 162, 235, 0.2)",
         tension: 0.4,
+        yAxisID: "y", // Assign to the primary Y-axis
       },
       {
         label: "Orders",
@@ -116,6 +117,7 @@ const AdvancedDashboard = () => {
         borderColor: "rgba(255, 99, 132, 1)",
         backgroundColor: "rgba(255, 99, 132, 0.2)",
         tension: 0.4,
+        yAxisID: "y1", // Assign to the secondary Y-axis
       },
     ],
   };
@@ -134,7 +136,29 @@ const AdvancedDashboard = () => {
     },
     scales: {
       y: {
+        // Primary Y-axis for Revenue
+        type: "linear",
+        display: true,
+        position: "left",
         beginAtZero: true,
+        title: {
+          display: true,
+          text: "Revenue (VND)",
+        },
+      },
+      y1: {
+        // Secondary Y-axis for Orders
+        type: "linear",
+        display: true,
+        position: "right",
+        beginAtZero: true,
+        title: {
+          display: true,
+          text: "Orders",
+        },
+        grid: {
+          drawOnChartArea: false, // Only draw grid lines for the first Y-axis
+        },
       },
     },
   };

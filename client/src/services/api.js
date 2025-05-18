@@ -3,7 +3,7 @@ import axios from "axios";
 /**
  * Base API service for making HTTP requests
  */
-const API_URL = process.env.REACT_APP_API_URL || "http://localhost:3000/api";
+const API_URL = "/api"; // Use relative path for API calls
 
 // Create axios instance with default config
 const axiosInstance = axios.create({
