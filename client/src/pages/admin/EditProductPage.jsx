@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import {
   Tabs,
@@ -75,110 +75,50 @@ const EditProductPage = () => {
     setCompletionStatus((prev) => ({ ...prev, pricing: isComplete }));
   };
 
-  const handleImagesChange = (data) => {
-    // Validate that we have at least one main product image
-    const hasMainProductImage = data.some(
-      (img) => img.isMain && !img.variantId
-    );
+  const handleImagesChange = useCallback(
+    (newImages) => {
+      // Filter for product images only, as ImagesManager now only deals with these.
+      const productImages = newImages.filter((img) => !img.variantId);
 
-    // If no main product image exists but we have images, set the first product image as main
-    if (
-      !hasMainProductImage &&
-      data.filter((img) => !img.variantId).length > 0
-    ) {
-      const firstProductImage = data.find((img) => !img.variantId);
-      if (firstProductImage) {
-        data = data.map((img) => {
-          if (img._id === firstProductImage._id) {
-            return { ...img, isMain: true };
-          } else if (!img.variantId) {
-            // Ensure other product images are not marked as main
-            return { ...img, isMain: false };
-          }
-          return img;
-        });
+      // Validate that we have at least one main product image if product images exist
+      let updatedImages = [...newImages]; // Start with newImages
 
-        // Update on server (would happen inside the ImagesManager, but this ensures consistency)
-        adminService
-          .updateProductImage(id, firstProductImage._id, { isMain: true })
-          .then((result) => {
-            if (result.success) {
-              toast.success("Main product image has been set automatically");
-            }
-          })
-          .catch((err) => console.error("Failed to update main image:", err));
-      }
-    }
-
-    // Check that each variant with specific images has a main variant image
-    variants.forEach((variant) => {
-      const variantImages = data.filter((img) => img.variantId === variant._id);
       if (
-        variantImages.length > 0 &&
-        !variantImages.some((img) => img.isMain)
+        productImages.length > 0 &&
+        !productImages.some((img) => img.isMain)
       ) {
-        // Set the first variant image as main for that variant
-        const firstVariantImage = variantImages[0];
-        data = data.map((img) => {
-          if (img._id === firstVariantImage._id) {
-            return { ...img, isMain: true };
-          }
-          return img;
-        });
-
-        // Update on server
-        adminService
-          .updateProductImage(id, firstVariantImage._id, { isMain: true })
-          .catch((err) =>
-            console.error(
-              `Failed to update main image for variant ${variant._id}:`,
-              err
-            )
-          );
+        const firstProductImage = productImages[0];
+        if (firstProductImage && firstProductImage._id) {
+          // Ensure it has an ID (i.e., it's a saved image)
+          // This logic is now primarily handled within ImagesManager's useEffect and setMain
+          // However, we ensure the state here reflects it for consistency if needed by other parts of EditProductPage
+          updatedImages = newImages.map((img) => {
+            if (img._id === firstProductImage._id) {
+              return { ...img, isMain: true };
+            } else if (!img.variantId) {
+              return { ...img, isMain: false };
+            }
+            return img;
+          });
+        }
       }
-    });
 
-    setImages(data);
+      setImages(updatedImages);
+      setUnsavedChanges(true); // Image changes might require a general save if other parts of product depend on it
 
-    // Update completion status
-    const isComplete = data.length > 0 && data.some((img) => img.isMain);
-    setCompletionStatus((prev) => ({ ...prev, images: isComplete }));
-
-    // Images are saved immediately so no need to track changes
-  };
+      const isComplete =
+        productImages.length > 0 && productImages.some((img) => img.isMain);
+      setCompletionStatus((prev) => ({ ...prev, images: isComplete }));
+    },
+    [setImages, setUnsavedChanges, setCompletionStatus]
+  ); // Dependencies for useCallback
 
   const handleVariantsChange = (data) => {
-    // Check if any variants were deleted (to clean up images)
-    const deletedVariantIds = variants
-      .filter(
-        (oldVariant) =>
-          !data.some((newVariant) => newVariant._id === oldVariant._id)
-      )
-      .map((variant) => variant._id);
-
-    // Update variant images (mark deleted variant images as general product images)
-    if (deletedVariantIds.length > 0) {
-      const updatedImages = images.map((image) => {
-        if (image.variantId && deletedVariantIds.includes(image.variantId)) {
-          // Convert to general product image if variant is deleted
-          return { ...image, variantId: null };
-        }
-        return image;
-      });
-
-      // Update images if needed
-      if (JSON.stringify(images) !== JSON.stringify(updatedImages)) {
-        setImages(updatedImages);
-      }
-    }
-
     setVariants(data);
-
+    setUnsavedChanges(true);
     // Update completion status
     const isComplete = !pricing.hasVariants || data.length > 0;
     setCompletionStatus((prev) => ({ ...prev, variants: isComplete }));
-
-    // Variants are saved immediately so no need to track changes
   };
 
   // Calculate overall completion percentage
@@ -223,8 +163,11 @@ const EditProductPage = () => {
 
           setPricing(initialPricing);
 
-          const productImages = productData.images || [];
-          setImages(productImages);
+          // Images are now only product-level from the server for this manager
+          const productLevelImages = (productData.images || []).filter(
+            (img) => !img.variantId
+          );
+          setImages(productLevelImages);
 
           const productVariants = productData.variants || [];
           setVariants(productVariants);
@@ -241,8 +184,8 @@ const EditProductPage = () => {
               !!initialPricing.basePrice &&
               (!initialPricing.hasVariants || productVariants.length > 0),
             images:
-              productImages.length > 0 &&
-              productImages.some((img) => img.isMain),
+              productLevelImages.length > 0 &&
+              productLevelImages.some((img) => img.isMain),
             variants: !initialPricing.hasVariants || productVariants.length > 0,
           });
         }
@@ -261,46 +204,59 @@ const EditProductPage = () => {
   const handleSave = async () => {
     try {
       setSaving(true);
+      setError(null);
 
-      // Validate that we have at least one product image
-      if (images.length === 0) {
-        toast.warning("Please add at least one image for the product");
+      const productLevelImages = images.filter((img) => !img.variantId);
+
+      if (productLevelImages.length === 0) {
+        toast.warning("Please add at least one image for the product.");
+        setActiveTab("images");
+        setSaving(false);
+        return;
+      }
+      if (!productLevelImages.some((img) => img.isMain)) {
+        toast.warning("Please set one product image as the main image.");
         setActiveTab("images");
         setSaving(false);
         return;
       }
 
-      // Validate that each variant has proper images
-      const hasVariantWithoutImages = variants.some((variant) => {
-        // Check if this variant has specific images
-        const variantImages = images.filter(
-          (img) => img.variantId === variant._id
-        );
-        return variantImages.length === 0;
-      });
-
-      if (hasVariantWithoutImages) {
-        // Just a warning, not a blocker
-        toast.info(
-          "Some variants don't have specific images. They will use the general product images."
-        );
-      }
-
-      // Save basic product info
-      const productData = {
+      // Save basic product info + variants
+      const productUpdateData = {
         ...basicInfo,
         basePrice: pricing.basePrice,
+        // variants: variants, // variants are updated via VariantsManager and its own save
+        // images are handled by ImagesManager directly via its own API calls
       };
 
-      const productResponse = await adminService.updateProduct(id, productData);
+      const productResponse = await adminService.updateProduct(
+        id,
+        productUpdateData
+      );
 
       if (productResponse.success) {
+        // Update variants if any changes
+        // This part assumes VariantsManager handles its own save or provides data to save here.
+        // For simplicity, let's assume VariantsManager handles its own saving for now.
+        // If variants need to be saved as part of this main save, adjust accordingly.
+
+        // Example: if variants need to be saved with the product update
+        // const variantsToSave = variants.map(v => ({ ...v, productId: id }));
+        // await adminService.updateProductVariants(id, variantsToSave); // Hypothetical endpoint
+
         toast.success("Product updated successfully");
+        setProduct((prev) => ({ ...prev, ...productResponse.data })); // Update local product state
         setUnsavedChanges(false);
+        // Optionally, refetch product to ensure data consistency if server modifies data significantly
+        // fetchProduct();
+      } else {
+        toast.error(productResponse.message || "Failed to update product.");
+        setError(productResponse.message || "Failed to update product.");
       }
     } catch (error) {
-      toast.error("Failed to update product");
-      console.error(error);
+      console.error("Error saving product:", error);
+      toast.error("An error occurred while saving the product.");
+      setError("An error occurred while saving the product.");
     } finally {
       setSaving(false);
     }
@@ -586,9 +542,9 @@ const EditProductPage = () => {
                 <div className="p-4">
                   <ImagesManager
                     productId={id}
-                    images={images}
+                    images={images} // Pass only product-level images if that's how it's stored
                     onChange={handleImagesChange}
-                    variants={variants}
+                    // variants prop is no longer needed by the simplified ImagesManager
                   />
                 </div>
               </Tab>

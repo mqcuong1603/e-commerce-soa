@@ -1,5 +1,16 @@
-import React, { useState, useEffect } from "react";
-import { Form, Row, Col, Button, Card, Spinner, Badge } from "react-bootstrap";
+import React, { useState, useEffect, useCallback } from "react";
+import {
+  Form,
+  Row,
+  Col,
+  Button,
+  Card,
+  Spinner,
+  Badge,
+  InputGroup,
+  ListGroup,
+  CloseButton,
+} from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 import adminService from "../../../services/admin.service";
 import { toast } from "react-toastify";
@@ -14,15 +25,18 @@ const ProductForm = ({ product, isEditing = false }) => {
     shortDescription: "",
     brand: "",
     basePrice: "",
-    salePrice: "",
     categories: [],
-    sku: "",
-    status: "active",
-    inventory: "",
+    tags: [], // Added tags
+    isActive: true, // Changed from status
     isNewProduct: true,
     isBestSeller: false,
     isFeatured: false,
   });
+
+  const [productVariants, setProductVariants] = useState([
+    // Example variant structure
+    // { sku: '', name: '', price: '', salePrice: '', inventory: '', attributes: { color: '', size: '' } }
+  ]);
 
   // UI state
   const [loading, setLoading] = useState(false);
@@ -31,6 +45,32 @@ const ProductForm = ({ product, isEditing = false }) => {
   const [categories, setCategories] = useState([]);
   const [imageFiles, setImageFiles] = useState([]);
   const [previewImages, setPreviewImages] = useState([]);
+  const [currentTag, setCurrentTag] = useState("");
+
+  // Memoize setAsMainImage using useCallback and functional update
+  const setAsMainImage = useCallback((indexToSetMain) => {
+    setPreviewImages((currentPreviews) =>
+      currentPreviews.map((preview, i) => ({
+        ...preview,
+        isMain: i === indexToSetMain,
+      }))
+    );
+  }, []); // setPreviewImages is stable, so empty dependency array is fine
+
+  // Effect to ensure a main image is always selected if images exist
+  useEffect(() => {
+    if (previewImages.length > 0 && !previewImages.some((p) => p.isMain)) {
+      // Set the first image as main
+      setPreviewImages((currentPreviews) => {
+        // Guard against an unlikely race condition where currentPreviews might be empty
+        if (currentPreviews.length === 0) return [];
+        return currentPreviews.map((img, idx) => ({
+          ...img,
+          isMain: idx === 0,
+        }));
+      });
+    }
+  }, [previewImages]); // Re-run when previewImages array reference changes
 
   // Load product data if editing
   useEffect(() => {
@@ -41,15 +81,29 @@ const ProductForm = ({ product, isEditing = false }) => {
         shortDescription: product.shortDescription || "",
         brand: product.brand || "",
         basePrice: product.basePrice || "",
-        salePrice: product.salePrice || "",
         categories: product.categories?.map((cat) => cat._id) || [],
-        sku: product.sku || "",
-        status: product.status || "active",
-        inventory: product.inventory || "",
+        tags: product.tags || [],
+        isActive: product.isActive !== undefined ? product.isActive : true,
         isNewProduct: product.isNewProduct || false,
         isBestSeller: product.isBestSeller || false,
         isFeatured: product.isFeatured || false,
       });
+
+      if (product.variants && product.variants.length > 0) {
+        setProductVariants(
+          product.variants.map((v) => ({
+            id: v._id, // Keep track of existing variant IDs
+            sku: v.sku || "",
+            name: v.name || "",
+            price: v.price || "",
+            salePrice: v.salePrice || "",
+            inventory: v.inventory || 0,
+            attributes: v.attributes || {},
+          }))
+        );
+      } else {
+        setProductVariants([]);
+      }
 
       // Set existing images for preview
       if (product.images) {
@@ -71,10 +125,15 @@ const ProductForm = ({ product, isEditing = false }) => {
       try {
         const response = await adminService.getCategories();
         if (response.success) {
-          setCategories(response.data || []);
+          // Ensure response.data is an array, default to empty array if not
+          setCategories(Array.isArray(response.data) ? response.data : []);
+        } else {
+          setCategories([]); // Set to empty array on failure
+          toast.error(response.message || "Failed to load categories");
         }
       } catch (err) {
         console.error("Error fetching categories:", err);
+        setCategories([]); // Set to empty array on error
         toast.error("Failed to load categories");
       }
     };
@@ -120,6 +179,12 @@ const ProductForm = ({ product, isEditing = false }) => {
   const handleImageChange = (e) => {
     const files = Array.from(e.target.files);
 
+    if (previewImages.length + files.length > 3) {
+      toast.warn("You can upload a maximum of 3 images per product.");
+      e.target.value = null;
+      return;
+    }
+
     // Create preview URLs for selected files
     const newPreviews = files.map((file) => ({
       file,
@@ -130,16 +195,6 @@ const ProductForm = ({ product, isEditing = false }) => {
 
     setImageFiles([...imageFiles, ...files]);
     setPreviewImages([...previewImages, ...newPreviews]);
-  };
-
-  // Set an image as main image
-  const setAsMainImage = (index) => {
-    const updatedPreviews = previewImages.map((preview, i) => ({
-      ...preview,
-      isMain: i === index,
-    }));
-
-    setPreviewImages(updatedPreviews);
   };
 
   // Remove an image
@@ -160,30 +215,83 @@ const ProductForm = ({ product, isEditing = false }) => {
 
     // Remove from state
     const updatedPreviews = previewImages.filter((_, i) => i !== index);
-    setPreviewImages(updatedPreviews);
+    // setPreviewImages(updatedPreviews); // This will be handled by the useEffect or subsequent logic if needed
 
     // If removed image was a file (not existing), remove from files array too
-    if (!imageToRemove.isExisting) {
-      const updatedFiles = imageFiles.filter((_, i) => {
-        // This matching logic is a bit simplistic but works for this case
-        return (
-          previewImages.findIndex((p) => p.url === URL.createObjectURL(_)) !==
-          index
-        );
-      });
-      setImageFiles(updatedFiles);
+    if (!imageToRemove.isExisting && imageToRemove.file) {
+      setImageFiles((currentImageFiles) =>
+        currentImageFiles.filter((f) => f !== imageToRemove.file)
+      );
     }
 
-    // If the main image was removed, set the first remaining image as main
+    // If the main image was removed and there are still previews,
+    // the useEffect will handle setting a new main image.
+    // However, to make it more immediate and specific, we can still set one here.
+    // The useEffect will act as a fallback.
     if (imageToRemove.isMain && updatedPreviews.length > 0) {
-      const newMainIndex = 0;
-      updatedPreviews[newMainIndex].isMain = true;
-      setPreviewImages([...updatedPreviews]);
+      // Check if any other image is already main in updatedPreviews
+      if (!updatedPreviews.some((p) => p.isMain)) {
+        updatedPreviews[0].isMain = true;
+      }
+    }
+    setPreviewImages(updatedPreviews); // Now set the state
+  };
+
+  // Tag Management
+  const handleTagInputChange = (e) => {
+    setCurrentTag(e.target.value);
+  };
+
+  const addTag = () => {
+    if (currentTag.trim() && !formData.tags.includes(currentTag.trim())) {
+      setFormData({ ...formData, tags: [...formData.tags, currentTag.trim()] });
+      setCurrentTag("");
     }
   };
 
+  const removeTag = (tagToRemove) => {
+    setFormData({
+      ...formData,
+      tags: formData.tags.filter((tag) => tag !== tagToRemove),
+    });
+  };
+
+  // Variant Management
+  const handleVariantChange = (index, field, value) => {
+    const updatedVariants = [...productVariants];
+    if (field.startsWith("attributes.")) {
+      const attrKey = field.split(".")[1];
+      updatedVariants[index].attributes = {
+        ...updatedVariants[index].attributes,
+        [attrKey]: value,
+      };
+    } else {
+      updatedVariants[index][field] = value;
+    }
+    setProductVariants(updatedVariants);
+  };
+
+  const addVariant = () => {
+    setProductVariants([
+      ...productVariants,
+      {
+        sku: "",
+        name: "",
+        price: "",
+        salePrice: "",
+        inventory: 0,
+        attributes: {},
+      },
+    ]);
+  };
+
+  const removeVariant = (index) => {
+    const updatedVariants = productVariants.filter((_, i) => i !== index);
+    setProductVariants(updatedVariants);
+  };
+
   // Validate form data
-  const validateForm = () => {
+  const validateForm = useCallback(() => {
     const newErrors = {};
 
     if (!formData.name.trim()) newErrors.name = "Product name is required";
@@ -197,77 +305,122 @@ const ProductForm = ({ product, isEditing = false }) => {
     if (formData.shortDescription.trim().length > 200)
       newErrors.shortDescription =
         "Short description cannot exceed 200 characters";
-    if (!formData.basePrice) newErrors.basePrice = "Base price is required";
-    if (parseFloat(formData.basePrice) < 0)
-      newErrors.basePrice = "Price cannot be negative";
-    if (
-      formData.salePrice &&
-      parseFloat(formData.salePrice) > parseFloat(formData.basePrice)
-    )
-      newErrors.salePrice = "Sale price cannot be higher than base price";
+    if (!formData.basePrice || parseFloat(formData.basePrice) < 0)
+      newErrors.basePrice = "Valid base price is required";
     if (!formData.categories.length)
       newErrors.categories = "At least one category is required";
 
+    const variantErrors = [];
+    productVariants.forEach((variant, index) => {
+      const errors = {};
+      if (!variant.sku.trim()) errors.sku = "SKU is required";
+      if (!variant.name.trim()) errors.name = "Variant name is required";
+      if (!variant.price || parseFloat(variant.price) < 0)
+        errors.price = "Valid price is required";
+      if (variant.salePrice && parseFloat(variant.salePrice) < 0)
+        errors.salePrice = "Sale price cannot be negative";
+      if (
+        variant.salePrice &&
+        parseFloat(variant.salePrice) > parseFloat(variant.price)
+      )
+        errors.salePrice = "Sale price cannot be higher than variant price";
+      if (variant.inventory === undefined || parseInt(variant.inventory) < 0)
+        errors.inventory = "Valid inventory is required (0 or more)";
+      if (Object.keys(errors).length > 0) variantErrors[index] = errors;
+    });
+
+    if (variantErrors.length > 0) newErrors.variants = variantErrors;
+
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
-  };
+  }, [formData, productVariants]);
 
   // Handle form submission
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // Validate form
     if (!validateForm()) {
       toast.error("Please fix the form errors");
       return;
     }
 
     // Prepare form data for API
-    const productData = {
+    const productDataPayload = {
       ...formData,
       basePrice: parseFloat(formData.basePrice),
-      salePrice: formData.salePrice
-        ? parseFloat(formData.salePrice)
-        : undefined,
-      inventory: formData.inventory ? parseInt(formData.inventory) : undefined,
+      // isActive is already a boolean
+      // tags are already an array of strings
+      variants: productVariants.map((variant) => ({
+        sku: variant.sku,
+        name: variant.name,
+        price: parseFloat(variant.price),
+        salePrice: variant.salePrice
+          ? parseFloat(variant.salePrice)
+          : undefined,
+        inventory: parseInt(variant.inventory),
+        attributes: variant.attributes,
+        // Include ID if it's an existing variant being updated
+        ...(variant.id && { _id: variant.id }),
+      })),
+      // Images will be uploaded separately as per existing logic
+      // If createProduct is to handle initial image list, this needs adjustment
+      images: [], // Send empty or omit if images are handled by uploadProductImage
     };
+
+    // Remove salePrice and inventory from top-level if they exist (legacy)
+    delete productDataPayload.salePrice;
+    delete productDataPayload.inventory;
+    delete productDataPayload.sku;
+    delete productDataPayload.status;
 
     try {
       setLoading(true);
-
       let response;
       let productId;
 
-      // Create or update product
       if (isEditing) {
-        response = await adminService.updateProduct(product._id, productData);
+        // For updates, the backend's updateProduct would also need to handle variants and images similarly
+        // This example focuses on createProduct; updateProduct would need a parallel refactor
+        response = await adminService.updateProduct(
+          product._id,
+          productDataPayload
+        );
         productId = product._id;
       } else {
-        response = await adminService.createProduct(productData);
+        response = await adminService.createProduct(productDataPayload);
         productId = response.data._id;
       }
 
       if (!response.success) {
-        throw new Error(response.message || "Failed to save product");
+        throw new Error(
+          response.message ||
+            `Failed to ${isEditing ? "update" : "create"} product`
+        );
       }
 
-      // Upload images if any
+      // Image upload logic (remains largely the same, happens after product creation/update)
       if (imageFiles.length > 0) {
         setUploading(true);
-
-        // Find which image should be main
-        const mainIndex = previewImages.findIndex(
+        const mainImagePreview = previewImages.find(
           (img) => img.isMain && !img.isExisting
         );
+        const mainImageFile = mainImagePreview ? mainImagePreview.file : null;
 
-        // Upload each image
         for (let i = 0; i < imageFiles.length; i++) {
-          const imageData = {
-            file: imageFiles[i],
-            isMain: i === mainIndex,
-          };
+          const file = imageFiles[i];
+          const imageIsMain = file === mainImageFile;
+          // Find corresponding preview to get alt text if available, or use product name
+          const preview = previewImages.find((p) => p.file === file);
+          const altText = preview?.alt || formData.name;
 
-          await adminService.uploadProductImage(productId, imageData);
+          const imageFormData = new FormData();
+          imageFormData.append("image", file);
+          imageFormData.append("isMain", String(imageIsMain)); // Convert boolean to string
+          imageFormData.append("alt", altText);
+          // If images can be associated with variants during upload:
+          // imageFormData.append("variantId", "some_variant_id_if_applicable");
+
+          await adminService.uploadProductImage(productId, imageFormData);
         }
       }
 
@@ -276,8 +429,15 @@ const ProductForm = ({ product, isEditing = false }) => {
       );
       navigate("/admin/products");
     } catch (err) {
-      console.error("Error saving product:", err);
-      toast.error(err.message || "Failed to save product");
+      console.error(
+        `Error saving product (${isEditing ? "update" : "create"}):`,
+        err
+      );
+      toast.error(
+        err.response?.data?.message ||
+          err.message ||
+          `Failed to ${isEditing ? "update" : "create"} product`
+      );
     } finally {
       setLoading(false);
       setUploading(false);
@@ -327,20 +487,7 @@ const ProductForm = ({ product, isEditing = false }) => {
                     </Form.Control.Feedback>
                   </Form.Group>
                 </Col>
-                <Col md={6}>
-                  <Form.Group className="mb-3">
-                    <Form.Label>SKU (Stock Keeping Unit)</Form.Label>
-                    <Form.Control
-                      type="text"
-                      name="sku"
-                      value={formData.sku}
-                      onChange={handleInputChange}
-                    />
-                    <Form.Text className="text-muted">
-                      Leave empty to generate automatically
-                    </Form.Text>
-                  </Form.Group>
-                </Col>
+                {/* SKU field removed from here, will be part of variants */}
               </Row>
 
               <Form.Group className="mb-3">
@@ -399,10 +546,11 @@ const ProductForm = ({ product, isEditing = false }) => {
                   multiple
                   accept="image/*"
                   onChange={handleImageChange}
+                  disabled={previewImages.length >= 3} // Disable if 3 images are already present
                 />
                 <Form.Text className="text-muted">
-                  Select multiple images. First image will be the main product
-                  image.
+                  Select up to 3 images. First image selected will be the main
+                  product image by default.
                 </Form.Text>
               </div>
 
@@ -455,82 +603,242 @@ const ProductForm = ({ product, isEditing = false }) => {
               )}
             </Card.Body>
           </Card>
+
+          {/* Product Variants Card - NEW */}
+          <Card className="mb-4 shadow-sm border-0">
+            <Card.Header className="bg-white d-flex justify-content-between align-items-center">
+              <h5 className="mb-0">Product Variants</h5>
+              <Button variant="outline-primary" size="sm" onClick={addVariant}>
+                <i className="bi bi-plus-circle me-1"></i> Add Variant
+              </Button>
+            </Card.Header>
+            <Card.Body>
+              {productVariants.map((variant, index) => (
+                <div key={index} className="mb-4 p-3 border rounded">
+                  <Row className="align-items-center mb-2">
+                    <Col>
+                      <h6>Variant {index + 1}</h6>
+                    </Col>
+                    <Col xs="auto">
+                      <Button
+                        variant="outline-danger"
+                        size="sm"
+                        onClick={() => removeVariant(index)}
+                      >
+                        <i className="bi bi-trash"></i> Remove
+                      </Button>
+                    </Col>
+                  </Row>
+                  <Row>
+                    <Col md={6}>
+                      <Form.Group className="mb-3">
+                        <Form.Label>
+                          Variant Name <span className="text-danger">*</span>
+                        </Form.Label>
+                        <Form.Control
+                          type="text"
+                          value={variant.name}
+                          onChange={(e) =>
+                            handleVariantChange(index, "name", e.target.value)
+                          }
+                          isInvalid={!!errors.variants?.[index]?.name}
+                        />
+                        <Form.Control.Feedback type="invalid">
+                          {errors.variants?.[index]?.name}
+                        </Form.Control.Feedback>
+                      </Form.Group>
+                    </Col>
+                    <Col md={6}>
+                      <Form.Group className="mb-3">
+                        <Form.Label>
+                          SKU <span className="text-danger">*</span>
+                        </Form.Label>
+                        <Form.Control
+                          type="text"
+                          value={variant.sku}
+                          onChange={(e) =>
+                            handleVariantChange(index, "sku", e.target.value)
+                          }
+                          isInvalid={!!errors.variants?.[index]?.sku}
+                        />
+                        <Form.Control.Feedback type="invalid">
+                          {errors.variants?.[index]?.sku}
+                        </Form.Control.Feedback>
+                      </Form.Group>
+                    </Col>
+                  </Row>
+                  <Row>
+                    <Col md={4}>
+                      <Form.Group className="mb-3">
+                        <Form.Label>
+                          Price <span className="text-danger">*</span>
+                        </Form.Label>
+                        <InputGroup>
+                          <InputGroup.Text>₫</InputGroup.Text>
+                          <Form.Control
+                            type="number"
+                            min="0"
+                            step="1000"
+                            value={variant.price}
+                            onChange={(e) =>
+                              handleVariantChange(
+                                index,
+                                "price",
+                                e.target.value
+                              )
+                            }
+                            isInvalid={!!errors.variants?.[index]?.price}
+                          />
+                        </InputGroup>
+                        <Form.Control.Feedback type="invalid">
+                          {errors.variants?.[index]?.price}
+                        </Form.Control.Feedback>
+                      </Form.Group>
+                    </Col>
+                    <Col md={4}>
+                      <Form.Group className="mb-3">
+                        <Form.Label>Sale Price</Form.Label>
+                        <InputGroup>
+                          <InputGroup.Text>₫</InputGroup.Text>
+                          <Form.Control
+                            type="number"
+                            min="0"
+                            step="1000"
+                            value={variant.salePrice}
+                            onChange={(e) =>
+                              handleVariantChange(
+                                index,
+                                "salePrice",
+                                e.target.value
+                              )
+                            }
+                            isInvalid={!!errors.variants?.[index]?.salePrice}
+                          />
+                        </InputGroup>
+                        <Form.Control.Feedback type="invalid">
+                          {errors.variants?.[index]?.salePrice}
+                        </Form.Control.Feedback>
+                      </Form.Group>
+                    </Col>
+                    <Col md={4}>
+                      <Form.Group className="mb-3">
+                        <Form.Label>
+                          Inventory <span className="text-danger">*</span>
+                        </Form.Label>
+                        <Form.Control
+                          type="number"
+                          min="0"
+                          step="1"
+                          value={variant.inventory}
+                          onChange={(e) =>
+                            handleVariantChange(
+                              index,
+                              "inventory",
+                              e.target.value
+                            )
+                          }
+                          isInvalid={!!errors.variants?.[index]?.inventory}
+                        />
+                        <Form.Control.Feedback type="invalid">
+                          {errors.variants?.[index]?.inventory}
+                        </Form.Control.Feedback>
+                      </Form.Group>
+                    </Col>
+                  </Row>
+                  <Form.Group className="mb-3">
+                    <Form.Label>Attributes (e.g., Color, Size)</Form.Label>
+                    {/* Basic attribute handling: example for 'color' and 'size' */}
+                    <Row>
+                      <Col md={6}>
+                        <Form.Control
+                          type="text"
+                          placeholder="Attribute: Color (e.g., Red)"
+                          value={variant.attributes?.color || ""}
+                          onChange={(e) =>
+                            handleVariantChange(
+                              index,
+                              "attributes.color",
+                              e.target.value
+                            )
+                          }
+                          className="mb-2"
+                        />
+                      </Col>
+                      <Col md={6}>
+                        <Form.Control
+                          type="text"
+                          placeholder="Attribute: Size (e.g., Large)"
+                          value={variant.attributes?.size || ""}
+                          onChange={(e) =>
+                            handleVariantChange(
+                              index,
+                              "attributes.size",
+                              e.target.value
+                            )
+                          }
+                        />
+                      </Col>
+                    </Row>
+                    <Form.Text muted>
+                      Customize attributes as needed. For more complex
+                      attributes, consider a dynamic key-value pair system.
+                    </Form.Text>
+                  </Form.Group>
+                </div>
+              ))}
+              {productVariants.length === 0 && (
+                <p className="text-muted">
+                  No variants added. Click "Add Variant" to create product
+                  options.
+                </p>
+              )}
+            </Card.Body>
+          </Card>
         </Col>
 
         <Col md={4}>
+          {/* Pricing & Inventory Card - Base Price remains, inventory and sale price moved to variants */}
           <Card className="mb-4 shadow-sm border-0">
             <Card.Header className="bg-white">
-              <h5 className="mb-0">Pricing & Inventory</h5>
+              <h5 className="mb-0">Base Product Details</h5>
             </Card.Header>
             <Card.Body>
-              <Row>
-                <Col sm={6}>
-                  <Form.Group className="mb-3">
-                    <Form.Label>
-                      Base Price <span className="text-danger">*</span>
-                    </Form.Label>
-                    <div className="input-group">
-                      <span className="input-group-text">₫</span>
-                      <Form.Control
-                        type="number"
-                        min="0"
-                        step="1000"
-                        name="basePrice"
-                        value={formData.basePrice}
-                        onChange={handleInputChange}
-                        isInvalid={!!errors.basePrice}
-                      />
-                    </div>
-                    <Form.Control.Feedback type="invalid">
-                      {errors.basePrice}
-                    </Form.Control.Feedback>
-                  </Form.Group>
-                </Col>
-                <Col sm={6}>
-                  <Form.Group className="mb-3">
-                    <Form.Label>Sale Price</Form.Label>
-                    <div className="input-group">
-                      <span className="input-group-text">₫</span>
-                      <Form.Control
-                        type="number"
-                        min="0"
-                        step="1000"
-                        name="salePrice"
-                        value={formData.salePrice}
-                        onChange={handleInputChange}
-                        isInvalid={!!errors.salePrice}
-                      />
-                    </div>
-                    <Form.Control.Feedback type="invalid">
-                      {errors.salePrice}
-                    </Form.Control.Feedback>
-                  </Form.Group>
-                </Col>
-              </Row>
-
               <Form.Group className="mb-3">
-                <Form.Label>Inventory</Form.Label>
-                <Form.Control
-                  type="number"
-                  min="0"
-                  step="1"
-                  name="inventory"
-                  value={formData.inventory}
-                  onChange={handleInputChange}
-                  placeholder="Leave empty if using variants"
-                />
-                <Form.Text className="text-muted">
-                  Set inventory quantity, or leave empty if using variants
+                <Form.Label>
+                  Base Price (Default) <span className="text-danger">*</span>
+                </Form.Label>
+                <InputGroup>
+                  <InputGroup.Text>₫</InputGroup.Text>
+                  <Form.Control
+                    type="number"
+                    min="0"
+                    step="1000"
+                    name="basePrice"
+                    value={formData.basePrice}
+                    onChange={handleInputChange}
+                    isInvalid={!!errors.basePrice}
+                    placeholder="Price if no variants"
+                  />
+                </InputGroup>
+                <Form.Control.Feedback type="invalid">
+                  {errors.basePrice}
+                </Form.Control.Feedback>
+                <Form.Text muted>
+                  This price is used if no variants are specified or as a
+                  general reference.
                 </Form.Text>
               </Form.Group>
+              {/* Sale Price and Inventory fields removed from here */}
             </Card.Body>
           </Card>
 
+          {/* Categories & Status Card */}
           <Card className="mb-4 shadow-sm border-0">
             <Card.Header className="bg-white">
-              <h5 className="mb-0">Categories & Status</h5>
+              <h5 className="mb-0">Organization & Visibility</h5>
             </Card.Header>
             <Card.Body>
+              {/* Categories (existing) */}
               <Form.Group className="mb-3">
                 <Form.Label>
                   Categories <span className="text-danger">*</span>
@@ -557,18 +865,71 @@ const ProductForm = ({ product, isEditing = false }) => {
                 </Form.Text>
               </Form.Group>
 
+              {/* Tags - NEW */}
               <Form.Group className="mb-3">
-                <Form.Label>Status</Form.Label>
+                <Form.Label>Tags</Form.Label>
+                <InputGroup className="mb-2">
+                  <Form.Control
+                    type="text"
+                    placeholder="Add a tag"
+                    value={currentTag}
+                    onChange={handleTagInputChange}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter") {
+                        e.preventDefault();
+                        addTag();
+                      }
+                    }}
+                  />
+                  <Button variant="outline-secondary" onClick={addTag}>
+                    Add
+                  </Button>
+                </InputGroup>
+                <div>
+                  {formData.tags.map((tag, index) => (
+                    <Badge
+                      key={index}
+                      pill
+                      bg="light"
+                      text="dark"
+                      className="me-2 mb-2 p-2"
+                    >
+                      {tag}
+                      <CloseButton
+                        onClick={() => removeTag(tag)}
+                        className="ms-1"
+                        style={{ fontSize: "0.65em" }}
+                      />
+                    </Badge>
+                  ))}
+                </div>
+                <Form.Text muted>
+                  Keywords to help customers find the product.
+                </Form.Text>
+              </Form.Group>
+
+              {/* Status (changed to isActive) */}
+              <Form.Group className="mb-3">
+                <Form.Label>Product Status</Form.Label>
                 <Form.Select
-                  name="status"
-                  value={formData.status}
-                  onChange={handleInputChange}
+                  name="isActive"
+                  value={formData.isActive}
+                  onChange={(e) =>
+                    handleInputChange({
+                      target: {
+                        name: "isActive",
+                        value: e.target.value === "true",
+                        type: "select",
+                      },
+                    })
+                  }
                 >
-                  <option value="active">Active</option>
-                  <option value="inactive">Inactive</option>
+                  <option value="true">Active</option>
+                  <option value="false">Inactive</option>
                 </Form.Select>
               </Form.Group>
 
+              {/* Checkboxes (existing) */}
               <Form.Group className="mb-3">
                 <Form.Check
                   type="checkbox"
@@ -601,6 +962,7 @@ const ProductForm = ({ product, isEditing = false }) => {
             </Card.Body>
           </Card>
 
+          {/* Submit Buttons (existing) */}
           <div className="d-grid gap-2">
             <Button
               variant="primary"

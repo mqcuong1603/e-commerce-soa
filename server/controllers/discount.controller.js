@@ -13,13 +13,25 @@ export const getAllDiscountCodes = async (req, res, next) => {
     const limit = parseInt(req.query.limit) || 20;
     const skip = (page - 1) * limit;
 
-    const total = await DiscountCode.countDocuments();
+    // For non-admin users, only show active and not fully used discount codes
+    const query =
+      req.user && req.user.role === "admin"
+        ? {}
+        : { isActive: true, $expr: { $lt: ["$usedCount", "$usageLimit"] } };
 
-    const discountCodes = await DiscountCode.find()
+    const total = await DiscountCode.countDocuments(query);
+
+    let discountCodesQuery = DiscountCode.find(query)
       .sort({ createdAt: -1 })
       .skip(skip)
-      .limit(limit)
-      .populate("createdBy", "fullName");
+      .limit(limit);
+
+    // Conditionally populate createdBy only for admin users
+    if (req.user && req.user.role === "admin") {
+      discountCodesQuery = discountCodesQuery.populate("createdBy", "fullName");
+    }
+
+    const discountCodes = await discountCodesQuery;
 
     // Calculate pagination
     const totalPages = Math.ceil(total / limit);

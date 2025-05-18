@@ -1,8 +1,8 @@
 [
   {
     "email": "admin@example.com",
-    "fullName": "Admin User",
-    "password": "Admin123!",
+    "fullName": "Admin",
+    "password": "123456",
     "role": "admin",
     "status": "active",
     "loyaltyPoints": 0,
@@ -90,15 +90,6 @@
     "createdAt": "2025-01-25T11:50:00.000Z"
   },
   {
-    "email": "mqcuong1603@gmail.com",
-    "fullName": "Cuong Ma",
-    "password": "Password123!",
-    "role": "customer",
-    "status": "active",
-    "loyaltyPoints": 75000,
-    "createdAt": "2025-04-05T08:15:00.000Z"
-  },
-  {
     "email": "alex.walker@example.com",
     "fullName": "Alex Walker",
     "password": "Password123!",
@@ -132,6 +123,15 @@
     "role": "customer",
     "status": "active",
     "loyaltyPoints": 175000,
+    "createdAt": "2025-05-15T11:35:00.000Z"
+  },
+  {
+    "email": "teacher@example.com",
+    "fullName": "Mai Van Manh",
+    "password": "123456",
+    "role": "customer",
+    "status": "active",
+    "loyaltyPoints": 50,
     "createdAt": "2025-05-15T11:35:00.000Z"
   }
 ]

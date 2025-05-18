@@ -10,9 +10,13 @@ import {
 import {
   authMiddleware,
   adminMiddleware,
+  optionalAuthMiddleware,
 } from "../middleware/auth.middleware.js";
 
 const router = express.Router();
+
+// Route for users to get available discount codes
+router.get("/available", optionalAuthMiddleware, getAllDiscountCodes);
 
 // All discount routes require admin privileges
 router.use(authMiddleware);

@@ -5,6 +5,8 @@ import { useAuth } from "../../contexts/AuthContext";
 import { useCart } from "../../contexts/CartContext";
 import Button from "../ui/Button";
 import { toast } from "react-toastify";
+import discountService from "../../services/discount.service"; // Import the discount service
+import { Accordion } from "react-bootstrap"; // Import Accordion
 
 /**
  * Cart summary component displaying cart totals, discount code input, and checkout button
@@ -28,6 +30,8 @@ const CartSummary = ({
   const [pointsToUse, setPointsToUse] = useState(loyaltyPoints || 0);
   const [loyaltyPointsEffect, setLoyaltyPointsEffect] = useState(null);
   const [applyingPoints, setApplyingPoints] = useState(false);
+  const [availableDiscounts, setAvailableDiscounts] = useState([]); // State for available discounts
+  const [loadingDiscounts, setLoadingDiscounts] = useState(false); // State for loading discounts
 
   // Format price with comma for thousands and currency symbol
   const formatPrice = (price) => {
@@ -181,6 +185,34 @@ const CartSummary = ({
       return () => clearTimeout(delayDebounceFn);
     }
   }, [pointsToUse, usingLoyaltyPoints, discountAmount]); // Handle proceed to checkout
+
+  // Fetch available discounts on component mount
+  useEffect(() => {
+    const fetchDiscounts = async () => {
+      setLoadingDiscounts(true);
+      try {
+        const response = await discountService.getAvailableDiscounts();
+        if (response.success) {
+          setAvailableDiscounts(response.data.discountCodes || []);
+        } else {
+          console.error(
+            "Failed to fetch available discounts:",
+            response.message
+          );
+          toast.error("Could not load available discounts.");
+        }
+      } catch (error) {
+        console.error("Error fetching available discounts:", error);
+        toast.error("Error loading available discounts.");
+      } finally {
+        setLoadingDiscounts(false);
+      }
+    };
+
+    fetchDiscounts();
+  }, []);
+
+  // Handle proceed to checkout
   const handleCheckout = () => {
     // If cart is empty, prevent checkout
     if (!cart.items || cart.items.length === 0) {
@@ -334,6 +366,58 @@ const CartSummary = ({
             </div>
           )}
         </div>
+
+        {/* Available Discounts Accordion */}
+        {availableDiscounts.length > 0 && (
+          <Accordion className="mb-4">
+            <Accordion.Item eventKey="0">
+              <Accordion.Header>
+                <i className="bi bi-gift-fill me-2 text-primary"></i>
+                Available Discounts
+              </Accordion.Header>
+              <Accordion.Body>
+                {loadingDiscounts ? (
+                  <p>Loading discounts...</p>
+                ) : (
+                  <ul className="list-unstyled">
+                    {availableDiscounts.map((d) => (
+                      <li
+                        key={d.code}
+                        className="mb-2 p-2 border rounded bg-white"
+                      >
+                        <div className="d-flex justify-content-between align-items-center">
+                          <div>
+                            <strong className="text-success">{d.code}</strong>
+                            <small className="d-block text-muted">
+                              {d.discountType === "percentage"
+                                ? `${d.discountValue}% off`
+                                : `₫${d.discountValue.toLocaleString()} off`}
+                            </small>
+                          </div>
+                          <Button
+                            variant="outline-primary"
+                            size="sm"
+                            onClick={() => {
+                              setCode(d.code);
+                              toast.info(
+                                `Discount code "${d.code}" copied to input.`
+                              );
+                            }}
+                          >
+                            Use Code
+                          </Button>
+                        </div>
+                        <small className="text-muted d-block mt-1">
+                          {d.usageLimit - d.usedCount} uses remaining
+                        </small>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </Accordion.Body>
+            </Accordion.Item>
+          </Accordion>
+        )}
 
         {/* Loyalty points with badge and visual enhancement */}
         {isAuthenticated && availableLoyaltyPoints > 0 && (

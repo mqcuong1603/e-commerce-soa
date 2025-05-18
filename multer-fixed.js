@@ -1,4 +1,4 @@
-// Fixed version of multer middleware (V2)
+// Fixed version of multer middleware
 import multer from "multer";
 import path from "path";
 import fs from "fs";
@@ -9,25 +9,19 @@ import crypto from "crypto";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-// Define storage locations using process.cwd() for consistency
-const serverUploadsDir = path.join(process.cwd(), "server/uploads/products");
-const clientUploadsDir = path.join(
-  process.cwd(),
-  "client/public/images/products"
-);
+// Define storage locations
+const serverUploadsDir = path.join(__dirname, "uploads/products");
+const clientUploadsDir = path.join(__dirname, "client/public/images/products");
 
 // Ensure uploads directories exist
-console.log("Server uploads directory:", serverUploadsDir);
-console.log("Client uploads directory:", clientUploadsDir);
-
 if (!fs.existsSync(serverUploadsDir)) {
-  console.log("Creating server uploads directory");
   fs.mkdirSync(serverUploadsDir, { recursive: true });
 }
 
-if (!fs.existsSync(clientUploadsDir)) {
-  console.log("Creating client uploads directory");
-  fs.mkdirSync(clientUploadsDir, { recursive: true });
+if (fs.existsSync(path.join(__dirname, "client"))) {
+  if (!fs.existsSync(clientUploadsDir)) {
+    fs.mkdirSync(clientUploadsDir, { recursive: true });
+  }
 }
 
 // Create a simple middleware function without using diskStorage
@@ -113,42 +107,20 @@ const uploadMiddleware = (req, res, next) => {
         });
       }
 
-      try {
-        // Ensure directories exist before writing files
-        const clientDir = path.dirname(clientPath);
-        const serverDir = path.dirname(serverPath);
+      // Save to client directory (primary location)
+      await fs.promises.writeFile(clientPath, req.file.buffer);
+      console.log("File saved to client directory:", clientPath);
 
-        if (!fs.existsSync(clientDir)) {
-          fs.mkdirSync(clientDir, { recursive: true });
-          console.log("Created client directory:", clientDir);
-        }
+      // Also save to server directory as backup
+      await fs.promises.writeFile(serverPath, req.file.buffer);
+      console.log("File also saved to server directory:", serverPath);
 
-        if (!fs.existsSync(serverDir)) {
-          fs.mkdirSync(serverDir, { recursive: true });
-          console.log("Created server directory:", serverDir);
-        }
+      // Add file info to request
+      req.file.filename = filename;
+      req.file.path = clientPath;
+      req.file.imageUrl = `/images/products/${filename}`;
 
-        // Save to client directory (primary location)
-        await fs.promises.writeFile(clientPath, req.file.buffer);
-        console.log("File saved to client directory:", clientPath);
-
-        // Also save to server directory as backup
-        await fs.promises.writeFile(serverPath, req.file.buffer);
-        console.log("File also saved to server directory:", serverPath);
-
-        // Add file info to request
-        req.file.filename = filename;
-        req.file.path = clientPath;
-        req.file.imageUrl = `/images/products/${filename}`;
-
-        next();
-      } catch (writeError) {
-        console.error("Error writing file to disk:", writeError);
-        return res.status(500).json({
-          success: false,
-          message: "Error saving uploaded file to disk",
-        });
-      }
+      next();
     } catch (error) {
       console.error("Error processing uploaded file:", error);
       return res.status(500).json({

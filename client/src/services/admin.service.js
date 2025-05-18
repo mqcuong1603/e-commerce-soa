@@ -92,16 +92,26 @@ const adminService = {
   updateProductImage: (productId, imageId, imageData) => {
     return api.put(`/admin/products/${productId}/images/${imageId}`, imageData);
   },
-
   uploadProductImage: (productId, imageData) => {
-    const formData = new FormData();
-    formData.append("image", imageData.file);
-    if (imageData.isMain !== undefined)
-      formData.append("isMain", imageData.isMain);
-    if (imageData.variantId) formData.append("variantId", imageData.variantId);
+    // If imageData is already a FormData object, use it directly
+    let formData;
+    if (imageData instanceof FormData) {
+      formData = imageData;
+    } else {
+      // Otherwise, create a new FormData object from the provided data
+      formData = new FormData();
+      formData.append("image", imageData.file);
+      if (imageData.isMain !== undefined)
+        formData.append("isMain", imageData.isMain);
+      if (imageData.variantId)
+        formData.append("variantId", imageData.variantId);
+    }
 
+    // Return with proper FormData handling
     return api.post(`/admin/products/${productId}/images`, formData, {
-      headers: { "Content-Type": "multipart/form-data" },
+      headers: {
+        "Content-Type": undefined,
+      },
     });
   },
 

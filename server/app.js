@@ -120,7 +120,7 @@ app.use("/api/cart", cartRoutes);
 app.use("/api/reviews", reviewRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/orders", orderRoutes);
-app.use("/api/discounts", authMiddleware, adminMiddleware, discountRoutes);
+app.use("/api/discounts", discountRoutes); // Updated to remove authMiddleware and adminMiddleware for the base path
 app.use("/api/admin/orders", adminOrderRoutes);
 app.use("/api/admin/products", adminProductRoutes);
 app.use("/api/admin/users", adminUserRoutes);
