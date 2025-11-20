@@ -52,7 +52,7 @@ export const configureMiddleware = (app, config, logger) => {
         path: "/",
         httpOnly: true,
         maxAge: 30 * 24 * 60 * 60 * 1000,
-        secure: config.nodeEnv === "production",
+        secure: false, // Set to true only if using HTTPS
         sameSite: "lax",
         domain: undefined,
       },
