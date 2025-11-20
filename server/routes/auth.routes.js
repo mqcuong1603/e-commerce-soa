@@ -44,7 +44,16 @@ router.get(
   (req, res, next) => {
     passport.authenticate("google", { session: false }, (err, user, info) => {
       if (err) {
-        console.error("Google OAuth Error:", err);
+        console.error("=== Google OAuth Error Details ===");
+        console.error("Error message:", err.message);
+        console.error("Error name:", err.name);
+        console.error("Full error object:", JSON.stringify(err, Object.getOwnPropertyNames(err), 2));
+        if (err.oauthError) {
+          console.error("OAuth Error statusCode:", err.oauthError.statusCode);
+          console.error("OAuth Error data:", err.oauthError.data);
+        }
+        console.error("=================================");
+
         let errorDetails = null;
         try {
           if (err.oauthError && err.oauthError.data) {
@@ -53,11 +62,13 @@ router.get(
         } catch (parseError) {
           errorDetails = err.oauthError ? err.oauthError.data : null;
         }
+
         return res.status(500).json({
           success: false,
           message: "Failed to obtain access token",
           error: err.message || "OAuth authentication failed",
           details: errorDetails,
+          statusCode: err.oauthError ? err.oauthError.statusCode : null,
         });
       }
       if (!user) {
