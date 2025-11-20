@@ -45,11 +45,19 @@ router.get(
     passport.authenticate("google", { session: false }, (err, user, info) => {
       if (err) {
         console.error("Google OAuth Error:", err);
+        let errorDetails = null;
+        try {
+          if (err.oauthError && err.oauthError.data) {
+            errorDetails = JSON.parse(err.oauthError.data);
+          }
+        } catch (parseError) {
+          errorDetails = err.oauthError ? err.oauthError.data : null;
+        }
         return res.status(500).json({
           success: false,
           message: "Failed to obtain access token",
-          error: err.message,
-          details: err.oauthError ? JSON.parse(err.oauthError.data) : null,
+          error: err.message || "OAuth authentication failed",
+          details: errorDetails,
         });
       }
       if (!user) {
@@ -79,11 +87,19 @@ router.get(
     passport.authenticate("facebook", { session: false }, (err, user, info) => {
       if (err) {
         console.error("Facebook OAuth Error:", err);
+        let errorDetails = null;
+        try {
+          if (err.oauthError && err.oauthError.data) {
+            errorDetails = JSON.parse(err.oauthError.data);
+          }
+        } catch (parseError) {
+          errorDetails = err.oauthError ? err.oauthError.data : null;
+        }
         return res.status(500).json({
           success: false,
           message: "Failed to obtain access token",
-          error: err.message,
-          details: err.oauthError ? JSON.parse(err.oauthError.data) : null,
+          error: err.message || "OAuth authentication failed",
+          details: errorDetails,
         });
       }
       if (!user) {
