@@ -57,6 +57,10 @@ const CLIENT_URL = process.env.CLIENT_URL || "http://localhost:8080";
 
 // Create Express app
 const app = express();
+
+// Trust proxy - required when behind nginx reverse proxy
+app.set('trust proxy', 1);
+
 const httpServer = createServer(app);
 const io = new Server(httpServer, {
   cors: {

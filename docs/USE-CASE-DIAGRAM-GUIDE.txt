@@ -1,0 +1,1061 @@
+================================================================================
+                    E-COMMERCE SOA PROJECT
+           USE CASE DIAGRAM COMPREHENSIVE GUIDE
+================================================================================
+
+This guide provides detailed instructions for creating use case diagrams for
+the E-Commerce Service-Oriented Architecture (SOA) project. The diagrams are
+organized into multiple views for clarity and comprehensiveness.
+
+================================================================================
+                        TABLE OF CONTENTS
+================================================================================
+
+1. PROJECT OVERVIEW
+2. ACTORS IDENTIFICATION
+3. DIAGRAM 1: GUEST USER USE CASES (Public Access)
+4. DIAGRAM 2: REGISTERED USER USE CASES (Customer Portal)
+5. DIAGRAM 3: ADMIN USE CASES (Administrative Functions)
+6. DIAGRAM 4: SYSTEM-WIDE USE CASES (Cross-cutting Concerns)
+7. RELATIONSHIPS AND EXTENSIONS
+8. DRAWING INSTRUCTIONS
+9. TOOL RECOMMENDATIONS
+
+================================================================================
+                    1. PROJECT OVERVIEW
+================================================================================
+
+Project Type: E-Commerce Platform with Service-Oriented Architecture
+Main Purpose: Online shopping platform with product catalog, shopping cart,
+              order management, and administrative functions
+
+Key Features:
+- Product browsing and search
+- Shopping cart management
+- User authentication and authorization
+- Order placement and tracking
+- Product reviews
+- Loyalty points system
+- Admin management console
+- OAuth social login (Google, Facebook)
+- Discount code system
+
+================================================================================
+                    2. ACTORS IDENTIFICATION
+================================================================================
+
+PRIMARY ACTORS (Human Users):
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+1. Guest User
+   - Description: Anonymous visitor to the website
+   - Capabilities: Browse products, view details, guest checkout
+   - Authentication: None required
+
+2. Registered User (Customer)
+   - Description: Authenticated user with an account
+   - Capabilities: All guest capabilities + account management, order history,
+                   saved addresses, loyalty points
+   - Authentication: Email/password or OAuth (Google/Facebook)
+
+3. Administrator
+   - Description: Staff member with administrative privileges
+   - Capabilities: Manage products, orders, users, discounts, view analytics
+   - Authentication: Email/password with admin role
+   - Inherits: Registered User capabilities
+
+SECONDARY ACTORS (External Systems):
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+4. Payment Gateway
+   - Description: External payment processing system
+   - Interaction: Process payments for orders
+
+5. Email Service
+   - Description: Email notification system (Gmail SMTP)
+   - Interaction: Send registration confirmations, order updates, password reset
+
+6. OAuth Providers
+   - Description: Google and Facebook authentication services
+   - Interaction: Authenticate users via OAuth 2.0
+
+7. Database System
+   - Description: MongoDB database
+   - Interaction: Store and retrieve data
+
+================================================================================
+              3. DIAGRAM 1: GUEST USER USE CASES
+                    (Public Access)
+================================================================================
+
+TITLE: "E-Commerce System - Guest User Use Cases"
+
+ACTORS:
+───────
+- Guest User (Primary Actor - Left side)
+- Email Service (Secondary Actor - Right side)
+
+USE CASES:
+──────────
+
+[Public Product Browsing]
+┌─────────────────────────────────────────────────────────┐
+│ UC1. Browse Products                                    │
+│   Description: View product catalog with pagination    │
+│   Trigger: User visits website                         │
+│   Includes:                                            │
+│     - UC1.1: Filter by Category                       │
+│     - UC1.2: Search Products                          │
+│     - UC1.3: Sort Products (price, name, date)        │
+└─────────────────────────────────────────────────────────┘
+
+┌─────────────────────────────────────────────────────────┐
+│ UC2. View Product Details                              │
+│   Description: View detailed product information       │
+│   Includes:                                            │
+│     - UC2.1: View Product Images                      │
+│     - UC2.2: View Product Specifications              │
+│     - UC2.3: View Product Variants (size, color)      │
+│     - UC2.4: View Product Reviews                     │
+│     - UC2.5: View Related Products                    │
+└─────────────────────────────────────────────────────────┘
+
+┌─────────────────────────────────────────────────────────┐
+│ UC3. View Categories                                    │
+│   Description: Browse category hierarchy                │
+│   Includes:                                            │
+│     - UC3.1: View Category Tree                       │
+│     - UC3.2: View Products by Category                │
+└─────────────────────────────────────────────────────────┘
+
+[Shopping Cart Management]
+┌─────────────────────────────────────────────────────────┐
+│ UC4. Manage Shopping Cart (Session-Based)              │
+│   Description: Add/update/remove items in cart         │
+│   Includes:                                            │
+│     - UC4.1: Add Item to Cart                         │
+│     - UC4.2: Update Item Quantity                     │
+│     - UC4.3: Remove Item from Cart                    │
+│     - UC4.4: View Cart                                │
+│     - UC4.5: Clear Cart                               │
+│   Note: Uses browser session cookies                   │
+└─────────────────────────────────────────────────────────┘
+
+[Review System]
+┌─────────────────────────────────────────────────────────┐
+│ UC5. Submit Guest Review                                │
+│   Description: Write review for a product              │
+│   Precondition: None (guest reviews allowed)           │
+│   Inputs: Rating (1-5), Comment, Name, Email           │
+└─────────────────────────────────────────────────────────┘
+
+┌─────────────────────────────────────────────────────────┐
+│ UC6. View Product Reviews                               │
+│   Description: Read reviews from other users            │
+│   Includes:                                            │
+│     - UC6.1: View Average Rating                      │
+│     - UC6.2: Filter Reviews by Rating                 │
+│     - UC6.3: Sort Reviews (date, rating)              │
+└─────────────────────────────────────────────────────────┘
+
+[Guest Checkout]
+┌─────────────────────────────────────────────────────────┐
+│ UC7. Place Order as Guest                               │
+│   Description: Complete purchase without account        │
+│   Precondition: Cart has items                         │
+│   Includes:                                            │
+│     - UC7.1: Enter Shipping Address                   │
+│     - UC7.2: Enter Email for Confirmation             │
+│     - UC7.3: Select Payment Method                    │
+│     - UC7.4: Apply Discount Code (optional)           │
+│     - UC7.5: Confirm Order                            │
+│   Extends:                                             │
+│     - UC7.6: View Order Summary                       │
+│   Postcondition: Order created, email sent             │
+│   Actor: Email Service (sends confirmation)            │
+└─────────────────────────────────────────────────────────┘
+
+[User Registration]
+┌─────────────────────────────────────────────────────────┐
+│ UC8. Register Account                                   │
+│   Description: Create new user account                 │
+│   Includes:                                            │
+│     - UC8.1: Enter Personal Information               │
+│     - UC8.2: Enter Shipping Address                   │
+│     - UC8.3: Set Password                             │
+│     - UC8.4: Verify Email                             │
+│   Alternative:                                         │
+│     - UC8.5: Register with Google OAuth               │
+│     - UC8.6: Register with Facebook OAuth             │
+│   Actor: Email Service (verification)                  │
+│   Actor: OAuth Providers (social login)                │
+└─────────────────────────────────────────────────────────┘
+
+[Discount System]
+┌─────────────────────────────────────────────────────────┐
+│ UC9. View Available Discounts                           │
+│   Description: Browse active discount codes             │
+└─────────────────────────────────────────────────────────┘
+
+┌─────────────────────────────────────────────────────────┐
+│ UC10. Verify Discount Code                              │
+│   Description: Check if discount code is valid         │
+│   Precondition: Has items in cart                      │
+└─────────────────────────────────────────────────────────┘
+
+RELATIONSHIPS:
+──────────────
+- UC7 <<includes>> UC10 (discount verification during checkout)
+- UC8 connects to OAuth Providers actor
+- UC7, UC8 connect to Email Service actor
+
+DIAGRAM LAYOUT:
+───────────────
+Left Side: Guest User actor
+Center: All use cases in ellipses
+Right Side: Email Service, OAuth Providers actors
+
+================================================================================
+           4. DIAGRAM 2: REGISTERED USER USE CASES
+                    (Customer Portal)
+================================================================================
+
+TITLE: "E-Commerce System - Registered User Use Cases"
+
+ACTORS:
+───────
+- Registered User (Primary Actor - Left side)
+- Email Service (Secondary Actor - Right side)
+- Payment Gateway (Secondary Actor - Right side)
+
+NOTE: Registered User inherits all Guest User capabilities
+      (shown with generalization arrow from Guest User)
+
+USE CASES:
+──────────
+
+[Authentication]
+┌─────────────────────────────────────────────────────────┐
+│ UC11. Login to Account                                  │
+│   Description: Authenticate with credentials            │
+│   Includes:                                            │
+│     - UC11.1: Login with Email/Password               │
+│     - UC11.2: Login with Google OAuth                 │
+│     - UC11.3: Login with Facebook OAuth               │
+│   Postcondition: JWT token generated, cart transferred │
+└─────────────────────────────────────────────────────────┘
+
+┌─────────────────────────────────────────────────────────┐
+│ UC12. Logout                                            │
+│   Description: End user session                         │
+└─────────────────────────────────────────────────────────┘
+
+┌─────────────────────────────────────────────────────────┐
+│ UC13. Reset Password                                    │
+│   Description: Recover account access                   │
+│   Includes:                                            │
+│     - UC13.1: Request Password Reset                  │
+│     - UC13.2: Receive Reset Email                     │
+│     - UC13.3: Set New Password                        │
+│   Actor: Email Service (reset link)                    │
+└─────────────────────────────────────────────────────────┘
+
+┌─────────────────────────────────────────────────────────┐
+│ UC14. Update Password                                   │
+│   Description: Change password while logged in          │
+│   Precondition: User authenticated                      │
+└─────────────────────────────────────────────────────────┘
+
+[Profile Management]
+┌─────────────────────────────────────────────────────────┐
+│ UC15. Manage Profile                                    │
+│   Description: Update personal information              │
+│   Includes:                                            │
+│     - UC15.1: View Profile                            │
+│     - UC15.2: Update Full Name                        │
+│     - UC15.3: View Account Status                     │
+└─────────────────────────────────────────────────────────┘
+
+┌─────────────────────────────────────────────────────────┐
+│ UC16. Manage Shipping Addresses                         │
+│   Description: Maintain address book                    │
+│   Includes:                                            │
+│     - UC16.1: Add Address                             │
+│     - UC16.2: Edit Address                            │
+│     - UC16.3: Delete Address                          │
+│     - UC16.4: Set Default Address                     │
+│     - UC16.5: View All Addresses                      │
+└─────────────────────────────────────────────────────────┘
+
+┌─────────────────────────────────────────────────────────┐
+│ UC17. Deactivate Account                                │
+│   Description: Disable user account                     │
+│   Postcondition: Account status set to inactive         │
+└─────────────────────────────────────────────────────────┘
+
+[Order Management]
+┌─────────────────────────────────────────────────────────┐
+│ UC18. Place Order (Authenticated)                       │
+│   Description: Complete purchase with account           │
+│   Precondition: User logged in, cart has items         │
+│   Includes:                                            │
+│     - UC18.1: Select Saved Address                    │
+│     - UC18.2: Select Payment Method                   │
+│     - UC18.3: Apply Discount Code                     │
+│     - UC18.4: Use Loyalty Points                      │
+│     - UC18.5: Confirm Order                           │
+│   Actor: Payment Gateway (process payment)              │
+│   Actor: Email Service (order confirmation)             │
+│   Postcondition: Inventory updated, loyalty points earned│
+└─────────────────────────────────────────────────────────┘
+
+┌─────────────────────────────────────────────────────────┐
+│ UC19. View Order History                                │
+│   Description: See all past orders                      │
+│   Includes:                                            │
+│     - UC19.1: Filter Orders by Status                 │
+│     - UC19.2: Filter Orders by Date                   │
+│     - UC19.3: Search Orders                           │
+└─────────────────────────────────────────────────────────┘
+
+┌─────────────────────────────────────────────────────────┐
+│ UC20. View Order Details                                │
+│   Description: See specific order information           │
+│   Includes:                                            │
+│     - UC20.1: View Order Items                        │
+│     - UC20.2: View Order Status                       │
+│     - UC20.3: View Shipping Information               │
+│     - UC20.4: View Payment Information                │
+│     - UC20.5: View Order Timeline                     │
+└─────────────────────────────────────────────────────────┘
+
+┌─────────────────────────────────────────────────────────┐
+│ UC21. Track Order                                       │
+│   Description: Monitor order delivery status            │
+│   Includes:                                            │
+│     - UC21.1: View Status History                     │
+│     - UC21.2: View Estimated Delivery                 │
+│     - UC21.3: View Tracking Number                    │
+└─────────────────────────────────────────────────────────┘
+
+┌─────────────────────────────────────────────────────────┐
+│ UC22. Cancel Order                                      │
+│   Description: Cancel pending order                     │
+│   Precondition: Order status is cancellable             │
+│   Postcondition: Refund initiated, inventory restored   │
+│   Actor: Email Service (cancellation notification)      │
+└─────────────────────────────────────────────────────────┘
+
+[Review Management]
+┌─────────────────────────────────────────────────────────┐
+│ UC23. Manage Reviews                                    │
+│   Description: Handle product reviews                   │
+│   Includes:                                            │
+│     - UC23.1: Submit Review (Authenticated)           │
+│     - UC23.2: Edit Own Review                         │
+│     - UC23.3: Delete Own Review                       │
+│     - UC23.4: View Own Reviews                        │
+└─────────────────────────────────────────────────────────┘
+
+[Loyalty Points]
+┌─────────────────────────────────────────────────────────┐
+│ UC24. Manage Loyalty Points                             │
+│   Description: View and use loyalty points              │
+│   Includes:                                            │
+│     - UC24.1: View Points Balance                     │
+│     - UC24.2: View Points History                     │
+│     - UC24.3: Redeem Points for Discount              │
+└─────────────────────────────────────────────────────────┘
+
+RELATIONSHIPS:
+──────────────
+- Registered User is a generalization of Guest User
+- UC18 <<includes>> UC24.3 (use loyalty points during checkout)
+- UC18 connects to Payment Gateway actor
+- UC13, UC18, UC22 connect to Email Service actor
+
+DIAGRAM LAYOUT:
+───────────────
+Left Side: Registered User actor (with generalization to Guest User)
+Center: All use cases in ellipses
+Right Side: Email Service, Payment Gateway actors
+
+================================================================================
+              5. DIAGRAM 3: ADMIN USE CASES
+                (Administrative Functions)
+================================================================================
+
+TITLE: "E-Commerce System - Admin Use Cases"
+
+ACTORS:
+───────
+- Administrator (Primary Actor - Left side)
+- Email Service (Secondary Actor - Right side)
+
+NOTE: Administrator inherits all Registered User capabilities
+      (shown with generalization arrow from Registered User)
+
+USE CASES:
+──────────
+
+[Product Management]
+┌─────────────────────────────────────────────────────────┐
+│ UC25. Manage Products                                   │
+│   Description: CRUD operations for products             │
+│   Includes:                                            │
+│     - UC25.1: Create Product                          │
+│     - UC25.2: Edit Product                            │
+│     - UC25.3: Delete Product                          │
+│     - UC25.4: View All Products                       │
+│     - UC25.5: Search Products (Admin View)            │
+│     - UC25.6: Activate/Deactivate Product             │
+└─────────────────────────────────────────────────────────┘
+
+┌─────────────────────────────────────────────────────────┐
+│ UC26. Manage Product Variants                           │
+│   Description: Handle product variations                │
+│   Includes:                                            │
+│     - UC26.1: Create Variant (SKU, size, color)       │
+│     - UC26.2: Edit Variant                            │
+│     - UC26.3: Delete Variant                          │
+│     - UC26.4: Update Inventory                        │
+│     - UC26.5: Update Pricing                          │
+└─────────────────────────────────────────────────────────┘
+
+┌─────────────────────────────────────────────────────────┐
+│ UC27. Manage Product Images                             │
+│   Description: Upload and manage product photos         │
+│   Includes:                                            │
+│     - UC27.1: Upload Image                            │
+│     - UC27.2: Set Main Image                          │
+│     - UC27.3: Delete Image                            │
+│     - UC27.4: Update Image Metadata                   │
+└─────────────────────────────────────────────────────────┘
+
+┌─────────────────────────────────────────────────────────┐
+│ UC28. View Product Statistics                           │
+│   Description: Analyze product performance              │
+│   Includes:                                            │
+│     - UC28.1: View Best Sellers                       │
+│     - UC28.2: View Sales by Product                   │
+│     - UC28.3: View Revenue by Product                 │
+│     - UC28.4: View Inventory Levels                   │
+└─────────────────────────────────────────────────────────┘
+
+[Category Management]
+┌─────────────────────────────────────────────────────────┐
+│ UC29. Manage Categories                                 │
+│   Description: CRUD operations for categories           │
+│   Includes:                                            │
+│     - UC29.1: Create Category                         │
+│     - UC29.2: Edit Category                           │
+│     - UC29.3: Delete Category                         │
+│     - UC29.4: View All Categories                     │
+│     - UC29.5: Manage Category Hierarchy               │
+└─────────────────────────────────────────────────────────┘
+
+[Order Management]
+┌─────────────────────────────────────────────────────────┐
+│ UC30. Manage Orders                                     │
+│   Description: Handle all system orders                 │
+│   Includes:                                            │
+│     - UC30.1: View All Orders                         │
+│     - UC30.2: Search Orders                           │
+│     - UC30.3: Filter Orders (status, date, customer)  │
+│     - UC30.4: View Order Details                      │
+│     - UC30.5: Update Order Status                     │
+│     - UC30.6: Process Refunds                         │
+│   Actor: Email Service (status notifications)          │
+└─────────────────────────────────────────────────────────┘
+
+┌─────────────────────────────────────────────────────────┐
+│ UC31. View Order Statistics                             │
+│   Description: Analyze order and revenue data           │
+│   Includes:                                            │
+│     - UC31.1: View Total Orders                       │
+│     - UC31.2: View Total Revenue                      │
+│     - UC31.3: View Average Order Value                │
+│     - UC31.4: View Orders by Status                   │
+│     - UC31.5: View Revenue Chart (daily/monthly)      │
+│     - UC31.6: View Order Trends                       │
+└─────────────────────────────────────────────────────────┘
+
+[User Management]
+┌─────────────────────────────────────────────────────────┐
+│ UC32. Manage Users                                      │
+│   Description: Handle user accounts                     │
+│   Includes:                                            │
+│     - UC32.1: View All Users                          │
+│     - UC32.2: Search Users                            │
+│     - UC32.3: Filter Users (status, role)             │
+│     - UC32.4: View User Details                       │
+│     - UC32.5: Edit User Information                   │
+│     - UC32.6: Delete User Account                     │
+│     - UC32.7: Change User Status (active/banned)      │
+│   Actor: Email Service (account status notifications)  │
+└─────────────────────────────────────────────────────────┘
+
+┌─────────────────────────────────────────────────────────┐
+│ UC33. View User Statistics                              │
+│   Description: Analyze user metrics                     │
+│   Includes:                                            │
+│     - UC33.1: View Total Users                        │
+│     - UC33.2: View Active Users                       │
+│     - UC33.3: View New Users (period)                 │
+│     - UC33.4: View User Growth                        │
+└─────────────────────────────────────────────────────────┘
+
+[Discount Management]
+┌─────────────────────────────────────────────────────────┐
+│ UC34. Manage Discount Codes                             │
+│   Description: Handle promotional codes                 │
+│   Includes:                                            │
+│     - UC34.1: Create Discount Code                    │
+│     - UC34.2: Edit Discount Code                      │
+│     - UC34.3: Delete Discount Code                    │
+│     - UC34.4: View All Discount Codes                 │
+│     - UC34.5: Activate/Deactivate Code                │
+│     - UC34.6: View Code Usage Statistics              │
+└─────────────────────────────────────────────────────────┘
+
+[Dashboard & Analytics]
+┌─────────────────────────────────────────────────────────┐
+│ UC35. View Admin Dashboard                              │
+│   Description: Overview of system metrics               │
+│   Includes:                                            │
+│     - UC35.1: View Sales Summary                      │
+│     - UC35.2: View Recent Orders                      │
+│     - UC35.3: View Low Stock Alerts                   │
+│     - UC35.4: View User Activity                      │
+└─────────────────────────────────────────────────────────┘
+
+RELATIONSHIPS:
+──────────────
+- Administrator is a generalization of Registered User
+- UC30, UC32 connect to Email Service actor
+- UC35 <<includes>> UC31, UC33, UC28 (aggregates statistics)
+
+DIAGRAM LAYOUT:
+───────────────
+Left Side: Administrator actor (with generalization to Registered User)
+Center: All use cases in ellipses, grouped by function
+Right Side: Email Service actor
+
+================================================================================
+          6. DIAGRAM 4: SYSTEM-WIDE USE CASES
+              (Cross-cutting Concerns)
+================================================================================
+
+TITLE: "E-Commerce System - System Architecture Use Cases"
+
+This diagram shows system-level interactions and cross-cutting concerns.
+
+ACTORS:
+───────
+- All User Types (Left side)
+- Database System (Right side)
+- Email Service (Right side)
+- Payment Gateway (Right side)
+- OAuth Providers (Right side)
+
+USE CASES:
+──────────
+
+[Data Persistence]
+┌─────────────────────────────────────────────────────────┐
+│ UC36. Store Data                                        │
+│   Description: Persist data to database                 │
+│   Actor: Database System                                │
+│   Triggered by: Any CRUD operation                      │
+└─────────────────────────────────────────────────────────┘
+
+┌─────────────────────────────────────────────────────────┐
+│ UC37. Retrieve Data                                     │
+│   Description: Fetch data from database                 │
+│   Actor: Database System                                │
+│   Triggered by: Any read operation                      │
+└─────────────────────────────────────────────────────────┘
+
+[Session Management]
+┌─────────────────────────────────────────────────────────┐
+│ UC38. Manage Session                                    │
+│   Description: Handle user sessions with cookies        │
+│   Includes:                                            │
+│     - UC38.1: Create Session                          │
+│     - UC38.2: Store Session Data                      │
+│     - UC38.3: Retrieve Session                        │
+│     - UC38.4: Destroy Session                         │
+│   Note: Used for shopping cart persistence              │
+└─────────────────────────────────────────────────────────┘
+
+[Email Notifications]
+┌─────────────────────────────────────────────────────────┐
+│ UC39. Send Email Notification                           │
+│   Description: Send automated emails                    │
+│   Actor: Email Service                                  │
+│   Includes:                                            │
+│     - UC39.1: Registration Confirmation               │
+│     - UC39.2: Password Reset Link                     │
+│     - UC39.3: Order Confirmation                      │
+│     - UC39.4: Order Status Update                     │
+│     - UC39.5: Account Status Change                   │
+└─────────────────────────────────────────────────────────┘
+
+[Payment Processing]
+┌─────────────────────────────────────────────────────────┐
+│ UC40. Process Payment                                   │
+│   Description: Handle payment transactions              │
+│   Actor: Payment Gateway                                │
+│   Includes:                                            │
+│     - UC40.1: Validate Payment Details                │
+│     - UC40.2: Charge Payment                          │
+│     - UC40.3: Process Refund                          │
+└─────────────────────────────────────────────────────────┘
+
+[Authentication Services]
+┌─────────────────────────────────────────────────────────┐
+│ UC41. Authenticate via OAuth                            │
+│   Description: Third-party authentication               │
+│   Actor: OAuth Providers                                │
+│   Includes:                                            │
+│     - UC41.1: Google OAuth                            │
+│     - UC41.2: Facebook OAuth                          │
+└─────────────────────────────────────────────────────────┘
+
+[Search & Filtering]
+┌─────────────────────────────────────────────────────────┐
+│ UC42. Search System                                     │
+│   Description: Search across products and orders        │
+│   Includes:                                            │
+│     - UC42.1: Full-Text Search                        │
+│     - UC42.2: Filter Results                          │
+│     - UC42.3: Sort Results                            │
+└─────────────────────────────────────────────────────────┘
+
+[Inventory Management]
+┌─────────────────────────────────────────────────────────┐
+│ UC43. Update Inventory                                  │
+│   Description: Track and update stock levels            │
+│   Triggered by: Order placement, returns, admin updates │
+│   Includes:                                            │
+│     - UC43.1: Decrease Stock (on order)               │
+│     - UC43.2: Increase Stock (on cancel/return)       │
+│     - UC43.3: Check Stock Availability                │
+└─────────────────────────────────────────────────────────┘
+
+================================================================================
+            7. RELATIONSHIPS AND EXTENSIONS
+================================================================================
+
+GENERALIZATION (Inheritance):
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+- Registered User extends Guest User
+  → Inherits all guest capabilities
+  → Adds authentication-required features
+
+- Administrator extends Registered User
+  → Inherits all user capabilities
+  → Adds administrative functions
+
+Notation: Draw with hollow triangle arrow pointing to parent actor
+
+INCLUDE RELATIONSHIPS:
+━━━━━━━━━━━━━━━━━━━━━━
+Use <<include>> when a use case ALWAYS uses another use case.
+
+Examples:
+- "Place Order" <<includes>> "Verify Discount Code"
+- "Manage Shopping Cart" <<includes>> "Update Inventory"
+- "Register Account" <<includes>> "Send Email Notification"
+- "View Product Details" <<includes>> "View Product Images"
+
+Notation: Dashed arrow with <<include>> label, pointing from base use case
+         to included use case
+
+EXTEND RELATIONSHIPS:
+━━━━━━━━━━━━━━━━━━━━━
+Use <<extend>> when a use case OPTIONALLY enhances another.
+
+Examples:
+- "Apply Loyalty Points" <<extends>> "Place Order"
+- "Filter by Price Range" <<extends>> "Browse Products"
+- "Add Product Review" <<extends>> "View Product Details"
+
+Notation: Dashed arrow with <<extend>> label, pointing from extending use case
+         to base use case
+
+ACTOR ASSOCIATIONS:
+━━━━━━━━━━━━━━━━━━━
+Solid lines connecting actors to use cases they participate in.
+
+Primary Actor: Initiates the use case (left side)
+Secondary Actor: Provides service (right side)
+
+================================================================================
+                8. DRAWING INSTRUCTIONS
+================================================================================
+
+STEP-BY-STEP GUIDE FOR EACH DIAGRAM:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+For DIAGRAM 1: Guest User Use Cases
+────────────────────────────────────────
+
+1. Draw System Boundary:
+   - Large rectangle encompassing all use cases
+   - Label: "E-Commerce System"
+
+2. Place Actors:
+   LEFT SIDE:
+   - Guest User (stick figure)
+
+   RIGHT SIDE:
+   - Email Service (stick figure or box)
+   - OAuth Providers (stick figure or box)
+
+3. Draw Use Cases (Ellipses):
+   Group by function for clarity:
+
+   TOP SECTION (Product Browsing):
+   - Browse Products
+   - View Product Details
+   - View Categories
+   - Search Products (smaller, connected to Browse Products)
+   - Filter by Category (smaller, connected to Browse Products)
+
+   MIDDLE SECTION (Shopping):
+   - Manage Shopping Cart
+   - Add Item to Cart (smaller, connected to cart)
+   - View Cart (smaller, connected to cart)
+   - Update Item Quantity (smaller, connected to cart)
+   - Clear Cart (smaller, connected to cart)
+
+   LOWER-MIDDLE SECTION (Reviews):
+   - Submit Guest Review
+   - View Product Reviews
+
+   BOTTOM SECTION (Checkout & Registration):
+   - Place Order as Guest
+   - Verify Discount Code (smaller, connected to order)
+   - View Available Discounts
+   - Register Account
+   - Register with OAuth (smaller, connected to register)
+
+4. Draw Associations (solid lines):
+   - Guest User to all use cases in left column
+   - Email Service to: Register Account, Place Order as Guest
+   - OAuth Providers to: Register with OAuth
+
+5. Draw Include Relationships (dashed arrows with <<include>>):
+   - Place Order <<includes>> Verify Discount Code
+   - Browse Products <<includes>> Search Products
+   - Browse Products <<includes>> Filter by Category
+
+6. Add Notes:
+   - "Session-based cart using cookies" near Manage Shopping Cart
+   - "No authentication required" in corner
+
+For DIAGRAM 2: Registered User Use Cases
+─────────────────────────────────────────
+
+1. Draw System Boundary:
+   - Label: "E-Commerce System - Customer Portal"
+
+2. Place Actors:
+   LEFT SIDE:
+   - Registered User (stick figure)
+   - Guest User (stick figure, smaller, with dashed generalization arrow
+     pointing from Registered User to Guest User)
+
+   RIGHT SIDE:
+   - Email Service
+   - Payment Gateway
+
+3. Draw Use Cases:
+   Group by function:
+
+   TOP SECTION (Authentication):
+   - Login to Account
+   - Logout
+   - Reset Password
+   - Update Password
+
+   UPPER-MIDDLE (Profile):
+   - Manage Profile
+   - Manage Shipping Addresses
+   - Deactivate Account
+
+   MIDDLE SECTION (Orders):
+   - Place Order (Authenticated)
+   - View Order History
+   - View Order Details
+   - Track Order
+   - Cancel Order
+   - Use Loyalty Points (smaller, connected to Place Order)
+
+   LOWER SECTION (Reviews & Loyalty):
+   - Manage Reviews
+   - Manage Loyalty Points
+   - View Points History
+
+4. Draw Associations:
+   - Registered User to all use cases
+   - Email Service to: Reset Password, Place Order, Cancel Order
+   - Payment Gateway to: Place Order
+
+5. Draw Include Relationships:
+   - Place Order <<includes>> Use Loyalty Points
+   - Manage Shipping Addresses <<includes>> Set Default Address
+
+6. Add Generalization:
+   - Draw hollow triangle arrow from Registered User to Guest User
+   - Label: Registered User "is-a" Guest User (inherits all capabilities)
+
+For DIAGRAM 3: Admin Use Cases
+───────────────────────────────
+
+1. Draw System Boundary:
+   - Label: "E-Commerce System - Admin Console"
+
+2. Place Actors:
+   LEFT SIDE:
+   - Administrator (stick figure)
+   - Registered User (smaller, with generalization arrow from Admin)
+
+   RIGHT SIDE:
+   - Email Service
+
+3. Draw Use Cases:
+   Group by function:
+
+   TOP-LEFT (Product Management):
+   - Manage Products
+   - Manage Product Variants
+   - Manage Product Images
+   - View Product Statistics
+
+   TOP-RIGHT (Category Management):
+   - Manage Categories
+
+   MIDDLE-LEFT (Order Management):
+   - Manage Orders
+   - View Order Statistics
+   - Update Order Status (smaller, inside Manage Orders)
+
+   MIDDLE-RIGHT (User Management):
+   - Manage Users
+   - View User Statistics
+   - Update User Status (smaller, inside Manage Users)
+
+   BOTTOM SECTION:
+   - Manage Discount Codes
+   - View Admin Dashboard
+
+4. Draw Associations:
+   - Administrator to all use cases
+   - Email Service to: Manage Orders, Manage Users
+
+5. Draw Include Relationships:
+   - View Admin Dashboard <<includes>> View Order Statistics
+   - View Admin Dashboard <<includes>> View User Statistics
+   - View Admin Dashboard <<includes>> View Product Statistics
+
+6. Add Generalization:
+   - Hollow triangle from Administrator to Registered User
+
+For DIAGRAM 4: System-Wide Use Cases
+─────────────────────────────────────
+
+1. Draw System Boundary:
+   - Label: "E-Commerce System - Architecture View"
+
+2. Place Actors:
+   LEFT SIDE:
+   - System User (abstract/general user)
+
+   RIGHT SIDE:
+   - Database System
+   - Email Service
+   - Payment Gateway
+   - OAuth Providers
+
+3. Draw Use Cases (grouped by concern):
+   - Store Data
+   - Retrieve Data
+   - Manage Session
+   - Send Email Notification
+   - Process Payment
+   - Authenticate via OAuth
+   - Search System
+   - Update Inventory
+
+4. Draw Associations showing which actors interact with which system services
+
+================================================================================
+                9. TOOL RECOMMENDATIONS
+================================================================================
+
+RECOMMENDED TOOLS:
+━━━━━━━━━━━━━━━━━━
+
+1. Draw.io (diagrams.net)
+   - Free, web-based
+   - Built-in UML shapes
+   - Export: PNG, PDF, SVG
+   - Link: https://app.diagrams.net/
+
+2. Lucidchart
+   - Professional, collaborative
+   - UML template library
+   - Real-time collaboration
+
+3. PlantUML
+   - Text-based diagrams
+   - Great for version control
+   - Automated layout
+
+4. Visual Paradigm
+   - Professional UML tool
+   - Comprehensive features
+   - Code generation
+
+5. StarUML
+   - Desktop application
+   - Multiple diagram types
+   - Professional output
+
+DRAWING BEST PRACTICES:
+━━━━━━━━━━━━━━━━━━━━━━━
+
+1. Layout:
+   - Primary actors on left
+   - Secondary actors on right
+   - Use cases in center
+   - Group related use cases
+
+2. Naming:
+   - Start with verb (e.g., "Manage Products")
+   - Be specific and clear
+   - Avoid technical jargon
+
+3. Organization:
+   - Keep diagrams focused (one diagram per actor perspective)
+   - Use swim lanes or colors to group related use cases
+   - Limit to 10-15 use cases per diagram for readability
+
+4. Relationships:
+   - Use <<include>> sparingly (only when always executed)
+   - Use <<extend>> for optional behavior
+   - Show generalization with proper notation
+
+5. Clarity:
+   - Add brief descriptions in notes
+   - Use consistent naming
+   - Align elements for professional appearance
+
+================================================================================
+                     PLANTUML CODE EXAMPLES
+================================================================================
+
+You can use PlantUML to generate diagrams from text. Here's an example:
+
+DIAGRAM 1 - Guest User (PlantUML):
+──────────────────────────────────
+
+@startuml
+left to right direction
+skinparam packageStyle rectangle
+
+actor "Guest User" as guest
+actor "Email Service" as email
+actor "OAuth Providers" as oauth
+
+rectangle "E-Commerce System" {
+  usecase "Browse Products" as UC1
+  usecase "View Product Details" as UC2
+  usecase "View Categories" as UC3
+  usecase "Manage Shopping Cart" as UC4
+  usecase "Submit Guest Review" as UC5
+  usecase "View Product Reviews" as UC6
+  usecase "Place Order as Guest" as UC7
+  usecase "Register Account" as UC8
+  usecase "View Available Discounts" as UC9
+  usecase "Verify Discount Code" as UC10
+
+  usecase "Search Products" as UC1_1
+  usecase "Filter by Category" as UC1_2
+  usecase "Add to Cart" as UC4_1
+  usecase "Update Quantity" as UC4_2
+  usecase "Enter Shipping Address" as UC7_1
+  usecase "Apply Discount" as UC7_4
+}
+
+guest --> UC1
+guest --> UC2
+guest --> UC3
+guest --> UC4
+guest --> UC5
+guest --> UC6
+guest --> UC7
+guest --> UC8
+guest --> UC9
+
+UC1 .> UC1_1 : <<include>>
+UC1 .> UC1_2 : <<include>>
+UC4 .> UC4_1 : <<include>>
+UC4 .> UC4_2 : <<include>>
+UC7 .> UC7_1 : <<include>>
+UC7 .> UC10 : <<include>>
+
+UC7 -- email
+UC8 -- email
+UC8 -- oauth
+
+note right of UC4
+  Session-based
+  using cookies
+end note
+
+@enduml
+
+================================================================================
+                        SUMMARY
+================================================================================
+
+TOTAL USE CASES: 43 main use cases + numerous sub-use cases
+
+DIAGRAM DISTRIBUTION:
+- Diagram 1 (Guest): 10 main use cases
+- Diagram 2 (Registered User): 14 main use cases
+- Diagram 3 (Admin): 11 main use cases
+- Diagram 4 (System): 8 system-level use cases
+
+KEY RELATIONSHIPS:
+- 2 Generalizations (Registered extends Guest, Admin extends Registered)
+- Multiple <<include>> relationships
+- Several <<extend>> relationships
+- Connections to 4 external actors (Email, Payment, OAuth, Database)
+
+ACTORS SUMMARY:
+Primary Actors (3):
+  - Guest User
+  - Registered User
+  - Administrator
+
+Secondary Actors (4):
+  - Email Service
+  - Payment Gateway
+  - OAuth Providers (Google, Facebook)
+  - Database System
+
+================================================================================
+                        END OF GUIDE
+================================================================================
+
+For questions or clarifications about specific use cases, refer to:
+- API Documentation: postman/README.md
+- Route Files: server/routes/*.js
+- Controller Files: server/controllers/*.js
+
+Last Updated: 2025-11-20
+Version: 1.0

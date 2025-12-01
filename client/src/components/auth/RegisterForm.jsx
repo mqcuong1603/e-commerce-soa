@@ -482,9 +482,7 @@ const RegisterForm = () => {
               <div className="row g-3">
                 <div className="col-6">
                   <a
-                    href={`${
-                      process.env.REACT_APP_API_URL || "http://localhost:3000"
-                    }/api/auth/google`}
+                    href="/api/auth/google"
                     className="btn btn-outline-secondary w-100 d-flex align-items-center justify-content-center"
                   >
                     <i className="bi bi-google me-2"></i>

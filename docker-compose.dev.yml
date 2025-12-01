@@ -34,6 +34,8 @@ services:
       - "3000:3000"
     env_file:
       - ./.env
+    environment:
+      - API_URL=http://localhost:3000/api
     depends_on:
       mongo:
         condition: service_healthy

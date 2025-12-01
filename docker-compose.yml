@@ -23,6 +23,9 @@ services:
       - ./.env
     environment:
       - NODE_ENV=production
+      - CLIENT_URL=http://localhost
+      - API_URL=http://localhost/api
+      - NODE_TLS_REJECT_UNAUTHORIZED=0
     depends_on:
       mongo:
         condition: service_healthy
